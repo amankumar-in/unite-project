@@ -1,4 +1,4 @@
-import EventDetailClient from "@/components/EventDetailClient";
+import EventDetailClient from "./EventDetailClient";
 import { fetchAPI } from "@/lib/api/api-config";
 
 export default async function EventDetailPage({
