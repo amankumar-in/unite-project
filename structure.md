@@ -22,8 +22,14 @@
         └── index
         └── 📁info
             └── exclude
-            └── 📁info
-            └── 📁pack
+        └── 📁logs
+            └── HEAD
+            └── 📁refs
+                └── 📁heads
+                    └── main
+                └── 📁remotes
+                    └── 📁origin
+                        └── main
         └── ORIG_HEAD
         └── 📁refs
             └── 📁heads
@@ -33,17 +39,15 @@
                     └── main
             └── 📁tags
     └── 📁unite-backend
-    └── 📁unite-backend-sqlite
         └── .env
         └── .env.example
         └── .gitignore
+        └── .npmrc
         └── 📁.strapi
         └── .strapi-updater.json
             └── 📁client
                 └── app.js
                 └── index.html
-        └── 📁.tmp
-            └── data.db
         └── 📁config
             └── admin.ts
             └── api.ts
@@ -77,40 +81,8 @@
             └── 📁generated
                 └── components.d.ts
                 └── contentTypes.d.ts
-        └── .env
-        └── .env.example
-        └── .gitignore
-        └── .npmrc
-        └── 📁config
-            └── admin.ts
-            └── api.ts
-            └── database.ts
-            └── middlewares.ts
-            └── plugins.ts
-            └── server.ts
-        └── 📁database
-            └── 📁migrations
-                └── .gitkeep
-        └── favicon.png
-        └── package-lock.json
-        └── package.json
-        └── 📁public
-            └── robots.txt
-            └── 📁uploads
-                └── .gitkeep
-        └── README.md
-        └── 📁src
-            └── 📁admin
-                └── app.example.tsx
-                └── tsconfig.json
-                └── vite.config.example.ts
-            └── 📁api
-                └── .gitkeep
-            └── 📁extensions
-                └── .gitkeep
-            └── index.ts
-        └── tsconfig.json
     └── 📁unite-frontend
+        └── .env.local
         └── .gitignore
             └── app-build-manifest.json
             └── 📁build
@@ -262,6 +234,7 @@
                 └── layout.tsx
                 └── page.tsx
         └── tsconfig.json
+    └── .DS_Store
     └── .gitignore
     └── render.yaml
 ```
