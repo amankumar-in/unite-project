@@ -16,13 +16,11 @@ interface Event {
   publishedAt: string;
 }
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function EventDetailPage({ params }: PageProps) {
+export default function EventDetailPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
