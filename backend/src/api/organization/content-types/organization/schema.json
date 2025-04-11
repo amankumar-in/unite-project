@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organizations",
+  "info": {
+    "singularName": "organization",
+    "pluralName": "organizations",
+    "displayName": "Organization",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Role": {
+      "type": "string",
+      "default": "Lead Organizer",
+      "required": true
+    },
+    "Description": {
+      "type": "blocks"
+    },
+    "Logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "LogoPlaceholder": {
+      "type": "string",
+      "default": "LOGO"
+    },
+    "ShortDescription": {
+      "type": "text",
+      "required": true
+    }
+  }
+}

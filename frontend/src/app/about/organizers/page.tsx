@@ -1,109 +1,104 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchAPI } from "@/lib/api/api-config";
 
-// Sample data for organizers - in a real app, this would come from Strapi
-const organizingCommittee = [
-  {
-    id: 1,
-    name: "Dr. Sarah Namuli",
-    title: "Chairperson, UNITE Expo 2025",
-    organization: "Uganda Investment Authority",
-    bio: "Dr. Namuli is the Executive Director of the Uganda Investment Authority with over 20 years of experience in investment promotion and economic development.",
-    imagePlaceholder: "F",
-  },
-  {
-    id: 2,
-    name: "James Okello",
-    title: "Deputy Chairperson",
-    organization: "Ministry of Trade, Industry & Cooperatives",
-    bio: "Mr. Okello oversees trade promotion initiatives and has been instrumental in developing Uganda's export strategy.",
-    imagePlaceholder: "M",
-  },
-  {
-    id: 3,
-    name: "Patricia Mulondo",
-    title: "Head of Operations",
-    organization: "Uganda Export Promotion Board",
-    bio: "Ms. Mulondo brings extensive experience in event management and trade exhibitions across East Africa.",
-    imagePlaceholder: "F",
-  },
-  {
-    id: 4,
-    name: "Robert Mukasa",
-    title: "Finance Director",
-    organization: "Private Sector Foundation Uganda",
-    bio: "Mr. Mukasa manages the financial planning and budgeting for UNITE Expo, ensuring resources are allocated effectively.",
-    imagePlaceholder: "M",
-  },
-  {
-    id: 5,
-    name: "Elizabeth Nantume",
-    title: "Marketing & Communications Lead",
-    organization: "Uganda Tourism Board",
-    bio: "Ms. Nantume directs all marketing efforts for UNITE Expo, leveraging her experience in promoting Uganda internationally.",
-    imagePlaceholder: "F",
-  },
-  {
-    id: 6,
-    name: "David Ochieng",
-    title: "Partnerships Coordinator",
-    organization: "Uganda Manufacturers Association",
-    bio: "Mr. Ochieng manages relationships with sponsors, exhibitors, and other stakeholders to ensure a successful expo.",
-    imagePlaceholder: "M",
-  },
-];
+interface Organizer {
+  id: number;
+  Name: string;
+  Title: string;
+  Organization: string;
+  Bio: string;
+  ShortBio: string; // Added ShortBio field
+  ImagePlaceholder: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
 
-const partnerOrganizations = [
-  {
-    id: 1,
-    name: "Uganda Investment Authority",
-    role: "Lead Organizer",
-    description:
-      "A government agency responsible for promoting and facilitating investment in Uganda.",
-    logo: "UIA",
-  },
-  {
-    id: 2,
-    name: "Ministry of Trade, Industry & Cooperatives",
-    role: "Co-organizer",
-    description:
-      "Government ministry responsible for trade policy and regulation in Uganda.",
-    logo: "MTIC",
-  },
-  {
-    id: 3,
-    name: "Uganda Export Promotion Board",
-    role: "Partner",
-    description:
-      "Agency focused on promoting Ugandan exports to international markets.",
-    logo: "UEPB",
-  },
-  {
-    id: 4,
-    name: "Private Sector Foundation Uganda",
-    role: "Partner",
-    description:
-      "Apex body of the private sector made up of over 200 business associations and corporate members.",
-    logo: "PSFU",
-  },
-  {
-    id: 5,
-    name: "Uganda Tourism Board",
-    role: "Partner",
-    description:
-      "Statutory organization responsible for promoting Uganda as a tourism destination.",
-    logo: "UTB",
-  },
-  {
-    id: 6,
-    name: "Uganda Manufacturers Association",
-    role: "Partner",
-    description:
-      "Business association representing the manufacturing sector in Uganda.",
-    logo: "UMA",
-  },
-];
+interface PartnerOrganization {
+  id: number;
+  Name: string;
+  Role: string;
+  Description: string;
+  ShortDescription: string; // Added ShortDescription field
+  LogoPlaceholder: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+}
 
 export default function OrganizersPage() {
+  const [organizers, setOrganizers] = useState<Organizer[]>([]);
+  const [organizations, setOrganizations] = useState<PartnerOrganization[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch organizers
+        const organizersResponse = await fetchAPI("/organizers");
+        console.log("Organizers response:", organizersResponse);
+
+        if (organizersResponse && organizersResponse.data) {
+          setOrganizers(organizersResponse.data);
+        }
+
+        // Fetch organizations
+        const organizationsResponse = await fetchAPI("/organizations");
+        console.log("Organizations response:", organizationsResponse);
+
+        if (organizationsResponse && organizationsResponse.data) {
+          setOrganizations(organizationsResponse.data);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching organizers data:", err);
+        setError("Failed to load organizers data. Please try again later.");
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Helper function to safely display rich text content
+  const renderRichText = (content: any) => {
+    if (!content) return "No information available";
+
+    // If content is a string, return it directly
+    if (typeof content === "string") return content;
+
+    // If it's an object with a text property (common in some Strapi responses)
+    if (typeof content === "object" && content.text) return content.text;
+
+    // If it's a Strapi rich text object
+    if (typeof content === "object" && content.data && content.data.content) {
+      try {
+        return content.data.content
+          .map((block: any) =>
+            block.children
+              ? block.children.map((child: any) => child.text || "").join("")
+              : ""
+          )
+          .join("\n");
+      } catch (e) {
+        console.error("Error parsing rich text:", e);
+      }
+    }
+
+    // If we have an array, try to join it
+    if (Array.isArray(content)) {
+      return content.join(" ");
+    }
+
+    // Last fallback - show something instead of [object Object]
+    return "View details for more information";
+  };
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -153,38 +148,82 @@ export default function OrganizersPage() {
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {organizingCommittee.map((member) => (
-              <div
-                key={member.id}
-                className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading organizers...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100">
+                <svg
+                  className="w-8 h-8 text-red-600"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <p className="mt-4 text-lg font-medium text-gray-900">
+                Error Loading Organizers
+              </p>
+              <p className="mt-2 text-gray-600">{error}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
               >
-                <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div
-                      className={`h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold ${
-                        member.imagePlaceholder === "F"
-                          ? "bg-green-600"
-                          : "bg-green-700"
-                      } text-white`}
-                    >
-                      {member.name.charAt(0)}
-                    </div>
-                    <div className="ml-4">
-                      <h3 className="text-lg font-bold text-gray-900">
-                        {member.name}
-                      </h3>
-                      <p className="text-green-600">{member.title}</p>
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {organizers.length === 0 ? (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-500">No organizers found.</p>
+                </div>
+              ) : (
+                organizers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="bg-gray-50 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="p-6">
+                      <div className="flex items-center mb-4">
+                        <div
+                          className={`h-16 w-16 rounded-full flex items-center justify-center text-xl font-bold ${
+                            member.ImagePlaceholder === "F"
+                              ? "bg-green-600"
+                              : "bg-green-700"
+                          } text-white`}
+                        >
+                          {member.Name.charAt(0)}
+                        </div>
+                        <div className="ml-4">
+                          <h3 className="text-lg font-bold text-gray-900">
+                            {member.Name}
+                          </h3>
+                          <p className="text-green-600">{member.Title}</p>
+                        </div>
+                      </div>
+                      <p className="text-gray-500 text-sm mb-3">
+                        {member.Organization}
+                      </p>
+                      <p className="text-gray-600">
+                        {member.ShortBio || renderRichText(member.Bio)}
+                      </p>
                     </div>
                   </div>
-                  <p className="text-gray-500 text-sm mb-3">
-                    {member.organization}
-                  </p>
-                  <p className="text-gray-600">{member.bio}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </section>
 
@@ -201,29 +240,51 @@ export default function OrganizersPage() {
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {partnerOrganizations.map((org) => (
-              <div
-                key={org.id}
-                className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
-              >
-                <div className="p-6">
-                  <div className="h-16 w-full flex items-center justify-center mb-4">
-                    <div className="bg-green-100 text-green-800 px-4 py-2 rounded-md font-bold text-xl">
-                      {org.logo}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading organizations...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500">
+                Unable to load organizations at this time.
+              </p>
+            </div>
+          ) : (
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {organizations.length === 0 ? (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-500">No organizations found.</p>
+                </div>
+              ) : (
+                organizations.map((org) => (
+                  <div
+                    key={org.id}
+                    className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="p-6">
+                      <div className="h-16 w-full flex items-center justify-center mb-4">
+                        <div className="bg-green-100 text-green-800 px-4 py-2 rounded-md font-bold text-xl">
+                          {org.LogoPlaceholder}
+                        </div>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1 text-center">
+                        {org.Name}
+                      </h3>
+                      <p className="text-green-600 text-sm mb-4 text-center">
+                        {org.Role}
+                      </p>
+                      <p className="text-gray-600">
+                        {org.ShortDescription ||
+                          renderRichText(org.Description)}
+                      </p>
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-1 text-center">
-                    {org.name}
-                  </h3>
-                  <p className="text-green-600 text-sm mb-4 text-center">
-                    {org.role}
-                  </p>
-                  <p className="text-gray-600">{org.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </section>
 

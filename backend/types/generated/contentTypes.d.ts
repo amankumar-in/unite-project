@@ -460,6 +460,79 @@ export interface ApiFaqFaq extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiOrganizationOrganization
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'organizations';
+  info: {
+    description: '';
+    displayName: 'Organization';
+    pluralName: 'organizations';
+    singularName: 'organization';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Blocks;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::organization.organization'
+    > &
+      Schema.Attribute.Private;
+    Logo: Schema.Attribute.Media<'images'>;
+    LogoPlaceholder: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'LOGO'>;
+    Name: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    Role: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Lead Organizer'>;
+    ShortDescription: Schema.Attribute.Text & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiOrganizerOrganizer extends Struct.CollectionTypeSchema {
+  collectionName: 'organizers';
+  info: {
+    description: '';
+    displayName: 'Organizer';
+    pluralName: 'organizers';
+    singularName: 'organizer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Bio: Schema.Attribute.Blocks;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Image: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    ImagePlaceholder: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::organizer.organizer'
+    > &
+      Schema.Attribute.Private;
+    Name: Schema.Attribute.String & Schema.Attribute.Required;
+    Organization: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    ShortBio: Schema.Attribute.Text & Schema.Attribute.Required;
+    Title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface PluginContentReleasesRelease
   extends Struct.CollectionTypeSchema {
   collectionName: 'strapi_releases';
@@ -972,6 +1045,8 @@ declare module '@strapi/strapi' {
       'api::event.event': ApiEventEvent;
       'api::faq-category.faq-category': ApiFaqCategoryFaqCategory;
       'api::faq.faq': ApiFaqFaq;
+      'api::organization.organization': ApiOrganizationOrganization;
+      'api::organizer.organizer': ApiOrganizerOrganizer;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

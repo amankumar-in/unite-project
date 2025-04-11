@@ -1,0 +1,48 @@
+{
+  "kind": "collectionType",
+  "collectionName": "organizers",
+  "info": {
+    "singularName": "organizer",
+    "pluralName": "organizers",
+    "displayName": "Organizer",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Title": {
+      "type": "string",
+      "required": true
+    },
+    "Organization": {
+      "type": "string",
+      "required": true
+    },
+    "Bio": {
+      "type": "blocks"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "ImagePlaceholder": {
+      "type": "string"
+    },
+    "ShortBio": {
+      "type": "text",
+      "required": true
+    }
+  }
+}
