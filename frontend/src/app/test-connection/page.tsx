@@ -18,10 +18,22 @@ export default function TestConnection() {
         setStatus("success");
         setMessage(JSON.stringify(data, null, 2));
       } catch (error) {
+        // Properly handle error with TypeScript type narrowing
         console.error("Connection test failed:", error);
         setStatus("error");
+
+        // Get error message with type safety
+        let errorMessage = "Unknown error occurred";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        } else if (error && typeof error === "object" && "message" in error) {
+          errorMessage = String(error.message);
+        }
+
         setMessage(
-          `Connection failed: ${error.message}. Make sure the Strapi server is running and properly configured.`
+          `Connection failed: ${errorMessage}. Make sure the Strapi server is running and properly configured.`
         );
       }
     };
