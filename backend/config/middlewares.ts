@@ -26,7 +26,20 @@ export default [
       },
     },
   },
-  "strapi::cors",
+  {
+    name: "strapi::cors",
+    config: {
+      enabled: true,
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:1337",
+        process.env.FRONTEND_URL || "https://unite-frontend.onrender.com",
+      ],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
+      headers: ["Content-Type", "Authorization", "Origin", "Accept"],
+      keepHeaderOnError: true,
+    },
+  },
   "strapi::poweredBy",
   "strapi::logger",
   "strapi::query",
