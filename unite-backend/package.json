@@ -36,5 +36,8 @@
   },
   "strapi": {
     "uuid": "3856ec51-caab-46b7-b7da-6412e26ca76e"
+  },
+  "resolutions": {
+    "@swc/helpers": "0.5.1"
   }
 }
