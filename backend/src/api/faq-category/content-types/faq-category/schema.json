@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "faq_categories",
+  "info": {
+    "singularName": "faq-category",
+    "pluralName": "faq-categories",
+    "displayName": "FAQ Category"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true,
+      "default": "General Information"
+    },
+    "identifier": {
+      "type": "string",
+      "required": true,
+      "default": "general"
+    }
+  }
+}
