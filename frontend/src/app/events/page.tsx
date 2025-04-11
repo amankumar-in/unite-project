@@ -48,7 +48,7 @@ export default function EventsPage() {
     try {
       const date = new Date(dateString);
       return date.toLocaleString();
-    } catch (e) {
+    } catch (_) {
       return dateString;
     }
   };
