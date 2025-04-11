@@ -45,12 +45,9 @@ export default function EventsPage() {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "No date provided";
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleString();
-    } catch (_) {
-      return dateString;
-    }
+
+    // Simple conversion without try/catch to avoid unused variable issues
+    return dateString ? new Date(dateString).toLocaleString() : dateString;
   };
 
   if (loading) {
