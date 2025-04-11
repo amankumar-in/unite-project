@@ -1,77 +1,46 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAPI } from "@/lib/api/api-config";
+import EventRegisterButtons from "@/components/events/EventRegisterButtons";
 
-interface Event {
-  id: number;
-  documentId: string;
-  Name: string;
-  Description: string;
-  Date: string;
-  Location: string;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
+// API function to fetch data server-side
+async function getEvent(id: string) {
+  const res = await fetch(
+    `${
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:1337"
+    }/api/events/${id}`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch event");
+  }
+
+  const data = await res.json();
+  return data;
 }
 
-export default function EventDetailPage({
+export default async function EventPage({
   params,
 }: {
   params: { id: string };
 }) {
-  const [event, setEvent] = useState<Event | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Server-side data fetching
+  let event;
+  let error = null;
 
-  useEffect(() => {
-    const getEvent = async () => {
-      try {
-        // For now, we'll fetch all events and filter on the client side
-        // In a production app, you'd create a specific API endpoint to fetch one event
-        const response = await fetchAPI("/events");
-
-        if (response && response.data) {
-          const foundEvent = response.data.find(
-            (e: Event) => e.id.toString() === params.id
-          );
-          if (foundEvent) {
-            setEvent(foundEvent);
-          } else {
-            setError("Event not found");
-          }
-        } else {
-          setError("Failed to load event data");
-        }
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching event:", err);
-        setError("Failed to load event. Please try again later.");
-        setLoading(false);
-      }
-    };
-
-    getEvent();
-  }, [params.id]);
+  try {
+    const response = await getEvent(params.id);
+    event = response.data;
+  } catch (err) {
+    error = "Failed to load event. Please try again later.";
+    console.error("Error fetching event:", err);
+  }
 
   const formatDate = (dateString: string) => {
     if (!dateString) return "No date provided";
     return new Date(dateString).toLocaleString();
   };
-
-  if (loading) {
-    return (
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center">
-            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
-            <p className="mt-4 text-gray-600">Loading event details...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (error || !event) {
     return (
@@ -453,20 +422,8 @@ export default function EventDetailPage({
                   </div>
                 </dl>
 
-                <div className="mt-8 space-y-4">
-                  <button
-                    type="button"
-                    className="w-full bg-green-600 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  >
-                    Register for This Event
-                  </button>
-                  <button
-                    type="button"
-                    className="w-full bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                  >
-                    Add to Calendar
-                  </button>
-                </div>
+                {/* Interactive elements moved to a client component */}
+                <EventRegisterButtons eventId={event.id} />
               </div>
 
               <div className="mt-8 bg-gray-50 p-6 rounded-lg shadow-sm">
