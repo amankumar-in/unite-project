@@ -12,16 +12,6 @@ const PESAPAL_SUBMIT_ORDER_URL = `${PESAPAL_BASE_URL}/api/Transactions/SubmitOrd
  */
 export async function POST(request: NextRequest) {
   try {
-    console.log("==== PAYMENT INITIATION START ====");
-    console.log("Environment info:", {
-      nodeVersion: process.version,
-      baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-      ipnIdSet: !!process.env.PESAPAL_IPN_ID,
-      consumerKeySet: !!process.env.PESAPAL_CONSUMER_KEY,
-      host: request.headers.get("host"),
-      requestUrl: request.url,
-    });
-
     // Extract the payment details from the request body
     const body = await request.json();
     const {
@@ -36,12 +26,6 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!referenceNumber || !amount || !currency || !description) {
-      console.log("Missing required fields:", {
-        referenceNumber,
-        amount,
-        currency,
-        description,
-      });
       return NextResponse.json(
         {
           success: false,
@@ -52,7 +36,6 @@ export async function POST(request: NextRequest) {
     }
 
     if (!buyerEmail && !buyerPhone) {
-      console.log("Missing contact details:", { buyerEmail, buyerPhone });
       return NextResponse.json(
         {
           success: false,
@@ -67,9 +50,6 @@ export async function POST(request: NextRequest) {
       amount,
       currency,
       description,
-      buyerName: buyerName || "Not provided",
-      buyerEmail: buyerEmail || "Not provided",
-      buyerPhone: buyerPhone || "Not provided",
     });
 
     // Get Pesapal IPN ID from environment variables
@@ -87,41 +67,19 @@ export async function POST(request: NextRequest) {
 
     // Get the base URL for callbacks
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || request.nextUrl.origin;
-    console.log("Base URL for callbacks:", baseUrl);
-
-    // Auth URL for token retrieval
-    const authUrl = `${request.nextUrl.origin}/api/tickets/pesapal-auth`;
-    console.log("Auth URL:", authUrl);
 
     // First, get authentication token
-    console.log("Attempting to fetch auth token...");
-    let authResponse;
-    try {
-      authResponse = await fetch(authUrl, {
+    const authResponse = await fetch(
+      `${request.nextUrl.origin}/api/tickets/pesapal-auth`,
+      {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      });
-      console.log("Auth response status:", authResponse.status);
-      console.log("Auth response OK:", authResponse.ok);
-    } catch (authError: any) {
-      console.error("Error fetching auth token:", {
-        message: authError.message,
-        cause: authError.cause
-          ? JSON.stringify(authError.cause)
-          : "No cause provided",
-        stack: authError.stack,
-      });
-      throw new Error(`Auth request failed: ${authError.message}`);
-    }
+      }
+    );
 
     const authData = await authResponse.json();
-    console.log("Auth data received:", {
-      success: authData.success,
-      tokenReceived: !!authData.token,
-      expiryDate: authData.expiryDate || "Not provided",
-    });
 
     if (!authData.success || !authData.token) {
       console.error("Failed to authenticate with Pesapal:", authData);
@@ -136,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Split name into first and last name for billing address
-    const nameParts = buyerName ? buyerName.split(" ") : ["", ""];
+    const nameParts = buyerName.split(" ");
     const firstName = nameParts[0] || "";
     const lastName = nameParts.slice(1).join(" ") || "";
 
@@ -164,60 +122,24 @@ export async function POST(request: NextRequest) {
       },
     };
 
-    console.log("Submitting order to Pesapal URL:", PESAPAL_SUBMIT_ORDER_URL);
-    console.log("Order payload:", JSON.stringify(orderRequestPayload));
-    console.log("Auth token length:", authData.token.length);
-    console.log("Auth token prefix:", authData.token.substring(0, 20) + "...");
+    console.log("Submitting order to Pesapal:", orderRequestPayload);
 
     // Submit the order to Pesapal
-    console.log("Sending request to Pesapal...");
-    let orderResponse;
-    try {
-      orderResponse = await fetch(PESAPAL_SUBMIT_ORDER_URL, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authData.token}`,
-        },
-        body: JSON.stringify(orderRequestPayload),
-      });
-      console.log("Order submission response status:", orderResponse.status);
-      console.log("Order submission response OK:", orderResponse.ok);
-    } catch (pesapalError: any) {
-      console.error("Pesapal API request failed:", {
-        message: pesapalError.message,
-        cause: pesapalError.cause
-          ? JSON.stringify(pesapalError.cause)
-          : "No cause provided",
-        code: pesapalError.code || "No error code",
-        stack: pesapalError.stack,
-      });
-
-      if (pesapalError.cause) {
-        console.error("Error cause details:", {
-          name: pesapalError.cause.name,
-          code: pesapalError.cause.code,
-          library: pesapalError.cause.library,
-          reason: pesapalError.cause.reason,
-        });
-      }
-
-      throw new Error(`Pesapal API request failed: ${pesapalError.message}`);
-    }
+    const orderResponse = await fetch(PESAPAL_SUBMIT_ORDER_URL, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authData.token}`,
+      },
+      body: JSON.stringify(orderRequestPayload),
+    });
 
     const orderData = await orderResponse.json();
     console.log("Pesapal order submission response:", orderData);
 
     if (orderData.status === "200" && orderData.redirect_url) {
       // Successfully created order request
-      console.log(
-        "Order successfully created with tracking ID:",
-        orderData.order_tracking_id
-      );
-      console.log("Redirect URL:", orderData.redirect_url);
-      console.log("==== PAYMENT INITIATION COMPLETED SUCCESSFULLY ====");
-
       return NextResponse.json({
         success: true,
         orderTrackingId: orderData.order_tracking_id,
@@ -226,9 +148,6 @@ export async function POST(request: NextRequest) {
       });
     } else {
       // Failed to create order request
-      console.error("Failed to create order request:", orderData);
-      console.log("==== PAYMENT INITIATION FAILED ====");
-
       return NextResponse.json(
         {
           success: false,
@@ -241,9 +160,6 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     // Handle any unexpected errors
     console.error("Error initiating payment:", error);
-    console.log("Error stack:", error.stack);
-    console.log("==== PAYMENT INITIATION FAILED WITH EXCEPTION ====");
-
     return NextResponse.json(
       {
         success: false,
