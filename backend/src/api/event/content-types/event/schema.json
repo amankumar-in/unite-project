@@ -73,6 +73,12 @@
       "relation": "manyToMany",
       "target": "api::speaker.speaker",
       "inversedBy": "events"
+    },
+    "sponsors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::sponsor.sponsor",
+      "mappedBy": "events"
     }
   }
 }

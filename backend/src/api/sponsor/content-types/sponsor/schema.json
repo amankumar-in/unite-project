@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "sponsors",
+  "info": {
+    "singularName": "sponsor",
+    "pluralName": "sponsors",
+    "displayName": "Sponsor"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Slug": {
+      "type": "uid",
+      "targetField": "Name",
+      "required": true
+    },
+    "Tier": {
+      "type": "enumeration",
+      "enum": [
+        "Platinum",
+        "Gold",
+        "Silver"
+      ]
+    },
+    "Description": {
+      "type": "text",
+      "required": true,
+      "default": "About the sponsor"
+    },
+    "Website": {
+      "type": "string"
+    },
+    "Logo": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "events": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::event.event",
+      "inversedBy": "sponsors"
+    }
+  }
+}

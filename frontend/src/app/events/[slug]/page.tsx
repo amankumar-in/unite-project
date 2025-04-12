@@ -7,6 +7,7 @@ import { fetchAPI } from "@/lib/api/api-config";
 interface Speaker {
   id: number;
   Name: string;
+  Slug: string;
   Title: string;
   Organization: string;
   ShortBio: string;
@@ -212,217 +213,246 @@ export default function EventDetailPage({
 
   return (
     <div className="bg-white">
-      {/* Hero Section with Image Banner */}
-      <div className="relative">
-        {/* Event Image */}
-        <div className="h-[40vh] md:h-[50vh] w-full relative">
-          {event.Image ? (
-            <img
-              src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
-              alt={event.Image.alternativeText || event.Title}
-              className="w-full h-full object-cover"
+      {/* Back Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Link
+          href="/events"
+          className="text-green-600 hover:text-green-700 inline-flex items-center text-sm font-medium"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="mr-2 h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
             />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-green-600">
-              <span className="text-white text-2xl font-bold">
-                UNITE Expo 2025
-              </span>
-            </div>
-          )}
+          </svg>
+          Back to Events
+        </Link>
+      </div>
 
-          {/* Overlay with gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-
-          {/* Event Details Overlay */}
-          <div className="absolute bottom-0 left-0 right-0 text-white p-6 md:p-10">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-              <span className="px-3 py-1 bg-green-600 text-white text-sm font-medium rounded-full">
-                {event.Enumeration}
-              </span>
-              {event.FeaturedEvent && (
-                <span className="px-3 py-1 bg-yellow-500 text-white text-sm font-medium rounded-full">
-                  Featured
-                </span>
-              )}
-            </div>
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2">
-              {event.Title}
-            </h1>
-            <div className="mt-4 flex flex-wrap gap-6">
-              <div className="flex items-center">
-                <svg
-                  className="h-5 w-5 mr-2 text-green-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <span>{formatDuration(event.StartDate, event.EndDate)}</span>
-              </div>
-              <div className="flex items-center">
-                <svg
-                  className="h-5 w-5 mr-2 text-green-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
-                <span>
-                  {event.Location}
-                  {event.RoomNumber && ` - Room ${event.RoomNumber}`}
+      {/* Event Image with Overlay - Full Width */}
+      <div className="relative w-full">
+        <div className="w-full">
+          <div className="relative h-[500px] w-full">
+            {event.Image ? (
+              <img
+                src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
+                alt={event.Image.alternativeText || event.Title}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500 text-2xl font-semibold">
+                  UNITE Expo 2025
                 </span>
               </div>
-              {event.MaxAttendees && (
-                <div className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-green-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                    />
-                  </svg>
-                  <span>Capacity: {event.MaxAttendees} attendees</span>
+            )}
+
+            {/* Overlay with gradient and event info */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end">
+              <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white">
+                    {event.Enumeration}
+                  </span>
+                  {event.FeaturedEvent && (
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 text-white">
+                      Featured
+                    </span>
+                  )}
                 </div>
-              )}
+
+                <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                  {event.Title}
+                </h1>
+                <p className="text-xl text-gray-200 mb-6 max-w-3xl">
+                  {event.ShortDescription}
+                </p>
+
+                <div className="flex flex-col sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2 text-white">
+                  <div className="flex items-center mb-2 sm:mb-0">
+                    <svg
+                      className="h-5 w-5 mr-2 text-green-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>{formatDate(event.StartDate)}</span>
+                  </div>
+
+                  <div className="flex items-center mb-2 sm:mb-0">
+                    <svg
+                      className="h-5 w-5 mr-2 text-green-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>
+                      {formatDuration(event.StartDate, event.EndDate)}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center mb-2 sm:mb-0">
+                    <svg
+                      className="h-5 w-5 mr-2 text-green-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <span>
+                      {event.Location}
+                      {event.RoomNumber && ` • Room ${event.RoomNumber}`}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          {/* Left Column - Event Description */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Event Details */}
           <div className="lg:col-span-2">
+            {/* Event Description */}
             <div className="mb-10">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 About This Event
               </h2>
-              <div className="prose max-w-none">
+              <div className="prose prose-green max-w-none">
                 {renderRichText(event.Description)}
               </div>
             </div>
 
-            {/* Speakers Section - Only show if there are speakers */}
+            {/* Speakers Section */}
             {event.speakers && event.speakers.length > 0 && (
-              <div className="mt-12">
+              <div className="mt-12 pt-8 border-t border-gray-200">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">
                   Speakers
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid gap-8 md:grid-cols-2">
                   {event.speakers.map((speaker) => (
-                    <div
-                      key={speaker.id}
-                      className="bg-white rounded-lg border border-gray-200 p-6 flex items-start"
-                    >
-                      <div className="flex-shrink-0 mr-4">
-                        {speaker.ProfileImage ? (
-                          <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL}${speaker.ProfileImage.url}`}
-                            alt={speaker.Name}
-                            className="h-16 w-16 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="h-16 w-16 rounded-full bg-green-600 flex items-center justify-center text-white text-xl font-bold">
-                            {speaker.Name.charAt(0)}
-                          </div>
-                        )}
+                    <Link href={`/speakers/${speaker.Slug}`} key={speaker.id}>
+                      <div className="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+                        <div className="flex-shrink-0 mr-4">
+                          {speaker.ProfileImage ? (
+                            <img
+                              src={`${process.env.NEXT_PUBLIC_API_URL}${speaker.ProfileImage.url}`}
+                              alt={speaker.Name}
+                              className="h-16 w-16 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="h-16 w-16 rounded-full bg-green-600 flex items-center justify-center text-white text-xl font-bold">
+                              {speaker.Name.charAt(0)}
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold text-gray-900">
+                            {speaker.Name}
+                          </h3>
+                          <p className="text-green-600">{speaker.Title}</p>
+                          <p className="text-gray-500 text-sm">
+                            {speaker.Organization}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-900">
-                          {speaker.Name}
-                        </h3>
-                        <p className="text-green-600">{speaker.Title}</p>
-                        <p className="text-sm text-gray-500">
-                          {speaker.Organization}
-                        </p>
-                      </div>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               </div>
             )}
           </div>
 
-          {/* Right Column - Additional Info & CTA */}
-          <div className="lg:col-span-1">
-            <div className="bg-gray-50 rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">
-                Event Details
-              </h3>
+          {/* Right Column - Event Info Card */}
+          <div className="lg:row-start-1 lg:col-start-3">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden sticky top-8">
+              <div className="p-6 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">
+                  Event Details
+                </h3>
 
-              <div className="space-y-4">
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">
-                    Date & Time
-                  </h4>
-                  <p className="mt-1 text-gray-900">
-                    {formatDate(event.StartDate)}
-                  </p>
-                  <p className="text-gray-900">
-                    {formatDuration(event.StartDate, event.EndDate)}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500">
-                    Location
-                  </h4>
-                  <p className="mt-1 text-gray-900">{event.Location}</p>
-                  {event.RoomNumber && (
-                    <p className="text-gray-900">Room {event.RoomNumber}</p>
-                  )}
-                </div>
-
-                {event.MaxAttendees && (
+                <div className="space-y-4">
                   <div>
                     <h4 className="text-sm font-medium text-gray-500">
-                      Capacity
+                      Date & Time
                     </h4>
                     <p className="mt-1 text-gray-900">
-                      {event.MaxAttendees} attendees
+                      {formatDate(event.StartDate)}
+                    </p>
+                    <p className="text-gray-900">
+                      {formatDuration(event.StartDate, event.EndDate)}
                     </p>
                   </div>
-                )}
+
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500">
+                      Location
+                    </h4>
+                    <p className="mt-1 text-gray-900">{event.Location}</p>
+                    {event.RoomNumber && (
+                      <p className="text-gray-900">Room {event.RoomNumber}</p>
+                    )}
+                  </div>
+
+                  {event.MaxAttendees && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500">
+                        Capacity
+                      </h4>
+                      <p className="mt-1 text-gray-900">
+                        {event.MaxAttendees} attendees
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="mt-6">
+              <div className="p-6">
                 <Link
                   href="/tickets"
                   className="w-full flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
                 >
                   Register for This Event
                 </Link>
-              </div>
 
-              <div className="mt-4">
                 <button
                   type="button"
-                  className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  className="mt-3 w-full flex justify-center items-center px-4 py-3 border border-gray-300 text-base font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50"
                   onClick={() => {
                     // Add calendar functionality here
                     alert("Add to calendar feature coming soon!");
@@ -445,7 +475,7 @@ export default function EventDetailPage({
                 </button>
               </div>
 
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="p-6 bg-gray-50">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
                   Share This Event
                 </h3>
@@ -503,8 +533,8 @@ export default function EventDetailPage({
         </div>
       </div>
 
-      {/* Related Events CTA */}
-      <section className="bg-gray-50 py-12">
+      {/* Related Events Section */}
+      <section className="bg-gray-50 py-12 mt-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">
