@@ -247,7 +247,9 @@ export default function SponsorDetailPage({
 
               {/* Description Preview */}
               <p className="text-gray-600 mt-2 mb-4 max-w-3xl">
-                {sponsor.Description}
+                {sponsor.Description.length > 140
+                  ? `${sponsor.Description.substring(0, 140)}...`
+                  : sponsor.Description}
               </p>
 
               {/* Action Buttons */}

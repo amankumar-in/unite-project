@@ -293,7 +293,9 @@ export default function EventDetailPage({
                   {event.Title}
                 </h1>
                 <p className="text-lg text-gray-200 mb-6 max-w-3xl">
-                  {event.ShortDescription}
+                  {event.ShortDescription.length > 140
+                    ? `${event.ShortDescription.substring(0, 140)}...`
+                    : event.ShortDescription}
                 </p>
 
                 <div className="flex flex-col sm:flex-row sm:flex-wrap sm:gap-x-6 sm:gap-y-2 text-white">
