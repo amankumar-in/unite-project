@@ -21,6 +21,27 @@ interface Speaker {
   };
 }
 
+interface Sponsor {
+  id: number;
+  Name: string;
+  Slug: string;
+  Tier: "Platinum" | "Gold" | "Silver";
+  Description: string;
+  Website?: string;
+  Featured: boolean;
+  Logo?: {
+    url: string;
+    formats?: {
+      thumbnail?: {
+        url: string;
+      };
+      small?: {
+        url: string;
+      };
+    };
+  };
+}
+
 interface RichTextNode {
   type: string;
   level?: number;
@@ -40,11 +61,10 @@ interface Event {
   EndDate: string;
   Location: string;
   RoomNumber?: string;
-  Enumeration: string; // This appears to be the Category field
+  Enumeration: string;
   FeaturedEvent: boolean;
   MaxAttendees?: number;
   Image?: {
-    id: number;
     url: string;
     width: number;
     height: number;
@@ -62,6 +82,7 @@ interface Event {
     };
   };
   speakers: Speaker[];
+  sponsors: Sponsor[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -79,11 +100,10 @@ export default function EventDetailPage({
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        // Using slug to fetch the event
+        // Using slug to fetch the event with all relations
         const response = await fetchAPI(
           `/events?filters[Slug][$eq]=${params.slug}&populate=*`
         );
-        console.log("Event detail response:", response);
 
         if (response && response.data && response.data.length > 0) {
           setEvent(response.data[0]);
@@ -107,10 +127,16 @@ export default function EventDetailPage({
       year: "numeric",
       month: "long",
       day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
     };
     return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  // Format time with 12-hour clock
+  const formatTime = (dateString: string) => {
+    return new Date(dateString).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   // Format time duration
@@ -120,17 +146,13 @@ export default function EventDetailPage({
 
     // If on the same day, just show time range
     if (start.toDateString() === end.toDateString()) {
-      return `${start.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })} - ${end.toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      })}`;
+      return `${formatTime(startDate)} - ${formatTime(endDate)}`;
     }
 
     // Different days, show full range
-    return `${formatDate(startDate)} - ${formatDate(endDate)}`;
+    return `${formatDate(startDate)} ${formatTime(startDate)} - ${formatDate(
+      endDate
+    )} ${formatTime(endDate)}`;
   };
 
   // Render rich text content
@@ -164,10 +186,10 @@ export default function EventDetailPage({
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center">
           <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading event details...</p>
+          <p className="mt-2 text-gray-600">Loading event details...</p>
         </div>
       </div>
     );
@@ -176,11 +198,11 @@ export default function EventDetailPage({
   // Error state
   if (error || !event) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+      <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center max-w-md px-4">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-3">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-6 h-6 text-red-600"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -194,10 +216,10 @@ export default function EventDetailPage({
               />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
             Event Not Found
           </h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 mb-4">
             {error || "We couldn't find the event you're looking for."}
           </p>
           <Link
@@ -212,7 +234,7 @@ export default function EventDetailPage({
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-white min-h-screen">
       {/* Back Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <Link
@@ -221,7 +243,7 @@ export default function EventDetailPage({
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="mr-2 h-5 w-5"
+            className="mr-2 h-4 w-4"
             viewBox="0 0 20 20"
             fill="currentColor"
           >
@@ -238,7 +260,7 @@ export default function EventDetailPage({
       {/* Event Image with Overlay - Full Width */}
       <div className="relative w-full">
         <div className="w-full">
-          <div className="relative h-[500px] w-full">
+          <div className="relative h-[400px] md:h-[500px] w-full">
             {event.Image ? (
               <img
                 src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
@@ -257,20 +279,20 @@ export default function EventDetailPage({
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent flex items-end">
               <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pb-8">
                 <div className="flex flex-wrap gap-2 mb-3">
-                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-600 text-white">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-600 text-white">
                     {event.Enumeration}
                   </span>
                   {event.FeaturedEvent && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-500 text-white">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-500 text-white">
                       Featured
                     </span>
                   )}
                 </div>
 
-                <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                <h1 className="text-2xl md:text-4xl font-bold text-white mb-4">
                   {event.Title}
                 </h1>
-                <p className="text-xl text-gray-200 mb-6 max-w-3xl">
+                <p className="text-lg text-gray-200 mb-6 max-w-3xl">
                   {event.ShortDescription}
                 </p>
 
@@ -344,13 +366,87 @@ export default function EventDetailPage({
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Event Details */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          {/* Left Column - Event Details & Sponsors */}
           <div className="lg:col-span-2">
+            {/* Event Sponsors - Display at top if available */}
+            {event.sponsors && event.sponsors.length > 0 && (
+              <div className="mb-10 bg-gray-50 rounded-lg border border-gray-200 p-6">
+                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                  <svg
+                    className="h-5 w-5 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Event Sponsors
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                  {event.sponsors.map((sponsor) => (
+                    <Link
+                      href={`/sponsors/${sponsor.Slug}`}
+                      key={sponsor.id}
+                      className="group flex flex-col items-center bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex-shrink-0 w-20 h-20 bg-white rounded-full p-1 flex items-center justify-center shadow-sm mb-3">
+                        {sponsor.Logo ? (
+                          <img
+                            src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
+                            alt={sponsor.Name}
+                            className="max-w-full max-h-full object-contain rounded-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xl font-bold">
+                            {sponsor.Name.substring(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-center">
+                        <h3 className="text-sm font-medium text-gray-900 group-hover:text-green-600 line-clamp-2">
+                          {sponsor.Name}
+                        </h3>
+                        <span
+                          className={`text-xs mt-1 inline-block px-2 py-0.5 rounded-full ${
+                            sponsor.Tier === "Platinum"
+                              ? "bg-purple-100 text-purple-800"
+                              : sponsor.Tier === "Gold"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-slate-100 text-slate-800"
+                          }`}
+                        >
+                          {sponsor.Tier}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Event Description */}
             <div className="mb-10">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <svg
+                  className="h-6 w-6 mr-2 text-gray-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 About This Event
               </h2>
               <div className="prose prose-green max-w-none">
@@ -361,10 +457,23 @@ export default function EventDetailPage({
             {/* Speakers Section */}
             {event.speakers && event.speakers.length > 0 && (
               <div className="mt-12 pt-8 border-t border-gray-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <svg
+                    className="h-6 w-6 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
                   Speakers
                 </h2>
-                <div className="grid gap-8 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-2">
                   {event.speakers.map((speaker) => (
                     <Link href={`/speakers/${speaker.Slug}`} key={speaker.id}>
                       <div className="flex items-center p-4 bg-white rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
@@ -399,7 +508,7 @@ export default function EventDetailPage({
           </div>
 
           {/* Right Column - Event Info Card */}
-          <div className="lg:row-start-1 lg:col-start-3">
+          <div>
             <div className="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden sticky top-8">
               <div className="p-6 border-b border-gray-200">
                 <h3 className="text-lg font-bold text-gray-900 mb-4">
@@ -437,6 +546,25 @@ export default function EventDetailPage({
                       <p className="mt-1 text-gray-900">
                         {event.MaxAttendees} attendees
                       </p>
+                    </div>
+                  )}
+
+                  {event.sponsors && event.sponsors.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-gray-500">
+                        Sponsored By
+                      </h4>
+                      <div className="mt-1 flex flex-wrap gap-2">
+                        {event.sponsors.map((sponsor) => (
+                          <Link
+                            key={sponsor.id}
+                            href={`/sponsors/${sponsor.Slug}`}
+                            className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 hover:bg-gray-200"
+                          >
+                            {sponsor.Name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -534,13 +662,13 @@ export default function EventDetailPage({
       </div>
 
       {/* Related Events Section */}
-      <section className="bg-gray-50 py-12 mt-10">
+      <section className="bg-gray-50 py-12 mt-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-2xl font-bold text-gray-900">
               Explore More Events
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
+            <p className="mt-2 text-lg text-gray-600">
               Discover other exciting opportunities at UNITE Expo 2025
             </p>
           </div>

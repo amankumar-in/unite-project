@@ -13,6 +13,17 @@ interface Event {
   StartDate: string;
   EndDate: string;
   Location: string;
+  Image?: {
+    url: string;
+    formats?: {
+      thumbnail?: {
+        url: string;
+      };
+      small?: {
+        url: string;
+      };
+    };
+  };
 }
 
 interface Sponsor {
@@ -24,7 +35,6 @@ interface Sponsor {
   Website?: string;
   Featured: boolean;
   Logo?: {
-    id: number;
     url: string;
     formats?: {
       thumbnail?: {
@@ -35,7 +45,7 @@ interface Sponsor {
       };
     };
   };
-  sponsoredEvents?: Event[];
+  events?: Event[];
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -53,6 +63,7 @@ export default function SponsorDetailPage({
   useEffect(() => {
     const fetchSponsorData = async () => {
       try {
+        // Using slug to fetch the sponsor with proper populate
         const response = await fetchAPI(
           `/sponsors?filters[Slug][$eq]=${params.slug}&populate=*`
         );
@@ -141,24 +152,32 @@ export default function SponsorDetailPage({
           bg: "bg-purple-100",
           text: "text-purple-800",
           border: "border-purple-200",
+          accent: "bg-purple-600",
+          light: "bg-purple-50",
         };
       case "Gold":
         return {
-          bg: "bg-yellow-100",
-          text: "text-yellow-800",
-          border: "border-yellow-200",
+          bg: "bg-amber-100",
+          text: "text-amber-800",
+          border: "border-amber-200",
+          accent: "bg-amber-500",
+          light: "bg-amber-50",
         };
       case "Silver":
         return {
-          bg: "bg-gray-100",
-          text: "text-gray-800",
-          border: "border-gray-200",
+          bg: "bg-slate-100",
+          text: "text-slate-800",
+          border: "border-slate-200",
+          accent: "bg-slate-500",
+          light: "bg-slate-50",
         };
       default:
         return {
           bg: "bg-green-100",
           text: "text-green-800",
           border: "border-green-200",
+          accent: "bg-green-600",
+          light: "bg-green-50",
         };
     }
   };
@@ -166,73 +185,73 @@ export default function SponsorDetailPage({
   const tierColor = getTierColor(sponsor.Tier);
 
   return (
-    <div className="bg-white">
-      {/* Compact Navigation */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-        <Link
-          href="/sponsors"
-          className="text-green-600 hover:text-green-700 inline-flex items-center text-sm font-medium"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="mr-1 h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
-              clipRule="evenodd"
-            />
-          </svg>
-          Back to Sponsors
-        </Link>
-      </div>
-
-      {/* Sponsor Header - More Compact */}
-      <div className={`border-b ${tierColor.border}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+    <div className="bg-white min-h-screen">
+      {/* Hero section with logo and title */}
+      <div
+        className={`${tierColor.light} pt-8 pb-12 border-b ${tierColor.border}`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
             {/* Logo */}
-            <div className="flex-shrink-0 bg-white p-4 rounded-lg shadow-sm border border-gray-200 w-40 h-40 flex items-center justify-center">
-              {sponsor.Logo ? (
-                <img
-                  src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
-                  alt={sponsor.Name}
-                  className="max-h-32 max-w-32 object-contain"
-                />
-              ) : (
-                <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-xl font-semibold">
-                  {sponsor.Name.substring(0, 2)}
-                </div>
-              )}
+            <div className="relative flex-shrink-0">
+              <div
+                className={`absolute inset-0 -m-2 rounded-full ${tierColor.bg} blur-sm opacity-60`}
+              ></div>
+              <div className="relative bg-white p-4 rounded-lg shadow-sm border border-gray-200 w-40 h-40 flex items-center justify-center">
+                {sponsor.Logo ? (
+                  <img
+                    src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
+                    alt={sponsor.Name}
+                    className="max-h-32 max-w-32 object-contain"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.style.display = "none";
+                      const parent = target.parentElement;
+                      if (parent) {
+                        const fallback = document.createElement("div");
+                        fallback.className =
+                          "h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-xl font-semibold";
+                        fallback.textContent = sponsor.Name.substring(0, 2);
+                        parent.appendChild(fallback);
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-xl font-semibold">
+                    {sponsor.Name.substring(0, 2).toUpperCase()}
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Sponsor Info - Better aligned */}
+            {/* Sponsor Info */}
             <div className="flex-1 text-center md:text-left">
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
                 <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
                   {sponsor.Name}
                 </h1>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${tierColor.bg} ${tierColor.text}`}
-                >
-                  {sponsor.Tier} Sponsor
-                </span>
-                {sponsor.Featured && (
-                  <span className="px-2.5 py-0.5 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                    Featured
+                <div className="flex flex-wrap gap-2">
+                  <span
+                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${tierColor.bg} ${tierColor.text}`}
+                  >
+                    {sponsor.Tier} Sponsor
                   </span>
-                )}
+                  {sponsor.Featured && (
+                    <span className="px-2.5 py-0.5 bg-green-100 text-green-800 text-sm font-medium rounded-full">
+                      Featured
+                    </span>
+                  )}
+                </div>
               </div>
 
               {/* Description Preview */}
-              <p className="text-gray-600 text-sm mt-1 mb-3 line-clamp-2 max-w-2xl">
+              <p className="text-gray-600 mt-2 mb-4 max-w-3xl">
                 {sponsor.Description}
               </p>
 
-              {/* Actions */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2">
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4">
                 {sponsor.Website && (
                   <a
                     href={
@@ -242,10 +261,10 @@ export default function SponsorDetailPage({
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-1.5 border border-green-600 text-green-600 hover:bg-green-50 rounded-md text-sm font-medium transition-colors"
+                    className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${tierColor.accent} hover:opacity-90 transition-opacity`}
                   >
                     <svg
-                      className="h-4 w-4 mr-1.5"
+                      className="h-4 w-4 mr-2"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -257,15 +276,15 @@ export default function SponsorDetailPage({
                         d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"
                       />
                     </svg>
-                    Website
+                    Visit Website
                   </a>
                 )}
                 <Link
                   href="/contact"
-                  className="inline-flex items-center px-3 py-1.5 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-md text-sm font-medium transition-colors"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   <svg
-                    className="h-4 w-4 mr-1.5"
+                    className="h-4 w-4 mr-2"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -280,47 +299,206 @@ export default function SponsorDetailPage({
                   Contact
                 </Link>
 
-                {/* Sponsored Events Count Badge */}
-                {sponsor.sponsoredEvents &&
-                  sponsor.sponsoredEvents.length > 0 && (
-                    <div
-                      className={`inline-flex items-center px-3 py-1.5 ${tierColor.bg} ${tierColor.text} rounded-md text-sm font-medium`}
-                    >
-                      <svg
-                        className="h-4 w-4 mr-1.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                      Sponsoring {sponsor.sponsoredEvents.length}{" "}
-                      {sponsor.sponsoredEvents.length === 1
-                        ? "Event"
-                        : "Events"}
-                    </div>
-                  )}
+                <Link
+                  href="/sponsors"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  <svg
+                    className="h-4 w-4 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                  All Sponsors
+                </Link>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content - Streamlined */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* About Section - Left Column */}
-          <div className="lg:col-span-8">
-            {/* About */}
-            <div className={`p-6 rounded-lg border ${tierColor.border} mb-8`}>
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column - Sponsored Events */}
+          <div className="lg:col-span-2">
+            {/* Sponsored Events Section */}
+            {sponsor.events && sponsor.events.length > 0 ? (
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold text-gray-900 flex items-center">
+                    <svg
+                      className="h-6 w-6 mr-2 text-gray-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Sponsored Events
+                  </h2>
+                  <span
+                    className={`px-3 py-1 ${tierColor.bg} ${tierColor.text} rounded-full text-sm font-medium`}
+                  >
+                    {sponsor.events.length}{" "}
+                    {sponsor.events.length === 1 ? "Event" : "Events"}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6">
+                  {sponsor.events.map((event) => (
+                    <Link
+                      href={`/events/${event.Slug}`}
+                      key={event.id}
+                      className="block group"
+                    >
+                      <div className="flex flex-col md:flex-row border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
+                        {/* Event Image */}
+                        <div className="md:w-1/3 lg:w-1/4 bg-gray-100 relative">
+                          {event.Image ? (
+                            <img
+                              src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
+                              alt={event.Title}
+                              className="w-full h-48 md:h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-48 md:h-full flex items-center justify-center bg-gray-200">
+                              <span className="text-gray-400 text-lg font-semibold">
+                                UNITE 2025
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute top-2 left-2">
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
+                              {event.Enumeration}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Event Details */}
+                        <div className="flex-1 p-4 md:p-6 flex flex-col justify-between">
+                          <div>
+                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-2">
+                              {event.Title}
+                            </h3>
+                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                              {event.ShortDescription}
+                            </p>
+                          </div>
+
+                          <div className="mt-auto">
+                            <div className="flex flex-wrap items-center text-sm text-gray-500 gap-x-4 gap-y-2">
+                              <div className="flex items-center">
+                                <svg
+                                  className="h-4 w-4 mr-1 text-green-500"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                  />
+                                </svg>
+                                <span>{formatDate(event.StartDate)}</span>
+                              </div>
+
+                              <div className="flex items-center">
+                                <svg
+                                  className="h-4 w-4 mr-1 text-green-500"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                                  />
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                                  />
+                                </svg>
+                                <span className="line-clamp-1">
+                                  {event.Location}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 flex justify-end">
+                              <span className="inline-flex items-center text-sm font-medium text-green-600 group-hover:text-green-700">
+                                View Event Details
+                                <svg
+                                  className="ml-1 h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M9 5l7 7-7 7"
+                                  />
+                                </svg>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div
+                className={`p-8 rounded-lg border ${tierColor.border} text-center`}
+              >
                 <svg
-                  className="h-5 w-5 mr-2 text-gray-500"
+                  className="mx-auto h-12 w-12 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <h3 className="mt-2 text-lg font-medium text-gray-900">
+                  No Events
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  This sponsor isn't associated with any specific events yet.
+                </p>
+              </div>
+            )}
+
+            {/* About Section */}
+            <div className={`mt-12 p-8 rounded-lg border ${tierColor.border}`}>
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                <svg
+                  className="h-6 w-6 mr-2 text-gray-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -338,123 +516,13 @@ export default function SponsorDetailPage({
                 <p>{sponsor.Description}</p>
               </div>
             </div>
-
-            {/* Sponsored Events Section - More compact design */}
-            {sponsor.sponsoredEvents && sponsor.sponsoredEvents.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Sponsored Events
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {sponsor.sponsoredEvents.map((event) => (
-                    <Link href={`/events/${event.Slug}`} key={event.id}>
-                      <div className="block h-full hover:bg-gray-50 transition-colors duration-200 rounded-lg border border-gray-200 shadow-sm overflow-hidden">
-                        <div className="p-4">
-                          {/* Event Header */}
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <h3 className="text-base font-bold text-gray-900 line-clamp-1">
-                                {event.Title}
-                              </h3>
-                            </div>
-                            <div className="shrink-0 ml-2 bg-gray-100 rounded text-center p-1 w-10">
-                              <p className="text-xs font-medium text-gray-500">
-                                {new Date(event.StartDate).toLocaleDateString(
-                                  undefined,
-                                  { month: "short" }
-                                )}
-                              </p>
-                              <p className="text-sm font-bold text-gray-800">
-                                {new Date(event.StartDate).getDate()}
-                              </p>
-                            </div>
-                          </div>
-
-                          {/* Event Details */}
-                          <div className="space-y-1 mb-2">
-                            <div className="flex items-center text-xs text-gray-600">
-                              <svg
-                                className="h-3 w-3 mr-1 text-green-500"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              <span className="line-clamp-1">
-                                {event.Location}
-                              </span>
-                            </div>
-                            <div className="flex items-center text-xs text-gray-600">
-                              <svg
-                                className="h-3 w-3 mr-1 text-green-500"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                              </svg>
-                              <span>{formatDate(event.StartDate)}</span>
-                            </div>
-                          </div>
-
-                          {/* Event Description */}
-                          <p className="text-xs text-gray-600 mb-3 line-clamp-2">
-                            {event.ShortDescription}
-                          </p>
-
-                          {/* Event Footer */}
-                          <div className="flex justify-between items-center">
-                            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                              {event.Enumeration}
-                            </span>
-                            <span className="text-xs font-medium text-green-600">
-                              View Details →
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
 
-          {/* Right Column - Tier info & CTA */}
-          <div className="lg:col-span-4">
-            {/* Sponsorship Tier Card */}
+          {/* Right Column - Sponsor Info */}
+          <div className="lg:col-span-1 space-y-6">
+            {/* Tier Card */}
             <div
-              className={`rounded-lg border ${tierColor.border} overflow-hidden mb-6`}
+              className={`rounded-lg border ${tierColor.border} overflow-hidden`}
             >
               <div className={`p-4 ${tierColor.bg}`}>
                 <div className="text-center">
@@ -465,8 +533,8 @@ export default function SponsorDetailPage({
                 </div>
               </div>
 
-              <div className="p-4">
-                <p className="text-sm text-gray-600 mb-4">
+              <div className="p-5">
+                <p className="text-sm text-gray-600">
                   {sponsor.Tier === "Platinum" &&
                     "Platinum sponsors receive maximum visibility and premium placement throughout the event, including prominent logo placement, speaking opportunities, and exclusive networking access."}
                   {sponsor.Tier === "Gold" &&
@@ -477,17 +545,20 @@ export default function SponsorDetailPage({
               </div>
             </div>
 
-            {/* Contact Card */}
-            <div className="rounded-lg border border-gray-200 overflow-hidden mb-6">
-              <div className="p-4 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-base font-bold text-gray-900">
-                  Contact Information
+            {/* Quick Info */}
+            <div className="rounded-lg border border-gray-200 overflow-hidden">
+              <div className="p-5 border-b border-gray-200 bg-gray-50">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Quick Information
                 </h3>
               </div>
 
-              <div className="p-4">
-                <div className="space-y-3">
-                  {sponsor.Website && (
+              <div className="p-5 space-y-4">
+                {sponsor.Website && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">
+                      Website
+                    </h4>
                     <a
                       href={
                         sponsor.Website.startsWith("http")
@@ -496,30 +567,40 @@ export default function SponsorDetailPage({
                       }
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block w-full text-center px-3 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 text-sm font-medium transition-colors"
+                      className="text-blue-600 hover:underline break-words"
                     >
-                      Visit Official Website
+                      {sponsor.Website}
                     </a>
-                  )}
+                  </div>
+                )}
 
-                  <Link
-                    href="/contact"
-                    className={`block w-full text-center px-3 py-2 border rounded-md shadow-sm text-sm font-medium transition-colors ${
-                      sponsor.Website
-                        ? "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
-                        : "border-transparent text-white bg-green-600 hover:bg-green-700"
-                    }`}
-                  >
-                    Contact Our Team
-                  </Link>
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500 mb-1">
+                    Sponsor Since
+                  </h4>
+                  <p className="text-gray-900">
+                    {formatDate(sponsor.createdAt)}
+                  </p>
                 </div>
+
+                {sponsor.events && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">
+                      Sponsoring
+                    </h4>
+                    <p className="text-gray-900">
+                      {sponsor.events.length || 0}{" "}
+                      {(sponsor.events.length || 0) === 1 ? "Event" : "Events"}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Become a Sponsor Card */}
+            {/* Become a Sponsor */}
             <div className="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
-              <div className="p-4">
-                <h3 className="text-base font-bold text-gray-900 mb-2">
+              <div className="p-5">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
                   Become a Sponsor
                 </h3>
                 <p className="text-sm text-gray-600 mb-4">
@@ -528,7 +609,7 @@ export default function SponsorDetailPage({
                 </p>
                 <Link
                   href="/contact"
-                  className="block w-full text-center px-3 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 text-sm font-medium transition-colors"
+                  className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 text-sm font-medium transition-colors"
                 >
                   Request Information
                 </Link>
