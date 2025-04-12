@@ -410,6 +410,7 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    venue: Schema.Attribute.Relation<'manyToOne', 'api::venue.venue'>;
   };
 }
 
@@ -624,6 +625,48 @@ export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
     publishedAt: Schema.Attribute.DateTime;
     Slug: Schema.Attribute.UID<'Name'> & Schema.Attribute.Required;
     Tier: Schema.Attribute.Enumeration<['Platinum', 'Gold', 'Silver']>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Website: Schema.Attribute.String;
+  };
+}
+
+export interface ApiVenueVenue extends Struct.CollectionTypeSchema {
+  collectionName: 'venues';
+  info: {
+    description: '';
+    displayName: 'Venue';
+    pluralName: 'venues';
+    singularName: 'venue';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Address: Schema.Attribute.Text;
+    City: Schema.Attribute.String & Schema.Attribute.Required;
+    Country: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'Uganda'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    Description: Schema.Attribute.Blocks;
+    Email: Schema.Attribute.String;
+    events: Schema.Attribute.Relation<'oneToMany', 'api::event.event'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<'oneToMany', 'api::venue.venue'> &
+      Schema.Attribute.Private;
+    MainImage: Schema.Attribute.Media<'images' | 'files' | 'videos' | 'audios'>;
+    MainVenue: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    MapEmbedURL: Schema.Attribute.Text;
+    Name: Schema.Attribute.String & Schema.Attribute.Required;
+    Phone: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    Slug: Schema.Attribute.UID<'Name'> & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1147,6 +1190,7 @@ declare module '@strapi/strapi' {
       'api::organizer.organizer': ApiOrganizerOrganizer;
       'api::speaker.speaker': ApiSpeakerSpeaker;
       'api::sponsor.sponsor': ApiSponsorSponsor;
+      'api::venue.venue': ApiVenueVenue;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

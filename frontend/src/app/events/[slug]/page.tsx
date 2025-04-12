@@ -51,6 +51,32 @@ interface RichTextNode {
   }[];
 }
 
+interface Venue {
+  id: number;
+  Name: string;
+  Slug: string;
+  Description?: RichTextNode[];
+  Address?: string;
+  City: string;
+  Country: string;
+  Phone?: string;
+  Email?: string;
+  Website?: string;
+  MapEmbedURL?: string;
+  MainVenue: boolean;
+  MainImage?: {
+    url: string;
+    formats?: {
+      thumbnail?: {
+        url: string;
+      };
+      small?: {
+        url: string;
+      };
+    };
+  };
+}
+
 interface Event {
   id: number;
   Title: string;
@@ -83,6 +109,7 @@ interface Event {
   };
   speakers: Speaker[];
   sponsors: Sponsor[];
+  venue?: Venue;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -97,6 +124,7 @@ export default function EventDetailPage({
   const [sponsorLogos, setSponsorLogos] = useState<{ [slug: string]: string }>(
     {}
   );
+  const [venueImage, setVenueImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -144,6 +172,26 @@ export default function EventDetailPage({
                   sponsorErr
                 );
               }
+            }
+          }
+
+          // If event has a venue, fetch the venue image
+          if (response.data[0].venue && response.data[0].venue.Slug) {
+            try {
+              const venueResponse = await fetchAPI(
+                `/venues?filters[Slug][$eq]=${response.data[0].venue.Slug}&populate=MainImage`
+              );
+
+              if (
+                venueResponse &&
+                venueResponse.data &&
+                venueResponse.data.length > 0 &&
+                venueResponse.data[0].MainImage
+              ) {
+                setVenueImage(venueResponse.data[0].MainImage.url);
+              }
+            } catch (venueErr) {
+              console.error("Error fetching venue image:", venueErr);
             }
           }
         } else {
@@ -395,7 +443,7 @@ export default function EventDetailPage({
                       />
                     </svg>
                     <span>
-                      {event.Location}
+                      {event.venue ? event.venue.Name : event.Location}
                       {event.RoomNumber && ` • Room ${event.RoomNumber}`}
                     </span>
                   </div>
@@ -411,9 +459,9 @@ export default function EventDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left Column - Event Details & Sponsors */}
           <div className="lg:col-span-2">
-            {/* Event Sponsors - Display at top if available */}
+            {/* Event Sponsors - But without the container box */}
             {event.sponsors && event.sponsors.length > 0 && (
-              <div className="mb-10 bg-gray-50 rounded-lg border border-gray-200 p-6">
+              <div className="mb-10">
                 <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
                   <svg
                     className="h-5 w-5 mr-2 text-gray-500"
@@ -503,6 +551,202 @@ export default function EventDetailPage({
               </div>
             </div>
 
+            {/* Venue Section */}
+            {event.venue && (
+              <div className="mb-10 p-6 border border-gray-200 rounded-lg bg-gray-50">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                  <svg
+                    className="h-6 w-6 mr-2 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                  Venue Information
+                </h2>
+
+                <div className="flex flex-col md:flex-row gap-6">
+                  {/* Venue Image */}
+                  <div className="md:w-1/3">
+                    <div className="rounded-lg overflow-hidden shadow-md h-48 md:h-full">
+                      {venueImage ? (
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL}${venueImage}`}
+                          alt={event.venue.Name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : event.venue.MainImage ? (
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL}${event.venue.MainImage.url}`}
+                          alt={event.venue.Name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-500 text-xl font-semibold">
+                            {event.venue.Name}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <Link
+                      href={`/venue/${event.venue.Slug}`}
+                      className="mt-4 inline-flex items-center text-sm font-medium text-green-600 hover:text-green-700"
+                    >
+                      View Venue Details
+                      <svg
+                        className="ml-1 h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </Link>
+                  </div>
+
+                  {/* Venue Details */}
+                  <div className="md:w-2/3">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3">
+                      {event.venue.Name}
+                    </h3>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-start text-gray-600">
+                        <svg
+                          className="h-5 w-5 mt-0.5 mr-2 text-green-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                          />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                          />
+                        </svg>
+                        <div>
+                          {event.venue.Address && <p>{event.venue.Address}</p>}
+                          <p>
+                            {event.venue.City}, {event.venue.Country}
+                          </p>
+                        </div>
+                      </div>
+
+                      {event.RoomNumber && (
+                        <div className="flex items-start text-gray-600">
+                          <svg
+                            className="h-5 w-5 mt-0.5 mr-2 text-green-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                          </svg>
+                          <span>Room {event.RoomNumber}</span>
+                        </div>
+                      )}
+
+                      {event.venue.Phone && (
+                        <div className="flex items-start text-gray-600">
+                          <svg
+                            className="h-5 w-5 mt-0.5 mr-2 text-green-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                            />
+                          </svg>
+                          <a
+                            href={`tel:${event.venue.Phone}`}
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            {event.venue.Phone}
+                          </a>
+                        </div>
+                      )}
+
+                      {event.venue.Website && (
+                        <div className="flex items-start text-gray-600">
+                          <svg
+                            className="h-5 w-5 mt-0.5 mr-2 text-green-600"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"
+                            />
+                          </svg>
+                          <a
+                            href={
+                              event.venue.Website.startsWith("http")
+                                ? event.venue.Website
+                                : `https://${event.venue.Website}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-green-600 hover:text-green-700"
+                          >
+                            {event.venue.Website}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+
+                    {event.venue.MapEmbedURL && (
+                      <div className="mt-4 rounded-lg overflow-hidden shadow-sm">
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: event.venue.MapEmbedURL,
+                          }}
+                          className="w-full h-48"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Speakers Section */}
             {event.speakers && event.speakers.length > 0 && (
               <div className="mt-12 pt-8 border-t border-gray-200">
@@ -581,9 +825,16 @@ export default function EventDetailPage({
                     <h4 className="text-sm font-medium text-gray-500">
                       Location
                     </h4>
-                    <p className="mt-1 text-gray-900">{event.Location}</p>
+                    <p className="mt-1 text-gray-900">
+                      {event.venue ? event.venue.Name : event.Location}
+                    </p>
                     {event.RoomNumber && (
                       <p className="text-gray-900">Room {event.RoomNumber}</p>
+                    )}
+                    {event.venue && (
+                      <p className="text-gray-900">
+                        {event.venue.City}, {event.venue.Country}
+                      </p>
                     )}
                   </div>
 

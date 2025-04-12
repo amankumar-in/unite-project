@@ -79,6 +79,12 @@
       "relation": "manyToMany",
       "target": "api::sponsor.sponsor",
       "mappedBy": "events"
+    },
+    "venue": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::venue.venue",
+      "inversedBy": "events"
     }
   }
 }
