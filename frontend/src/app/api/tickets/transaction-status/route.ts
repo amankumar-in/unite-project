@@ -12,12 +12,21 @@ const PESAPAL_TRANSACTION_STATUS_URL = `${PESAPAL_BASE_URL}/api/Transactions/Get
  */
 export async function GET(request: NextRequest) {
   try {
+    console.log("==== TRANSACTION STATUS CHECK START ====");
+    console.log("Environment info:", {
+      nodeVersion: process.version,
+      baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
+      host: request.headers.get("host"),
+      requestUrl: request.url,
+    });
+
     // Get the orderTrackingId from the query parameters
     const searchParams = request.nextUrl.searchParams;
     const orderTrackingId = searchParams.get("orderTrackingId");
 
     // Validate that orderTrackingId is provided
     if (!orderTrackingId) {
+      console.log("Missing orderTrackingId parameter");
       return NextResponse.json(
         {
           success: false,
@@ -29,25 +38,46 @@ export async function GET(request: NextRequest) {
 
     console.log("Checking transaction status for:", orderTrackingId);
 
-    // First, get authentication token from our auth endpoint
-    const authResponse = await fetch(
-      `${request.nextUrl.origin}/api/tickets/pesapal-auth`,
-      {
+    // Auth URL for token retrieval
+    const authUrl = `${request.nextUrl.origin}/api/tickets/pesapal-auth`;
+    console.log("Auth URL:", authUrl);
+
+    // First, get authentication token
+    console.log("Attempting to fetch auth token...");
+    let authResponse;
+    try {
+      authResponse = await fetch(authUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      }
-    );
+      });
+      console.log("Auth response status:", authResponse.status);
+      console.log("Auth response OK:", authResponse.ok);
+    } catch (authError: any) {
+      console.error("Error fetching auth token:", {
+        message: authError.message,
+        cause: authError.cause
+          ? JSON.stringify(authError.cause)
+          : "No cause provided",
+        stack: authError.stack,
+      });
+      throw new Error(`Auth request failed: ${authError.message}`);
+    }
 
     const authData = await authResponse.json();
+    console.log("Auth data received:", {
+      success: authData.success,
+      tokenReceived: !!authData.token,
+      expiryDate: authData.expiryDate || "Not provided",
+    });
 
     if (!authData.success || !authData.token) {
       console.error("Failed to authenticate with Pesapal:", authData);
       return NextResponse.json(
         {
           success: false,
-          message: "Failed to authenticate with Pesapal",
+          message: "Failed to authenticate with payment provider",
           error: authData.error || authData.message || "Authentication failed",
         },
         { status: 500 }
@@ -56,23 +86,54 @@ export async function GET(request: NextRequest) {
 
     // Now call Pesapal's GetTransactionStatus API
     const statusUrl = `${PESAPAL_TRANSACTION_STATUS_URL}?orderTrackingId=${orderTrackingId}`;
-
     console.log("Calling Pesapal Transaction Status API:", statusUrl);
+    console.log("Auth token length:", authData.token.length);
+    console.log("Auth token prefix:", authData.token.substring(0, 20) + "...");
 
-    const statusResponse = await fetch(statusUrl, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authData.token}`,
-      },
-    });
+    // Using the same pattern as in the working file
+    let statusResponse;
+    try {
+      statusResponse = await fetch(statusUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authData.token}`,
+        },
+      });
+      console.log("Status response status:", statusResponse.status);
+      console.log("Status response OK:", statusResponse.ok);
+    } catch (statusError: any) {
+      console.error("Pesapal status request failed:", {
+        message: statusError.message,
+        cause: statusError.cause
+          ? JSON.stringify(statusError.cause)
+          : "No cause provided",
+        code: statusError.code || "No error code",
+        stack: statusError.stack,
+      });
+
+      if (statusError.cause) {
+        console.error("Error cause details:", {
+          name: statusError.cause.name,
+          code: statusError.cause.code,
+          library: statusError.cause.library,
+          reason: statusError.cause.reason,
+        });
+      }
+
+      throw new Error(`Pesapal status request failed: ${statusError.message}`);
+    }
 
     const statusData = await statusResponse.json();
     console.log("Pesapal transaction status response:", statusData);
 
     if (statusData.status === "200") {
       // Successfully retrieved transaction status
+      console.log("Transaction status retrieved successfully");
+      console.log("Payment status:", statusData.payment_status_description);
+      console.log("==== TRANSACTION STATUS CHECK COMPLETED SUCCESSFULLY ====");
+
       return NextResponse.json({
         success: true,
         paymentMethod: statusData.payment_method,
@@ -89,6 +150,9 @@ export async function GET(request: NextRequest) {
       });
     } else {
       // Failed to get transaction status
+      console.error("Failed to retrieve transaction status:", statusData);
+      console.log("==== TRANSACTION STATUS CHECK FAILED ====");
+
       return NextResponse.json(
         {
           success: false,
@@ -101,6 +165,9 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     // Handle any unexpected errors
     console.error("Error checking transaction status:", error);
+    console.log("Error stack:", error.stack);
+    console.log("==== TRANSACTION STATUS CHECK FAILED WITH EXCEPTION ====");
+
     return NextResponse.json(
       {
         success: false,
