@@ -5,6 +5,7 @@ const PESAPAL_BASE_URL = "https://pay.pesapal.com/v3";
 // For sandbox/testing, use:
 // const PESAPAL_BASE_URL = "https://cybqa.pesapal.com/pesapalv3";
 
+const PESAPAL_AUTH_URL = `${PESAPAL_BASE_URL}/api/Auth/RequestToken`;
 const PESAPAL_SUBMIT_ORDER_URL = `${PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest`;
 
 /**
@@ -72,8 +73,23 @@ export async function POST(request: NextRequest) {
       buyerPhone: buyerPhone || "Not provided",
     });
 
-    // Get Pesapal IPN ID from environment variables
+    // Get Pesapal credentials from environment variables
+    const PESAPAL_CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY;
+    const PESAPAL_CONSUMER_SECRET = process.env.PESAPAL_CONSUMER_SECRET;
     const PESAPAL_IPN_ID = process.env.PESAPAL_IPN_ID;
+
+    if (!PESAPAL_CONSUMER_KEY || !PESAPAL_CONSUMER_SECRET) {
+      console.error("Pesapal credentials not found in environment variables");
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Payment system not properly configured (missing credentials)",
+        },
+        { status: 500 }
+      );
+    }
+
     if (!PESAPAL_IPN_ID) {
       console.error("Pesapal IPN ID not found in environment variables");
       return NextResponse.json(
@@ -89,19 +105,23 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || request.nextUrl.origin;
     console.log("Base URL for callbacks:", baseUrl);
 
-    // Auth URL for token retrieval
-    const authUrl = `${request.nextUrl.origin}/api/tickets/pesapal-auth`;
-    console.log("Auth URL:", authUrl);
-
-    // First, get authentication token
-    console.log("Attempting to fetch auth token...");
+    // Get authentication token directly (without using internal API)
+    console.log(
+      "Getting authentication token directly from Pesapal:",
+      PESAPAL_AUTH_URL
+    );
     let authResponse;
     try {
-      authResponse = await fetch(authUrl, {
+      authResponse = await fetch(PESAPAL_AUTH_URL, {
         method: "POST",
         headers: {
+          Accept: "application/json",
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          consumer_key: PESAPAL_CONSUMER_KEY,
+          consumer_secret: PESAPAL_CONSUMER_SECRET,
+        }),
       });
       console.log("Auth response status:", authResponse.status);
       console.log("Auth response OK:", authResponse.ok);
@@ -113,17 +133,17 @@ export async function POST(request: NextRequest) {
           : "No cause provided",
         stack: authError.stack,
       });
-      throw new Error(`Auth request failed: ${authError.message}`);
+      throw new Error(`Direct auth request failed: ${authError.message}`);
     }
 
     const authData = await authResponse.json();
     console.log("Auth data received:", {
-      success: authData.success,
+      status: authData.status,
       tokenReceived: !!authData.token,
       expiryDate: authData.expiryDate || "Not provided",
     });
 
-    if (!authData.success || !authData.token) {
+    if (authData.error || !authData.token || authData.status !== "200") {
       console.error("Failed to authenticate with Pesapal:", authData);
       return NextResponse.json(
         {
