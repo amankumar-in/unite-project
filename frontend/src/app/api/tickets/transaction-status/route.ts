@@ -13,11 +13,25 @@ const PESAPAL_TRANSACTION_STATUS_URL = `${PESAPAL_BASE_URL}/api/Transactions/Get
 export async function GET(request: NextRequest) {
   try {
     console.log("==== TRANSACTION STATUS CHECK START ====");
+
+    // Extract host information
+    const host = request.headers.get("host") || "";
+    const isLocalhost =
+      host.includes("localhost") || host.includes("127.0.0.1");
+
+    // Properly determine the base URL for API calls
+    // Critical fix: Don't use request.nextUrl.origin as it may be incorrect in production
+    // Use http for localhost, https for production
+    const protocol = isLocalhost ? "http" : "https";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `${protocol}://${host}`;
+
     console.log("Environment info:", {
       nodeVersion: process.version,
       baseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-      host: request.headers.get("host"),
+      host: host,
+      detectedBaseUrl: baseUrl,
       requestUrl: request.url,
+      isLocalhost: isLocalhost,
     });
 
     // Get the orderTrackingId from the query parameters
@@ -38,8 +52,8 @@ export async function GET(request: NextRequest) {
 
     console.log("Checking transaction status for:", orderTrackingId);
 
-    // Auth URL for token retrieval
-    const authUrl = `${request.nextUrl.origin}/api/tickets/pesapal-auth`;
+    // Auth URL for token retrieval - using the correct base URL
+    const authUrl = `${baseUrl}/api/tickets/pesapal-auth`;
     console.log("Auth URL:", authUrl);
 
     // First, get authentication token
