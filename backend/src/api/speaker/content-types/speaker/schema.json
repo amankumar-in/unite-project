@@ -1,0 +1,68 @@
+{
+  "kind": "collectionType",
+  "collectionName": "speakers",
+  "info": {
+    "singularName": "speaker",
+    "pluralName": "speakers",
+    "displayName": "Speaker"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Slug": {
+      "type": "uid",
+      "targetField": "Name",
+      "required": true
+    },
+    "Title": {
+      "type": "string",
+      "required": true,
+      "default": "Job Title"
+    },
+    "Organization": {
+      "type": "string",
+      "required": true,
+      "default": "Current Org"
+    },
+    "ShortBio": {
+      "type": "text",
+      "required": true,
+      "default": "A short description about the speaker"
+    },
+    "Bio": {
+      "type": "text"
+    },
+    "Featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "ProfileImage": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "LinkedIn": {
+      "type": "string",
+      "required": false
+    },
+    "Twitter": {
+      "type": "string"
+    },
+    "Website": {
+      "type": "string"
+    },
+    "events": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::event.event",
+      "mappedBy": "speakers"
+    }
+  }
+}

@@ -4,24 +4,75 @@
   "info": {
     "singularName": "event",
     "pluralName": "events",
-    "displayName": "Event"
+    "displayName": "Event",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
   },
   "attributes": {
-    "Name": {
+    "Title": {
       "type": "string",
       "required": true
     },
-    "Description": {
-      "type": "text"
-    },
-    "Date": {
-      "type": "datetime"
+    "ShortDescription": {
+      "type": "text",
+      "required": true
     },
     "Location": {
+      "type": "string",
+      "required": true
+    },
+    "Slug": {
+      "type": "uid",
+      "targetField": "Title",
+      "required": true
+    },
+    "Description": {
+      "type": "blocks",
+      "required": true
+    },
+    "StartDate": {
+      "type": "datetime"
+    },
+    "EndDate": {
+      "type": "datetime"
+    },
+    "RoomNumber": {
       "type": "string"
+    },
+    "Enumeration": {
+      "type": "enumeration",
+      "enum": [
+        "Conference",
+        "Workshop",
+        "Networking",
+        "Exhibition",
+        "Panel"
+      ],
+      "required": true
+    },
+    "FeaturedEvent": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "MaxAttendees": {
+      "type": "integer"
+    },
+    "Image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "speakers": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::speaker.speaker",
+      "inversedBy": "events"
     }
   }
 }
