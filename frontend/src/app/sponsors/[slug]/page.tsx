@@ -57,6 +57,9 @@ export default function SponsorDetailPage({
   params: { slug: string };
 }) {
   const [sponsor, setSponsor] = useState<Sponsor | null>(null);
+  const [eventImages, setEventImages] = useState<{ [slug: string]: string }>(
+    {}
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -70,6 +73,36 @@ export default function SponsorDetailPage({
 
         if (response && response.data && response.data.length > 0) {
           setSponsor(response.data[0]);
+
+          // If sponsor has events, fetch their images
+          if (response.data[0].events && response.data[0].events.length > 0) {
+            const eventSlugs = response.data[0].events.map(
+              (event: any) => event.Slug
+            );
+
+            // Fetch events with their images
+            for (const slug of eventSlugs) {
+              try {
+                const eventResponse = await fetchAPI(
+                  `/events?filters[Slug][$eq]=${slug}&populate=Image`
+                );
+
+                if (
+                  eventResponse &&
+                  eventResponse.data &&
+                  eventResponse.data.length > 0 &&
+                  eventResponse.data[0].Image
+                ) {
+                  setEventImages((prev) => ({
+                    ...prev,
+                    [slug]: eventResponse.data[0].Image.url,
+                  }));
+                }
+              } catch (eventErr) {
+                console.error(`Error fetching event ${slug} image:`, eventErr);
+              }
+            }
+          }
         } else {
           setError("Sponsor not found");
         }
@@ -367,11 +400,13 @@ export default function SponsorDetailPage({
                       className="block group"
                     >
                       <div className="flex flex-col md:flex-row border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                        {/* Event Image */}
+                        {/* Event Image - Using image from the additional query */}
                         <div className="md:w-1/3 lg:w-1/4 bg-gray-100 relative">
-                          {event.Image ? (
+                          {eventImages[event.Slug] ? (
                             <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
+                              src={`${process.env.NEXT_PUBLIC_API_URL}${
+                                eventImages[event.Slug]
+                              }`}
                               alt={event.Title}
                               className="w-full h-48 md:h-full object-cover"
                             />

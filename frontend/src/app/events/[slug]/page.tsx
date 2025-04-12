@@ -94,19 +94,58 @@ export default function EventDetailPage({
   params: { slug: string };
 }) {
   const [event, setEvent] = useState<Event | null>(null);
+  const [sponsorLogos, setSponsorLogos] = useState<{ [slug: string]: string }>(
+    {}
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEventData = async () => {
       try {
-        // Using slug to fetch the event with all relations
+        // Using slug to fetch the event with all related data
         const response = await fetchAPI(
           `/events?filters[Slug][$eq]=${params.slug}&populate=*`
         );
 
         if (response && response.data && response.data.length > 0) {
           setEvent(response.data[0]);
+
+          // If event has sponsors, fetch their logos
+          if (
+            response.data[0].sponsors &&
+            response.data[0].sponsors.length > 0
+          ) {
+            const sponsorSlugs = response.data[0].sponsors.map(
+              (sponsor: any) => sponsor.Slug
+            );
+
+            // Fetch sponsors with their logos
+            for (const slug of sponsorSlugs) {
+              try {
+                const sponsorResponse = await fetchAPI(
+                  `/sponsors?filters[Slug][$eq]=${slug}&populate=Logo`
+                );
+
+                if (
+                  sponsorResponse &&
+                  sponsorResponse.data &&
+                  sponsorResponse.data.length > 0 &&
+                  sponsorResponse.data[0].Logo
+                ) {
+                  setSponsorLogos((prev) => ({
+                    ...prev,
+                    [slug]: sponsorResponse.data[0].Logo.url,
+                  }));
+                }
+              } catch (sponsorErr) {
+                console.error(
+                  `Error fetching sponsor ${slug} logo:`,
+                  sponsorErr
+                );
+              }
+            }
+          }
         } else {
           setError("Event not found");
         }
@@ -402,6 +441,14 @@ export default function EventDetailPage({
                         {sponsor.Logo ? (
                           <img
                             src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
+                            alt={sponsor.Name}
+                            className="max-w-full max-h-full object-contain rounded-full"
+                          />
+                        ) : sponsorLogos[sponsor.Slug] ? (
+                          <img
+                            src={`${process.env.NEXT_PUBLIC_API_URL}${
+                              sponsorLogos[sponsor.Slug]
+                            }`}
                             alt={sponsor.Name}
                             className="max-w-full max-h-full object-contain rounded-full"
                           />
