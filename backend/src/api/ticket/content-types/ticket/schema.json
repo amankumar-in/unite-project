@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tickets",
+  "info": {
+    "singularName": "ticket",
+    "pluralName": "tickets",
+    "displayName": "Ticket",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "ticketNumber": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "attendeeName": {
+      "type": "string",
+      "required": true
+    },
+    "attendeeEmail": {
+      "type": "email",
+      "required": true
+    },
+    "attendeePhone": {
+      "type": "string"
+    },
+    "attendeeOrganization": {
+      "type": "string"
+    },
+    "isCheckedIn": {
+      "type": "boolean",
+      "default": false
+    },
+    "checkinTime": {
+      "type": "datetime"
+    },
+    "qrCodeData": {
+      "type": "string"
+    },
+    "ticketCategory": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::ticket-category.ticket-category",
+      "inversedBy": "tickets"
+    },
+    "purchase": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::ticket-purchase.ticket-purchase",
+      "inversedBy": "tickets"
+    }
+  }
+}

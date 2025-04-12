@@ -47,6 +47,7 @@
                 └── fb5f2cf874c2db8b0d549e5edf0bb093cfbe4e
             └── 📁07
                 └── b68716e25a0a2bac97c2cf036441242bcb3edf
+                └── dcbf4bcad84fc13a59a44deae48a89d097ffe0
             └── 📁08
                 └── 3046e7cd7c34b1db6560436ccb94b4101a059e
                 └── cea2b9f92263a5b308dd664c1970cb5c8ad8e2
@@ -55,11 +56,13 @@
                 └── 79a32e02104e5491e00ec2c59ae5cb81426274
             └── 📁0a
                 └── 3fde385863d7495d02d321060b0bd07de0f0dd
+                └── c89fb252a5e4ded0a9239c82cf15160809ec16
             └── 📁0b
                 └── 977307be5de75a7cc7c98e91faaf383081d467
                 └── a5239f0fac2a5263dba31ae1ebcab3f1c66862
                 └── cb35c3983375979d1d783b219a581c766a4c74
             └── 📁0c
+                └── 09dea348a96796d7ad972e808058972ff51c81
                 └── 674e551f82cd048ec422d48e5f422824dbba65
                 └── 6cf0d8ded598fda8fe38d4f9ef4f8859062ee1
                 └── 6ea2f83313183f03bd53d1f3329f67f9e28c8c
@@ -73,6 +76,7 @@
                 └── efbbe5b2fe79d93c37c3abc0f6b26d19e873da
             └── 📁11
                 └── 920d7f7153e5fa35f62e5b8b905eba20ed2fb6
+                └── 9591f918bc88334a4342c958f0ee079304e503
             └── 📁12
                 └── 84153fbbf7961db455dfbab81017d3a4eace7a
                 └── a06aaf86a049f34d6e959690a98d20ba6532f5
@@ -80,9 +84,12 @@
             └── 📁13
                 └── 538635696cc61a10e29a73c9684b8898c85095
             └── 📁14
+                └── 6a63e1bf2e66b3ee8ab2afb5926771e2c452a3
                 └── ccbb4d2361131547560d3d1df37ffa2f399455
             └── 📁16
                 └── 30c90ab701fe268ccb3affaf81518ee4012aa6
+                └── 5ab2a450a4f691ab50929052b5487d8fa2081f
+                └── 7fad649c7b2c8a9de12bb4079984837ebd94b7
             └── 📁17
                 └── 4fd1f158974e3d0cc2169ccbf961ee1849237d
                 └── 98903b91f4a2d6f8b9d88dba635e846e127ed6
@@ -123,6 +130,8 @@
                 └── 05766fcb223d205298a0382c5dc0227a102e89
             └── 📁27
                 └── 114c992d7f4d146c0fc8535e91b001ade4f62f
+            └── 📁28
+                └── e91880603bf18eb13cae9c5cc1eba6ecf58995
             └── 📁29
                 └── 3a7f9f86e7061180461900989f8998e9f6ba6d
                 └── 63ab3913d9966cbbdfb6c1242b737aa6391b75
@@ -151,6 +160,7 @@
             └── 📁33
                 └── 3c1ef7b48f11e4ba42ef73e2c987af5b50f52a
                 └── 9f2905b8ccebe2ace4099f8ed663ac4bc76de0
+                └── bf2d2d9b2714cdcca87387e1457290417a84b9
             └── 📁34
                 └── b507e4578dd83f007d2dfd58df79b754a17aca
             └── 📁35
@@ -161,6 +171,7 @@
             └── 📁37
                 └── 825d596f31acd7692b89c361ac6adc18248772
                 └── 8a84f9fc04e2f86b02ec9a77235c3d98106cd4
+                └── d9c3b4b0266e76e12b84805d8b44a89cf9c9a3
                 └── f7c14a4229fab771800282d2f518f1f00400ae
             └── 📁38
                 └── 8aa294419b1b304871d19cda7cd291cbf9db4a
@@ -171,26 +182,34 @@
                 └── 191b23ee9074d8c2345a30b7a9ffe4be35f56f
                 └── 2ec40e05cb8b6049972b22739eec065dd0b01d
                 └── edafa3eff459e5617d57e7cb4f7793101204f8
+            └── 📁3b
+                └── 6662384e42ff267da0ef69faff200854752cb9
             └── 📁3c
+                └── 8bb3ee466a93ea5d49714df9cf331ffaa1864a
                 └── 8c45a7162b8f135ab12149e2dbe45c7372adea
             └── 📁3d
                 └── c0eba11c5b55f0d79e9beb501bb2b8e33785d4
                 └── e3c4f3f7cafa49e5ff875322c5d7f07fe76623
                 └── e9ad7fe5979ae9a6853934826fe8335b657272
             └── 📁3e
+                └── 204a2372228dec1b75c9227e37553b893795e5
                 └── a4d919fb5d2c086fd7655d3778da82d1ce8c43
                 └── ed5c9b1b51003624363d832a7fb054dace5443
             └── 📁3f
                 └── 1c343cce57576643bcefb9473da10861ec95e2
                 └── 6841db100bacbc81ea3bd9265b7a0bf0bd92e4
+                └── 84e798ccba1a3d9a71efdc737f84829805dd09
                 └── d03cc63beb808b6f39588bcec1e6fc57e4cc36
             └── 📁41
                 └── aa5633bf30ef1df806ecd5a179830c166fb762
                 └── f25315f956671894dba395e0144bbd28320dd8
             └── 📁42
+                └── af93592a3621956fd214a8af77d7423fe062c3
                 └── d111e44e31712444c553ccc60e7a48c5f0a34c
             └── 📁43
                 └── 1acf71529a817548541604289b47b7b9a1c8c3
+            └── 📁45
+                └── b01ce0ab2192d4d4f2e2417284df5ba11e1505
             └── 📁46
                 └── ba4d7d90f306bd30777d78cc8c7ae6f4339765
             └── 📁47
@@ -221,6 +240,7 @@
                 └── 7034584c014d0a4a1d52fb2d4a7a727a5f8022
             └── 📁51
                 └── 74b28c565c285e3e312ec5178be64fbeca8398
+                └── 8e573a0e723cf971e5dd9b32c743218c1e717e
                 └── cc7c783315db586247e49d9e5632d36492f464
             └── 📁52
                 └── 13d67150445785d337ad1270b7fedb9c2e12dc
@@ -234,6 +254,7 @@
                 └── 028b0463898653aa1dad00321ec3211c242dbc
                 └── 7f17b0d7c7fb662c16d4357dd74830caf2dccb
                 └── bf55ff188deb02c4af612f9cef2d7b593dee99
+                └── d4d9c5709272709605ee2f12bdd967eb4999fe
             └── 📁57
                 └── c1257194de338e01b3ccef7ac3f485af2afe6e
                 └── f4a017ad80e6029ac22637d8218c6cbfe7501e
@@ -261,6 +282,7 @@
                 └── e41b15d8fac4f8da2ad60b6491ff25fa4de5d7
             └── 📁62
                 └── 3f8443fbe50aeab5227fa3c09715b0c8184862
+                └── 400ea26a57002171749c0d5c0289d518b2058d
             └── 📁63
                 └── 1f6bfd00e600bbc385064996f1c5e06c7d1d0d
                 └── 8ab08dfe76bc51f1fad1c6e3abd40146f133fc
@@ -268,10 +290,12 @@
             └── 📁65
                 └── 910cb4e73ad29a13e30cade36b4659854e2001
             └── 📁66
+                └── 39bef1dbf8afaa6051c494eccfb34b0faa45b6
                 └── 3d9f874b745e559745005b7f9ab0391900204a
             └── 📁67
                 └── 0c8fc0316e4d468bdab44d9b66389a54df09cf
             └── 📁68
+                └── 16f49ddfe66a7d0c57d02294d080fd13c860b5
                 └── 8a7e1f1c60b6bb6c66f90b9a45b403cdc3a1d3
             └── 📁69
                 └── 92ddde672d02127413a1b703b5e39edbd9d878
@@ -280,17 +304,20 @@
             └── 📁6b
                 └── 30bad3e1b51d40152d3d468d667858751111bf
                 └── 5c594971ca2ac0d8fd63bfed64ebc6f4487a7f
+                └── b1d8e293b9fa1f5d9430610117a910e28c4711
             └── 📁6c
                 └── 1de16297e0e5cd6a0eab7486f8f337580da8e1
             └── 📁6d
                 └── 2b7ecadd15ac1c3c29a9d8bf2a108a32063f50
             └── 📁6e
                 └── 389e76253855c3b32f7849a88397e5af8f4523
+                └── 7059b4086fa6bedb8edfaf0c00cf46d710ee37
                 └── b1de65b5c0c90b80d3b24c54a5329b6670437d
                 └── c0d2f63e488d23f0505aefce788d73fdb07295
                 └── cfcba6ccaaafeabe8da4458c9a7ba2fa65338e
             └── 📁6f
                 └── 378311594ae065bf5a91e2ec263f5a2cb1c08a
+                └── 514294f6f4c88054199ea35cf343150fa09562
                 └── a474fe0aeaeae27fb59c52c42d9b0c99eb2445
                 └── ffbbd4914f6806a1f8509b1177378cabc4aeb4
             └── 📁70
@@ -307,6 +334,10 @@
             └── 📁73
                 └── 0bb169bb9478d74c29679375845b72973af8b4
                 └── b2085a4e931c8f46d75d295ae2fb3a45a87e20
+            └── 📁74
+                └── 2d009af7484bf43d9533f7a6d70d495c3eb0aa
+                └── 7cc6057a1b5929003fa51699ee31547983241d
+                └── d9d11a405c372acf83663b82086997b4705dfc
             └── 📁75
                 └── 16919ac83e45665f8ca844741ee8765626bc95
                 └── b50704327596ba2e7e48950ac42cf6bdb6c230
@@ -314,6 +345,7 @@
                 └── b2f95fa710567cf2b461c0c82f1c553f058c17
             └── 📁77
                 └── 053960334e2e34dc584dea8019925c3b4ccca9
+                └── 2c9a5b0a3cd8c81446164dcbe9ff66408144de
                 └── 7037c34fbcf190e157b9fde4ec73455dab269e
                 └── beab495effb745f912acb795393423db884989
                 └── fcc6aed501907b23b2bfb11b725546ad232409
@@ -336,6 +368,7 @@
                 └── 2ade0cde4a4455795e20bccab7f2c29cbfc46e
                 └── 8715760a3b5b9562caf7b626e68f92e2b09f69
             └── 📁7f
+                └── 2904e4ce8b94bcad699096a4b316997a0932b7
                 └── 7f9908ee0ea7639115955b7513ff68124684bb
                 └── f421adbd5a09bd8e456118be4426ce2a4a98db
             └── 📁80
@@ -359,6 +392,7 @@
             └── 📁86
                 └── 065fd0c5d052457bab251973ad4c5c31de29ca
                 └── 0bd191ff72a933b94878ebf2221aadc0a44e11
+                └── 2f2d69fc196f2795e9320d74a38edabfa7f1d7
                 └── 8d5b41f2159e90bf224a217a35442b4a29bbc5
             └── 📁87
                 └── 0af82721f8161c914c72afedaf4e269d5c42e0
@@ -369,6 +403,7 @@
                 └── c06d9598669d30852c542cb88a391dc4b92530
             └── 📁8a
                 └── 14d44b2c901d8bb383a445b81ace4bd996b734
+                └── a72f52d6923182ed62c383e85afba09b847ea6
                 └── b85cce60653ce22aacca5f39b91a8ce3a46be4
             └── 📁8b
                 └── 20627d07391721b7537405b12fc916412c68e4
@@ -391,6 +426,7 @@
             └── 📁90
                 └── bc33c0be3865c88befe2a626135e7c74826944
             └── 📁91
+                └── 91bb69be076ff5bb3d23939ffe35f56c274e4f
                 └── fe1eb97c30384575ff78d7dd539ace5832a5fc
             └── 📁92
                 └── 5cc99bd1270ef795e6e9e4ec0a3866c40b8dfc
@@ -404,6 +440,7 @@
                 └── 18d72142a6aa9f82a2cdc26c315586d342c9cb
             └── 📁95
                 └── 69e99dfc9c5c2b64d1c229f006df8da471105e
+                └── 7bcbf5984225640992119dd992230c4913f037
             └── 📁96
                 └── 7aaa3acca9f48e9335920266a334caeaf66691
                 └── a0a1451d9f05254802170000a6dfe12c74b89e
@@ -430,6 +467,7 @@
                 └── c676402ba8bb1c2b4dd05f5d8075e2b378a8bd
             └── 📁9d
                 └── 13eaead163bcd170771670c1c9cfd3c47295dd
+                └── 1bbd9d6db9b62fef5b8bc6439c9a2c6681d918
                 └── 5c3953b7ca2777c3697f53df5360f96fe0ed89
             └── 📁9e
                 └── 6c8c1efc9c17a3619455525b7ff382dba29dec
@@ -451,8 +489,10 @@
                 └── 2eff5539437828040bf5c3918b07858c6197f0
                 └── 5d290b30e8b04dc7aafc69b964caab7ccb8d8f
                 └── 87f9c0a2a685c2cfda133babe243d865956027
+                └── e43d2a91a580e3dcb611b4094484eb72616ee9
             └── 📁a4
                 └── 5ce52bece5c78d64410306bbcf4169081978fe
+                └── ad717c99db2d994bafc778f079acad06c1d259
             └── 📁a5
                 └── 4e2bf6f61c42c1ab2b8afd155fad130902482b
                 └── 884922f56ab949c17df83abf81c58fd7ff42d8
@@ -466,11 +506,14 @@
                 └── 788eaf4af9d5ba6155a8158925d6f7390f8e02
             └── 📁ad
                 └── 345313d64edc957aeed5f84e309ebe4f51acc3
+                └── 64a8408e920825b14311b7df24dbc85bafcb99
                 └── 7e7851e88b3fe1c747c16e75e35608bc1debdc
+                └── da91f94e31faa4dccf096344295e5528a737af
                 └── e1bbb2cc07c61dfe588a24ac30bf9deec07112
                 └── ea2471b37ed5d3560dce02e0997c4f0221d039
             └── 📁ae
                 └── 3ea0d705a981dfa22bbb8b11636ffad675cea6
+                └── 68b47148fec68f4894605ba6061615c451ab3b
                 └── 98e92d481082f1a552fbed6433041d1e15e01f
                 └── dad7e404ee034ae7ac3f3bc2e5a1c7924a74e1
                 └── fd0d3e1a794eb0843e3cd45ad549b676e85587
@@ -489,6 +532,7 @@
                 └── 820920dfd4da8f45d639ef39b2d14ca507b100
                 └── 9fea2154a4294c266412592aeaddc1d0304e64
                 └── b2a44f6ebc70c450043c05a002e7a93ba5d651
+                └── b87699f97a59df3b38b60ffb828d73b2557be6
             └── 📁b3
                 └── 5c41bbc44e8df046e81452e4e599f6ae9066ce
             └── 📁b4
@@ -524,10 +568,12 @@
                 └── 4262f4354eff5d2667ff207c8486197fbf2e9d
                 └── 541010ef4e5c62d8565ed0783e73f046b7cf0b
                 └── 77f8b5ec339b3fa4b675337d0e1c06792bf605
+                └── a394966ec0986718ddef41a40b94ce0afff8ef
                 └── f9396a93530c4d86ff4ff9e4d2da15db06bc6c
             └── 📁bd
                 └── 1c92b1314ceefd686f891dd3a98df109b1b00f
                 └── f1ef12e6d69a8b5da8e94a9075cf2d97d50d71
+                └── fe58dc4e5029ec12a09b2478f076d8e36426b3
             └── 📁be
                 └── 3344df19fd644db7a04990630cf1bcf7ec5a23
                 └── 3d45779d89ce9aef89b12ecaa6098ae9954629
@@ -535,6 +581,7 @@
                 └── a7eaa8c40582fb6b26aecd345285c26d590de8
                 └── c75b088abb02d3a568d39ab411d00053a31e57
             └── 📁bf
+                └── 01f801e4d81575b39126ffe2eb71e28533b701
                 └── 61141575c1e83938d991922bbe351c03facd96
             └── 📁c0
                 └── 739e1b6f2851042f95edf7b4f2a08cc0e57a12
@@ -565,6 +612,7 @@
                 └── e2cf0a4c8c9510a10c6f919618ab4fdc925f3a
                 └── fae950a3ce6c3da33562966858172179692edd
             └── 📁c8
+                └── 28c12483b154ffd931bc3ca6a9a533cf907941
                 └── 5fb67c463f20d1ee449b0ffee725a61dfb9259
                 └── 8f389de09f418da376598c42e8788d4fb6d172
             └── 📁ca
@@ -591,19 +639,23 @@
                 └── cde85384cfb04e177ee3254da1abffc22a880a
                 └── e8e664757d2ad7a6297196a1d81b12d85503c6
             └── 📁d1
+                └── 38e6c147c72671536380cd9786710cb41a20f6
                 └── b70d6107657b2c98f5420cb8f1107b410f3530
             └── 📁d3
                 └── 1b8756a22caa3695ea5a85301352b3420218d1
                 └── d4b5b34ffd4e47c67dd2412acf2b1696b62edb
             └── 📁d4
                 └── 3cb3b9b1c890bd2ddaaa3bed28f73faa4d21b2
+                └── 8508c1d3139fcd5812ec9dc63794215da6d973
                 └── e26096697f6465c639a045f99c2eae5270c218
             └── 📁d5
                 └── 014d93920cc53eb5475d3f3cc793d61fcc1c52
+                └── 0452caf9a70bfe8cda2619e1e6caf683ac148b
                 └── 64d0bc3dd917926892c55e3706cc116d5b165e
                 └── d6b95a23767a736cf39e946f9ae8d41de31fd7
                 └── dc79874515dc578cbc98b5647d31cc8a2ecae7
             └── 📁d6
+                └── 646ef938e7d2c72e8758982fb5d1f6c01c19d6
                 └── da71bade201b07ad0d252a53935aeb6dceae62
             └── 📁d7
                 └── 5e20f52dfd8fb9d17ea226cd09403c6fafb65c
@@ -614,6 +666,7 @@
                 └── ac01d62a10d3815604fb61eca15d424297378e
                 └── b1d19e401953562e4321a159c5a7882c5a84cd
             └── 📁d9
+                └── 453d217862c8aabf5a9056978a53aebd95200f
                 └── fe5f31acb4fdef56644d2b89caf5bc3faff00d
             └── 📁da
                 └── d374b19e543f83477ca075f5545df87fe5651b
@@ -633,6 +686,7 @@
             └── 📁e1
                 └── 171646cf0f7cfcf4607a14fe512103afb6c59c
                 └── 6f59b47253953fe5de1344f47b73cef23a36d4
+                └── ebfdbf97a0d02704b662ed7b226afb8dcdb4c1
             └── 📁e2
                 └── 15bc4ccf138bbc38ad58ad57e92135484b3c0f
                 └── 3632a14c21286dd56c7e25dbfee448eb52a7c3
@@ -673,6 +727,7 @@
                 └── fb56289b057dffc1c8ad4a67a716eb4b332719
             └── 📁ef
                 └── 404b6b0817062e53f3cc95bcc9e11f078e837c
+                └── 659e0e695e4e20d6c80a5ad8f0953153487ea0
             └── 📁f0
                 └── d2fe00b7e9ffc0d5228bd72154fcd7ddeb9295
             └── 📁f1
@@ -686,9 +741,13 @@
                 └── 35e0b0a39e73503e05ddb049c1dc7717b80e48
             └── 📁f4
                 └── 5625d22cd676e91fb1bdcb62be630c064e1100
+            └── 📁f5
+                └── 42425d84889c6ff9dc6d0578590beebba9298b
+                └── d969b30f7d1c765ee42a26f80fab061f80d128
             └── 📁f6
                 └── 3cd030b2a8b93dfd64fa2bc918b12339566d02
             └── 📁f7
+                └── d48d3736a21cde777cb05258bc2c30b9195207
                 └── fa87eb875260ed98651bc419c8139b5119e554
             └── 📁f9
                 └── 3d0f7c18d3d7a07f393a2e99da98b077ef7180
@@ -706,10 +765,12 @@
                 └── ff5361d454bcbda9378be4ca912d98b59a5454
             └── 📁fd
                 └── 35cf48a4ae969fabfa24a1c1baa3c1c66c0e33
+                └── 773ba98b621f8b6c6006ee1967bd91d7167d06
                 └── ff1958b6ce3ba326fddfab952bc39519511451
             └── 📁fe
                 └── 55a133dbdf9f3f2889b0d70c4a61ac809d12d4
                 └── 9e1ddf8f5564cc23ca617402118ea9443d5417
+                └── ffdf03e69087c01231a6fb6a062e68c45f9d24
             └── 📁ff
                 └── 3af7e12b90d285dc153dca680caee838bbf6a3
                 └── 5d3164e0463720b1561ccb6e64190096f53a46
@@ -760,6 +821,8 @@
                 └── 467396812_10235053761907537_1138780165631383124_n_9fb764cb24.jpg
                 └── ctf_4_9ebba88c2a.jpg
                 └── Docu_Locker_Banner_ad425d14ea.svg
+                └── logo_blue_square_Asset_15icon_10b24adb54.png
+                └── logo_blue_square_Asset_15icon_88faf6d5eb.png
                 └── logo_white_nobg_Asset_26_fd32f55bf8.svg
                 └── medium_ctf_4_9ebba88c2a.jpg
                 └── small_28_0b64ee5eee.jpg
@@ -775,6 +838,16 @@
                 └── vite.config.example.ts
             └── 📁api
                 └── .gitkeep
+                └── 📁contact-message
+                    └── 📁content-types
+                        └── 📁contact-message
+                            └── schema.json
+                    └── 📁controllers
+                        └── contact-message.ts
+                    └── 📁routes
+                        └── contact-message.ts
+                    └── 📁services
+                        └── contact-message.ts
                 └── 📁event
                     └── 📁content-types
                         └── 📁event
@@ -852,6 +925,36 @@
                         └── sponsor.ts
                     └── 📁services
                         └── sponsor.ts
+                └── 📁ticket
+                └── 📁ticket-category
+                    └── 📁content-types
+                        └── 📁ticket-category
+                            └── schema.json
+                    └── 📁controllers
+                        └── ticket-category.ts
+                    └── 📁routes
+                        └── ticket-category.ts
+                    └── 📁services
+                        └── ticket-category.ts
+                └── 📁ticket-purchase
+                    └── 📁content-types
+                        └── 📁ticket-purchase
+                            └── schema.json
+                    └── 📁controllers
+                        └── ticket-purchase.ts
+                    └── 📁routes
+                        └── ticket-purchase.ts
+                    └── 📁services
+                        └── ticket-purchase.ts
+                    └── 📁content-types
+                        └── 📁ticket
+                            └── schema.json
+                    └── 📁controllers
+                        └── ticket.ts
+                    └── 📁routes
+                        └── ticket.ts
+                    └── 📁services
+                        └── ticket.ts
                 └── 📁venue
                     └── 📁content-types
                         └── 📁venue
@@ -941,6 +1044,85 @@
                                 └── next-font-manifest.json
                                 └── react-loadable-manifest.json
                                 └── server-reference-manifest.json
+                        └── 📁page
+                        └── page_client-reference-manifest.js
+                        └── page.js
+                        └── page.js.map
+                            └── app-build-manifest.json
+                            └── app-paths-manifest.json
+                            └── build-manifest.json
+                            └── next-font-manifest.json
+                            └── react-loadable-manifest.json
+                            └── server-reference-manifest.json
+                    └── 📁api
+                        └── 📁test-env
+                            └── 📁route
+                            └── route_client-reference-manifest.js
+                            └── route.js
+                            └── route.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁tickets
+                            └── 📁initiate-payment
+                                └── 📁route
+                                └── route_client-reference-manifest.js
+                                └── route.js
+                                └── route.js.map
+                                    └── app-build-manifest.json
+                                    └── app-paths-manifest.json
+                                    └── build-manifest.json
+                                    └── next-font-manifest.json
+                                    └── react-loadable-manifest.json
+                                    └── server-reference-manifest.json
+                            └── 📁pesapal-auth
+                                └── 📁route
+                                └── route_client-reference-manifest.js
+                                └── route.js
+                                └── route.js.map
+                                    └── app-build-manifest.json
+                                    └── app-paths-manifest.json
+                                    └── build-manifest.json
+                                    └── next-font-manifest.json
+                                    └── react-loadable-manifest.json
+                                    └── server-reference-manifest.json
+                            └── 📁register-ipn
+                                └── 📁route
+                                └── route_client-reference-manifest.js
+                                └── route.js
+                                └── route.js.map
+                                    └── app-build-manifest.json
+                                    └── app-paths-manifest.json
+                                    └── build-manifest.json
+                                    └── next-font-manifest.json
+                                    └── react-loadable-manifest.json
+                                    └── server-reference-manifest.json
+                            └── 📁submit-order
+                                └── 📁route
+                                └── route_client-reference-manifest.js
+                                └── route.js
+                                └── route.js.map
+                                    └── app-build-manifest.json
+                                    └── app-paths-manifest.json
+                                    └── build-manifest.json
+                                    └── next-font-manifest.json
+                                    └── react-loadable-manifest.json
+                                    └── server-reference-manifest.json
+                            └── 📁test-pesapal
+                                └── 📁route
+                                └── route_client-reference-manifest.js
+                                └── route.js
+                                └── route.js.map
+                                    └── app-build-manifest.json
+                                    └── app-paths-manifest.json
+                                    └── build-manifest.json
+                                    └── next-font-manifest.json
+                                    └── react-loadable-manifest.json
+                                    └── server-reference-manifest.json
+                    └── 📁contact
                         └── 📁page
                         └── page_client-reference-manifest.js
                         └── page.js
@@ -1056,28 +1238,158 @@
                             └── next-font-manifest.json
                             └── react-loadable-manifest.json
                             └── server-reference-manifest.json
+                    └── 📁tickets
+                        └── 📁buy
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁page
+                        └── page_client-reference-manifest.js
+                        └── page.js
+                        └── page.js.map
+                            └── app-build-manifest.json
+                            └── app-paths-manifest.json
+                            └── build-manifest.json
+                            └── next-font-manifest.json
+                            └── react-loadable-manifest.json
+                            └── server-reference-manifest.json
+                        └── 📁test-auth
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁test-callback
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁test-ipn
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁test-payment
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                    └── 📁venue
+                        └── 📁[slug]
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁page
+                        └── page_client-reference-manifest.js
+                        └── page.js
+                        └── page.js.map
+                            └── app-build-manifest.json
+                            └── app-paths-manifest.json
+                            └── build-manifest.json
+                            └── next-font-manifest.json
+                            └── react-loadable-manifest.json
+                            └── server-reference-manifest.json
                 └── 📁chunks
+                    └── [root-of-the-server]__0d833492._.js
+                    └── [root-of-the-server]__0d833492._.js.map
+                    └── [root-of-the-server]__42a3dd60._.js
+                    └── [root-of-the-server]__42a3dd60._.js.map
                     └── [root-of-the-server]__48b32c58._.js
                     └── [root-of-the-server]__48b32c58._.js.map
+                    └── [root-of-the-server]__5f796677._.js
+                    └── [root-of-the-server]__5f796677._.js.map
+                    └── [root-of-the-server]__8850f204._.js
+                    └── [root-of-the-server]__8850f204._.js.map
+                    └── [root-of-the-server]__ebf75dd0._.js
+                    └── [root-of-the-server]__ebf75dd0._.js.map
+                    └── [root-of-the-server]__ed2b685f._.js
+                    └── [root-of-the-server]__ed2b685f._.js.map
                     └── [turbopack]_runtime.js
                     └── [turbopack]_runtime.js.map
+                    └── node_modules_next_14d9abfe._.js
+                    └── node_modules_next_14d9abfe._.js.map
+                    └── node_modules_next_2140eaaf._.js
+                    └── node_modules_next_2140eaaf._.js.map
                     └── node_modules_next_229848ed._.js
                     └── node_modules_next_229848ed._.js.map
+                    └── node_modules_next_2d190760._.js
+                    └── node_modules_next_2d190760._.js.map
+                    └── node_modules_next_4aa13b9f._.js
+                    └── node_modules_next_4aa13b9f._.js.map
+                    └── node_modules_next_aceebaa3._.js
+                    └── node_modules_next_aceebaa3._.js.map
+                    └── node_modules_next_fba9ffcd._.js
+                    └── node_modules_next_fba9ffcd._.js.map
                     └── 📁ssr
+                        └── _086b7bde._.js
+                        └── _086b7bde._.js.map
                         └── _138d3036._.js
                         └── _138d3036._.js.map
                         └── _157e2d94._.js
                         └── _157e2d94._.js.map
                         └── _1c87f2b0._.js
                         └── _1c87f2b0._.js.map
+                        └── _3654d6c2._.js
+                        └── _3654d6c2._.js.map
+                        └── _44db44a0._.js
+                        └── _44db44a0._.js.map
+                        └── _5c711ab7._.js
+                        └── _5c711ab7._.js.map
                         └── _5d0a62a2._.js
                         └── _5d0a62a2._.js.map
                         └── _5de0da2c._.js
                         └── _5de0da2c._.js.map
                         └── _5f904819._.js
                         └── _5f904819._.js.map
+                        └── _5fc06832._.js
+                        └── _5fc06832._.js.map
+                        └── _625b6069._.js
+                        └── _625b6069._.js.map
+                        └── _6b35e8d0._.js
+                        └── _6b35e8d0._.js.map
                         └── _6cd919c1._.js
                         └── _6cd919c1._.js.map
+                        └── _7259fe2a._.js
+                        └── _7259fe2a._.js.map
+                        └── _7eba8c4f._.js
+                        └── _7eba8c4f._.js.map
                         └── _8044f390._.js
                         └── _8044f390._.js.map
                         └── _8427c705._.js
@@ -1090,12 +1402,16 @@
                         └── _a355d2e5._.js.map
                         └── _a859276b._.js
                         └── _a859276b._.js.map
+                        └── _bc3b71a2._.js
+                        └── _bc3b71a2._.js.map
                         └── _c002201e._.js
                         └── _c002201e._.js.map
                         └── _c794ab98._.js
                         └── _c794ab98._.js.map
                         └── _dfbfff75._.js
                         └── _dfbfff75._.js.map
+                        └── _f060c640._.js
+                        └── _f060c640._.js.map
                         └── _f9f24fa1._.js
                         └── _f9f24fa1._.js.map
                         └── [externals]_next_dist_compiled_next-server_app-page-turbo_runtime_dev_30fa57d5.js
@@ -1138,10 +1454,14 @@
                         └── node_modules_next_dist_client_components_forbidden-error_ea7ea172.js.map
                         └── node_modules_next_dist_client_components_unauthorized-error_c8949b27.js
                         └── node_modules_next_dist_client_components_unauthorized-error_c8949b27.js.map
+                        └── src_00d648ad._.js
+                        └── src_00d648ad._.js.map
                         └── src_0fac31b4._.js
                         └── src_0fac31b4._.js.map
                         └── src_12b7a40d._.js
                         └── src_12b7a40d._.js.map
+                        └── src_1b741a32._.js
+                        └── src_1b741a32._.js.map
                         └── src_1e137402._.js
                         └── src_1e137402._.js.map
                         └── src_4317299a._.js
@@ -1156,12 +1476,22 @@
                         └── src_app_a4430781._.js.map
                         └── src_app_about_faq_page_tsx_efd18075._.js
                         └── src_app_about_faq_page_tsx_efd18075._.js.map
+                        └── src_app_contact_page_tsx_4d51d7dc._.js
+                        └── src_app_contact_page_tsx_4d51d7dc._.js.map
                         └── src_app_events_[id]_EventDetailClient_tsx_afeb656a._.js
                         └── src_app_events_[id]_EventDetailClient_tsx_afeb656a._.js.map
+                        └── src_app_tickets_test-auth_page_tsx_0ee02b85._.js
+                        └── src_app_tickets_test-auth_page_tsx_0ee02b85._.js.map
+                        └── src_app_tickets_test-ipn_page_tsx_978713cb._.js
+                        └── src_app_tickets_test-ipn_page_tsx_978713cb._.js.map
+                        └── src_app_tickets_test-payment_page_tsx_af3a7686._.js
+                        └── src_app_tickets_test-payment_page_tsx_af3a7686._.js.map
                         └── src_bf00254e._.js
                         └── src_bf00254e._.js.map
                         └── src_e3e1ec9a._.js
                         └── src_e3e1ec9a._.js.map
+                        └── src_f2e87505._.js
+                        └── src_f2e87505._.js.map
                         └── src_f3bc29d9._.js
                         └── src_f3bc29d9._.js.map
                 └── interception-route-rewrite-manifest.js
@@ -1174,8 +1504,12 @@
                 └── server-reference-manifest.json
             └── 📁static
                 └── 📁chunks
+                    └── _7d2afbed._.js
+                    └── _7d2afbed._.js.map
                     └── _93808211._.js
                     └── _93808211._.js.map
+                    └── _c9aa1e72._.js
+                    └── _c9aa1e72._.js.map
                     └── _e69f0d32._.js
                     └── _fb2d3641._.js
                     └── _fb2d3641._.js.map
@@ -1219,10 +1553,14 @@
                     └── src_3803c9fb._.js.map
                     └── src_41b63483._.js
                     └── src_41b63483._.js.map
+                    └── src_41f0969f._.js
+                    └── src_41f0969f._.js.map
                     └── src_5e52c3d4._.js
                     └── src_5e52c3d4._.js.map
                     └── src_6a15138e._.js
                     └── src_6a15138e._.js.map
+                    └── src_890ed99e._.js
+                    └── src_890ed99e._.js.map
                     └── src_8b8f637f._.js
                     └── src_8b8f637f._.js.map
                     └── src_9f56e172._.js
@@ -1233,6 +1571,9 @@
                     └── src_app_about_faq_page_tsx_56825bb3._.js.map
                     └── src_app_about_faq_page_tsx_89d9ff11._.js
                     └── src_app_about_organizers_page_tsx_89d9ff11._.js
+                    └── src_app_contact_page_tsx_20db083e._.js
+                    └── src_app_contact_page_tsx_20db083e._.js.map
+                    └── src_app_contact_page_tsx_89d9ff11._.js
                     └── src_app_events_[id]_EventDetailClient_tsx_688f500e._.js
                     └── src_app_events_[id]_EventDetailClient_tsx_688f500e._.js.map
                     └── src_app_events_[id]_page_tsx_89d9ff11._.js
@@ -1250,6 +1591,22 @@
                     └── src_app_sponsors_[slug]_page_tsx_89d9ff11._.js
                     └── src_app_sponsors_page_tsx_89d9ff11._.js
                     └── src_app_test-connection_page_tsx_9a63da02._.js
+                    └── src_app_tickets_buy_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_test-auth_page_tsx_1cbb10c7._.js
+                    └── src_app_tickets_test-auth_page_tsx_1cbb10c7._.js.map
+                    └── src_app_tickets_test-auth_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_test-callback_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_test-ipn_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_test-ipn_page_tsx_e17ac2be._.js
+                    └── src_app_tickets_test-ipn_page_tsx_e17ac2be._.js.map
+                    └── src_app_tickets_test-payment_page_tsx_89d9ff11._.js
+                    └── src_app_tickets_test-payment_page_tsx_e90a1af5._.js
+                    └── src_app_tickets_test-payment_page_tsx_e90a1af5._.js.map
+                    └── src_app_venue_[slug]_page_tsx_89d9ff11._.js
+                    └── src_app_venue_page_tsx_89d9ff11._.js
+                    └── src_dc846c39._.js
+                    └── src_dc846c39._.js.map
                     └── src_fe25c065._.js
                     └── src_fe25c065._.js.map
                 └── 📁development
@@ -1296,6 +1653,24 @@
                     └── 📁organizers
                         └── page.tsx
                     └── page.tsx
+                └── 📁api
+                    └── 📁test-env
+                        └── route.ts
+                    └── 📁tickets
+                        └── 📁initiate-payment
+                            └── route.ts
+                        └── 📁pesapal-auth
+                            └── route.ts
+                        └── 📁register-ipn
+                            └── route.ts
+                        └── 📁submit-order
+                            └── route.ts
+                        └── 📁test-callback
+                            └── route.ts
+                        └── 📁test-pesapal
+                            └── route.ts
+                └── 📁contact
+                    └── page.tsx
                 └── 📁events
                     └── 📁[slug]
                         └── page.tsx
@@ -1313,6 +1688,26 @@
                         └── page.tsx
                     └── page.tsx
                 └── 📁test-connection
+                    └── page.tsx
+                └── 📁tickets
+                    └── 📁buy
+                        └── page.tsx
+                    └── 📁ipn-notification
+                        └── route.ts
+                    └── page.tsx
+                    └── 📁payment
+                        └── page.tsx
+                    └── 📁test-auth
+                        └── page.tsx
+                    └── 📁test-callback
+                        └── page.tsx
+                    └── 📁test-ipn
+                        └── page.tsx
+                    └── 📁test-payment
+                        └── page.tsx
+                └── 📁venue
+                    └── 📁[slug]
+                        └── page.tsx
                     └── page.tsx
             └── 📁components
                 └── 📁layout

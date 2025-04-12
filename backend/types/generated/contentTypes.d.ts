@@ -443,6 +443,10 @@ export interface ApiEventEvent extends Struct.CollectionTypeSchema {
     speakers: Schema.Attribute.Relation<'manyToMany', 'api::speaker.speaker'>;
     sponsors: Schema.Attribute.Relation<'manyToMany', 'api::sponsor.sponsor'>;
     StartDate: Schema.Attribute.DateTime;
+    ticketCategories: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::ticket-category.ticket-category'
+    >;
     Title: Schema.Attribute.String & Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -666,6 +670,144 @@ export interface ApiSponsorSponsor extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     Website: Schema.Attribute.String;
+  };
+}
+
+export interface ApiTicketCategoryTicketCategory
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'ticket_categories';
+  info: {
+    description: '';
+    displayName: 'Ticket Category';
+    pluralName: 'ticket-categories';
+    singularName: 'ticket-category';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    allowedEvents: Schema.Attribute.Relation<'manyToMany', 'api::event.event'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'UGX'>;
+    description: Schema.Attribute.Blocks & Schema.Attribute.Required;
+    isActive: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    isFeatured: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ticket-category.ticket-category'
+    > &
+      Schema.Attribute.Private;
+    maxPurchaseQuantity: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<10>;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    price: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    sortOrder: Schema.Attribute.Integer;
+    tickets: Schema.Attribute.Relation<'oneToMany', 'api::ticket.ticket'>;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    validFrom: Schema.Attribute.Date & Schema.Attribute.Required;
+    validUntil: Schema.Attribute.Date & Schema.Attribute.Required;
+  };
+}
+
+export interface ApiTicketPurchaseTicketPurchase
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'ticket_purchases';
+  info: {
+    displayName: 'Ticket Purchase';
+    pluralName: 'ticket-purchases';
+    singularName: 'ticket-purchase';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    buyerEmail: Schema.Attribute.Email & Schema.Attribute.Required;
+    buyerName: Schema.Attribute.String & Schema.Attribute.Required;
+    buyerPhone: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    currency: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'UGX'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ticket-purchase.ticket-purchase'
+    > &
+      Schema.Attribute.Private;
+    paymentMethod: Schema.Attribute.String;
+    paymentStatus: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'failed', 'cancelled', 'required']
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    purchaseDate: Schema.Attribute.DateTime & Schema.Attribute.Required;
+    referenceNumber: Schema.Attribute.String & Schema.Attribute.Required;
+    tickets: Schema.Attribute.Relation<'oneToMany', 'api::ticket.ticket'>;
+    totalAmount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    transactionId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiTicketTicket extends Struct.CollectionTypeSchema {
+  collectionName: 'tickets';
+  info: {
+    description: '';
+    displayName: 'Ticket';
+    pluralName: 'tickets';
+    singularName: 'ticket';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    attendeeEmail: Schema.Attribute.Email & Schema.Attribute.Required;
+    attendeeName: Schema.Attribute.String & Schema.Attribute.Required;
+    attendeeOrganization: Schema.Attribute.String;
+    attendeePhone: Schema.Attribute.String;
+    checkinTime: Schema.Attribute.DateTime;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    isCheckedIn: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ticket.ticket'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    purchase: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::ticket-purchase.ticket-purchase'
+    >;
+    qrCodeData: Schema.Attribute.String;
+    ticketCategory: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::ticket-category.ticket-category'
+    >;
+    ticketNumber: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -1228,6 +1370,9 @@ declare module '@strapi/strapi' {
       'api::organizer.organizer': ApiOrganizerOrganizer;
       'api::speaker.speaker': ApiSpeakerSpeaker;
       'api::sponsor.sponsor': ApiSponsorSponsor;
+      'api::ticket-category.ticket-category': ApiTicketCategoryTicketCategory;
+      'api::ticket-purchase.ticket-purchase': ApiTicketPurchaseTicketPurchase;
+      'api::ticket.ticket': ApiTicketTicket;
       'api::venue.venue': ApiVenueVenue;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;

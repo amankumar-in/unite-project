@@ -1,0 +1,70 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ticket_categories",
+  "info": {
+    "singularName": "ticket-category",
+    "pluralName": "ticket-categories",
+    "displayName": "Ticket Category",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "blocks",
+      "required": true
+    },
+    "price": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "required": true,
+      "default": "UGX"
+    },
+    "validFrom": {
+      "type": "date",
+      "required": true
+    },
+    "validUntil": {
+      "type": "date",
+      "required": true
+    },
+    "maxPurchaseQuantity": {
+      "type": "integer",
+      "required": true,
+      "default": 10
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "required": true
+    },
+    "isFeatured": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "sortOrder": {
+      "type": "integer"
+    },
+    "tickets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ticket.ticket",
+      "mappedBy": "ticketCategory"
+    },
+    "allowedEvents": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::event.event",
+      "inversedBy": "ticketCategories"
+    }
+  }
+}

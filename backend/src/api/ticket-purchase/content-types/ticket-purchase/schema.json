@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ticket_purchases",
+  "info": {
+    "singularName": "ticket-purchase",
+    "pluralName": "ticket-purchases",
+    "displayName": "Ticket Purchase"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "referenceNumber": {
+      "type": "string",
+      "required": true
+    },
+    "totalAmount": {
+      "type": "decimal",
+      "required": true
+    },
+    "currency": {
+      "type": "string",
+      "required": true,
+      "default": "UGX"
+    },
+    "paymentStatus": {
+      "type": "enumeration",
+      "enum": [
+        "pending",
+        "paid",
+        "failed",
+        "cancelled",
+        "required"
+      ]
+    },
+    "paymentMethod": {
+      "type": "string"
+    },
+    "transactionId": {
+      "type": "string"
+    },
+    "purchaseDate": {
+      "type": "datetime",
+      "required": true
+    },
+    "buyerName": {
+      "type": "string",
+      "required": true
+    },
+    "buyerEmail": {
+      "type": "email",
+      "required": true
+    },
+    "buyerPhone": {
+      "type": "string"
+    },
+    "tickets": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::ticket.ticket",
+      "mappedBy": "purchase"
+    }
+  }
+}

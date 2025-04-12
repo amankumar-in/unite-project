@@ -85,6 +85,12 @@
       "relation": "manyToOne",
       "target": "api::venue.venue",
       "inversedBy": "events"
+    },
+    "ticketCategories": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::ticket-category.ticket-category",
+      "mappedBy": "allowedEvents"
     }
   }
 }
