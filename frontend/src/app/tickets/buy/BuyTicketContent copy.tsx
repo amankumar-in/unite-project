@@ -20,19 +20,17 @@ interface TicketCategory {
   sortOrder: number;
 }
 
-interface Attendee {
-  name: string;
-  email: string;
-  phone: string;
-  organization: string;
-}
-
 interface FormData {
   quantity: number;
   buyerName: string;
   buyerEmail: string;
   buyerPhone: string;
-  attendees: Attendee[];
+  attendees: Array<{
+    name: string;
+    email: string;
+    phone: string;
+    organization: string;
+  }>;
 }
 
 export default function BuyTicketContent() {
@@ -129,28 +127,6 @@ export default function BuyTicketContent() {
       ...prev,
       [name]: value,
     }));
-
-    // Prefill first attendee's information with buyer info
-    if (
-      name === "buyerName" ||
-      name === "buyerEmail" ||
-      name === "buyerPhone"
-    ) {
-      const attendeeField = name.replace("buyer", "").toLowerCase();
-      const newAttendees = [...formData.attendees];
-
-      if (newAttendees.length > 0) {
-        newAttendees[0] = {
-          ...newAttendees[0],
-          [attendeeField]: value,
-        };
-
-        setFormData((prev) => ({
-          ...prev,
-          attendees: newAttendees,
-        }));
-      }
-    }
   };
 
   // Update attendee information
@@ -221,18 +197,6 @@ export default function BuyTicketContent() {
 
       // Calculate total amount
       const totalAmount = formData.quantity * (ticketCategory?.price || 0);
-
-      // Save attendee data to localStorage for later ticket creation
-      if (ticketCategory) {
-        localStorage.setItem(
-          `attendeeData_${referenceNumber}`,
-          JSON.stringify({
-            attendees: formData.attendees,
-            quantity: formData.quantity,
-            ticketCategoryId: ticketCategory.documentId,
-          })
-        );
-      }
 
       console.log("Creating purchase with data:", {
         referenceNumber,
@@ -326,7 +290,7 @@ export default function BuyTicketContent() {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-none border-4 border-solid border-green-500 border-r-transparent"></div>
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
           <p className="mt-2 text-gray-600">Loading ticket details...</p>
         </div>
       </div>
@@ -337,7 +301,7 @@ export default function BuyTicketContent() {
     return (
       <div className="flex justify-center items-center min-h-[60vh]">
         <div className="text-center max-w-md px-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-red-100 mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-3">
             <svg
               className="w-6 h-6 text-red-600"
               xmlns="http://www.w3.org/2000/svg"
@@ -359,7 +323,7 @@ export default function BuyTicketContent() {
           </p>
           <Link
             href="/tickets"
-            className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
           >
             Back to Tickets
           </Link>
@@ -369,7 +333,7 @@ export default function BuyTicketContent() {
   }
 
   return (
-    <div className="bg-white min-h-screen py-8">
+    <div className="bg-gray-50 min-h-screen py-12">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Navigation */}
         <div className="mb-6">
@@ -394,9 +358,9 @@ export default function BuyTicketContent() {
         </div>
 
         {/* Ticket Purchase Form */}
-        <div className="bg-white border border-gray-200">
-          <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h1 className="text-xl font-medium text-gray-900">
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="px-4 py-5 sm:px-6 border-b border-gray-200">
+            <h1 className="text-lg font-medium text-gray-900">
               Purchase Tickets: {ticketCategory.name}
             </h1>
             <p className="mt-1 text-sm text-gray-500">
@@ -404,13 +368,13 @@ export default function BuyTicketContent() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="px-6 py-6">
+          <form onSubmit={handleSubmit} className="px-4 py-5 sm:p-6">
             {/* Ticket Selection */}
             <div className="mb-8 pb-6 border-b border-gray-200">
               <h2 className="text-lg font-medium text-gray-900 mb-4">
                 Ticket Selection
               </h2>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-50 p-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-50 p-4 rounded-lg">
                 <div>
                   <h3 className="font-medium text-gray-900">
                     {ticketCategory.name}
@@ -434,13 +398,13 @@ export default function BuyTicketContent() {
                     name="quantity"
                     value={formData.quantity}
                     onChange={handleQuantityChange}
-                    className="block w-full border-0 border-b-2 border-gray-300 focus:border-green-500 focus:ring-0 bg-transparent"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                   >
                     {quantityOptions()}
                   </select>
                 </div>
               </div>
-              <div className="mt-4 flex justify-between items-center bg-green-50 p-6">
+              <div className="mt-4 flex justify-between items-center bg-green-50 p-4 rounded-lg">
                 <span className="font-medium text-gray-900">Total</span>
                 <span className="text-xl font-bold text-green-600">
                   {formatCurrency(totalPrice, ticketCategory.currency)}
@@ -453,7 +417,7 @@ export default function BuyTicketContent() {
               <h2 className="text-lg font-medium text-gray-900 mb-4">
                 Buyer Information
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <label
                     htmlFor="buyerName"
@@ -467,10 +431,10 @@ export default function BuyTicketContent() {
                     name="buyerName"
                     value={formData.buyerName}
                     onChange={handleBuyerChange}
-                    className={`block w-full border-0 border-b-2 py-1.5 focus:ring-0 bg-transparent ${
+                    className={`block w-full rounded-md shadow-sm sm:text-sm ${
                       validationErrors.buyerName
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:border-green-500"
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                     }`}
                   />
                   {validationErrors.buyerName && (
@@ -492,10 +456,10 @@ export default function BuyTicketContent() {
                     name="buyerEmail"
                     value={formData.buyerEmail}
                     onChange={handleBuyerChange}
-                    className={`block w-full border-0 border-b-2 py-1.5 focus:ring-0 bg-transparent ${
+                    className={`block w-full rounded-md shadow-sm sm:text-sm ${
                       validationErrors.buyerEmail
-                        ? "border-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:border-green-500"
+                        ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                        : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                     }`}
                   />
                   {validationErrors.buyerEmail && (
@@ -517,7 +481,7 @@ export default function BuyTicketContent() {
                     name="buyerPhone"
                     value={formData.buyerPhone}
                     onChange={handleBuyerChange}
-                    className="block w-full border-0 border-b-2 border-gray-300 py-1.5 focus:border-green-500 focus:ring-0 bg-transparent"
+                    className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                   />
                 </div>
               </div>
@@ -532,16 +496,16 @@ export default function BuyTicketContent() {
               {formData.attendees.map((attendee, index) => (
                 <div
                   key={index}
-                  className={`mb-6 p-6 ${
+                  className={`mb-6 p-4 rounded-lg ${
                     index % 2 === 0
                       ? "bg-gray-50"
-                      : "bg-white border-t border-b border-gray-200"
+                      : "bg-white border border-gray-200"
                   }`}
                 >
                   <h3 className="font-medium text-gray-900 mb-3">
                     Attendee {index + 1}
                   </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label
                         htmlFor={`attendee${index}Name`}
@@ -555,10 +519,10 @@ export default function BuyTicketContent() {
                         name="name"
                         value={attendee.name}
                         onChange={(e) => handleAttendeeChange(index, e)}
-                        className={`block w-full border-0 border-b-2 py-1.5 focus:ring-0 bg-transparent ${
+                        className={`block w-full rounded-md shadow-sm sm:text-sm ${
                           validationErrors[`attendee${index}Name`]
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-300 focus:border-green-500"
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                            : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                         }`}
                       />
                       {validationErrors[`attendee${index}Name`] && (
@@ -580,10 +544,10 @@ export default function BuyTicketContent() {
                         name="email"
                         value={attendee.email}
                         onChange={(e) => handleAttendeeChange(index, e)}
-                        className={`block w-full border-0 border-b-2 py-1.5 focus:ring-0 bg-transparent ${
+                        className={`block w-full rounded-md shadow-sm sm:text-sm ${
                           validationErrors[`attendee${index}Email`]
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-300 focus:border-green-500"
+                            ? "border-red-300 focus:border-red-500 focus:ring-red-500"
+                            : "border-gray-300 focus:border-green-500 focus:ring-green-500"
                         }`}
                       />
                       {validationErrors[`attendee${index}Email`] && (
@@ -605,7 +569,7 @@ export default function BuyTicketContent() {
                         name="phone"
                         value={attendee.phone}
                         onChange={(e) => handleAttendeeChange(index, e)}
-                        className="block w-full border-0 border-b-2 border-gray-300 py-1.5 focus:border-green-500 focus:ring-0 bg-transparent"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                       />
                     </div>
                     <div>
@@ -621,7 +585,7 @@ export default function BuyTicketContent() {
                         name="organization"
                         value={attendee.organization}
                         onChange={(e) => handleAttendeeChange(index, e)}
-                        className="block w-full border-0 border-b-2 border-gray-300 py-1.5 focus:border-green-500 focus:ring-0 bg-transparent"
+                        className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                       />
                     </div>
                   </div>
@@ -633,14 +597,14 @@ export default function BuyTicketContent() {
             <div className="mt-8 flex justify-end">
               <Link
                 href="/tickets"
-                className="mr-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+                className="mr-4 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md bg-white text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`inline-flex items-center px-6 py-2 border-0 text-base font-medium bg-green-600 text-white hover:bg-green-700 ${
+                className={`inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 ${
                   isSubmitting ? "opacity-75 cursor-not-allowed" : ""
                 }`}
               >
