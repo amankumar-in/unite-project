@@ -72,6 +72,58 @@ export default function ConfirmationContent() {
         if (data.success) {
           setPaymentDetails(data);
 
+          // Add direct update to Strapi as a fallback when payment is successful
+          if (
+            data.paymentStatus === "Completed" &&
+            data.statusCode === 1 &&
+            data.merchantReference
+          ) {
+            console.log(
+              "Payment successful, updating purchase record directly"
+            );
+
+            try {
+              // Get Strapi API URL
+              let STRAPI_URL = process.env.NEXT_PUBLIC_API_URL;
+
+              // Fix for IPv6/IPv4 issue
+              if (STRAPI_URL && STRAPI_URL.includes("localhost")) {
+                STRAPI_URL = STRAPI_URL.replace("localhost", "127.0.0.1");
+              }
+
+              // Update the purchase using our custom endpoint
+              const updateUrl = `${STRAPI_URL}/api/ticket-purchases/by-reference/${data.merchantReference}`;
+              console.log(`Updating purchase directly at ${updateUrl}`);
+
+              const updateResponse = await fetch(updateUrl, {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  data: {
+                    paymentStatus: "paid",
+                    paymentMethod: data.paymentMethod || null,
+                    transactionId: orderTrackingId,
+                  },
+                }),
+              });
+
+              if (updateResponse.ok) {
+                console.log(
+                  `Successfully updated purchase ${data.merchantReference} directly`
+                );
+              } else {
+                console.error(
+                  "Failed direct update:",
+                  await updateResponse.json()
+                );
+              }
+            } catch (updateError) {
+              console.error("Error in direct update:", updateError);
+            }
+          }
+
           // If we have a merchant reference, fetch the purchase details from Strapi
           if (data.merchantReference) {
             try {
