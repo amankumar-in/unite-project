@@ -807,7 +807,75 @@ export default function ConfirmationContent() {
         console.error("Error removing localStorage data:", error);
       }
 
-      // TODO: Send email notification with ticket details
+      // After tickets are successfully generated, send them via email
+      // After tickets are successfully generated, send them via email
+      if (generatedTickets.length > 0) {
+        try {
+          console.log("Starting email process for:", purchase.buyerEmail);
+
+          // Build confirmation URL
+          const baseUrl = window.location.origin;
+          const confirmationUrl = `${baseUrl}/tickets/confirmation?OrderTrackingId=${orderTrackingId}&OrderMerchantReference=${purchase.referenceNumber}`;
+
+          console.log("Confirmation URL:", confirmationUrl);
+
+          // Prepare email data
+          const emailData = {
+            email: purchase.buyerEmail,
+            name: purchase.buyerName,
+            subject: "Your UNITE Expo 2025 Tickets",
+            ticketDetails: generatedTickets.map((ticket) => ({
+              ticketNumber: ticket.ticketNumber,
+              attendeeName: ticket.attendeeName,
+              attendeeEmail: ticket.attendeeEmail,
+              ticketCategory: ticket.ticketCategory,
+            })),
+            eventDate: "April 12-30, 2025",
+            eventLocation: "Kampala International Convention Centre, Uganda",
+            confirmationUrl: confirmationUrl,
+          };
+
+          console.log(
+            "Preparing to send email with data:",
+            JSON.stringify(emailData, null, 2)
+          );
+
+          // Send email with link to tickets rather than attaching PDF
+          console.log("Calling email API endpoint...");
+          const emailResponse = await fetch("/api/tickets/send-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(emailData),
+          });
+
+          console.log("Email API response status:", emailResponse.status);
+
+          const emailResult = await emailResponse.json();
+          console.log("Email API response body:", emailResult);
+
+          if (emailResult.success) {
+            console.log("Email sent successfully:", emailResult.messageId);
+          } else {
+            console.error("Failed to send email:", emailResult.message);
+          }
+        } catch (emailError) {
+          console.error("Error in email sending process:", emailError);
+          console.error(
+            "Error details:",
+            emailError instanceof Error
+              ? emailError.message
+              : String(emailError)
+          );
+          console.error(
+            "Error stack:",
+            emailError instanceof Error
+              ? emailError.stack
+              : "No stack available"
+          );
+        }
+      }
     } catch (error) {
       console.error("Error generating tickets:", error);
     } finally {

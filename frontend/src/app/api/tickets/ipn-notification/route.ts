@@ -323,7 +323,49 @@ export async function GET(request: NextRequest) {
                       `Successfully created ${successfulTickets} of ${ticketQuantity} tickets`
                     );
 
-                    // TODO: Send email notification with ticket details
+                    // Send email notification with ticket details
+                    if (successfulTickets > 0) {
+                      try {
+                        console.log(
+                          `Sending tickets via email to ${purchase.buyerEmail}`
+                        );
+
+                        // Get the base URL
+                        const baseUrl =
+                          process.env.NEXT_PUBLIC_BASE_URL ||
+                          request.nextUrl.origin;
+
+                        // Call the email API
+                        const emailEndpoint = `${baseUrl}/api/tickets/send-email`;
+
+                        // Create a simple email without PDF for server-side
+                        const emailResponse = await fetch(emailEndpoint, {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            email: purchase.buyerEmail,
+                            name: purchase.buyerName,
+                            subject: "Your UNITE Expo 2025 Tickets",
+                            ticketNumber: "Multiple tickets",
+                            referenceNumber: orderMerchantReference,
+                            text: `Thank you for your purchase. Your tickets for UNITE Expo 2025 have been generated. 
+                            Reference: ${orderMerchantReference}. 
+                            Please check your order confirmation page to download your tickets.`,
+                          }),
+                        });
+
+                        const emailResult = await emailResponse.json();
+                        console.log("Email notification result:", emailResult);
+                      } catch (emailError) {
+                        console.error(
+                          "Error sending email notification:",
+                          emailError
+                        );
+                        // Non-critical error, don't throw
+                      }
+                    }
                   } else {
                     console.error(
                       "Purchase not found:",
@@ -671,7 +713,49 @@ export async function POST(request: NextRequest) {
                       `Successfully created ${successfulTickets} of ${ticketQuantity} tickets`
                     );
 
-                    // TODO: Send email notification with ticket details
+                    // Send email notification with ticket details
+                    if (successfulTickets > 0) {
+                      try {
+                        console.log(
+                          `Sending tickets via email to ${purchase.buyerEmail}`
+                        );
+
+                        // Get the base URL
+                        const baseUrl =
+                          process.env.NEXT_PUBLIC_BASE_URL ||
+                          request.nextUrl.origin;
+
+                        // Call the email API
+                        const emailEndpoint = `${baseUrl}/api/tickets/send-email`;
+
+                        // Create a simple email without PDF for server-side
+                        const emailResponse = await fetch(emailEndpoint, {
+                          method: "POST",
+                          headers: {
+                            "Content-Type": "application/json",
+                          },
+                          body: JSON.stringify({
+                            email: purchase.buyerEmail,
+                            name: purchase.buyerName,
+                            subject: "Your UNITE Expo 2025 Tickets",
+                            ticketNumber: "Multiple tickets",
+                            referenceNumber: orderMerchantReference,
+                            text: `Thank you for your purchase. Your tickets for UNITE Expo 2025 have been generated. 
+                            Reference: ${orderMerchantReference}. 
+                            Please check your order confirmation page to download your tickets.`,
+                          }),
+                        });
+
+                        const emailResult = await emailResponse.json();
+                        console.log("Email notification result:", emailResult);
+                      } catch (emailError) {
+                        console.error(
+                          "Error sending email notification:",
+                          emailError
+                        );
+                        // Non-critical error, don't throw
+                      }
+                    }
                   } else {
                     console.error(
                       "Purchase not found:",
