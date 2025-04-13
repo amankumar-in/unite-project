@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import html2canvas from "html2canvas";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
@@ -41,6 +42,16 @@ interface Attendee {
   organization: string;
 }
 
+interface TicketCategory {
+  id: number;
+  documentId: string;
+  name: string;
+  price: number;
+  currency: string;
+  validFrom: string;
+  validUntil: string;
+}
+
 interface Ticket {
   id: number;
   documentId: string;
@@ -52,6 +63,7 @@ interface Ticket {
   isCheckedIn: boolean;
   qrCodeData: string;
   qrCodeImage?: string; // For storing generated QR code image
+  ticketCategory?: TicketCategory;
 }
 
 export default function ConfirmationContent() {
@@ -69,6 +81,23 @@ export default function ConfirmationContent() {
     useState<PurchaseDetails | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isGeneratingTickets, setIsGeneratingTickets] = useState(false);
+  const [pdfMakeLoaded, setPdfMakeLoaded] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // Load pdfmake library
+  useEffect(() => {
+    // Only import pdfmake in the browser
+    import("pdfmake/build/pdfmake").then((pdfMakeModule) => {
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Import fonts
+      import("pdfmake/build/vfs_fonts").then((pdfFontsModule) => {
+        const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+        pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts.vfs;
+        setPdfMakeLoaded(true);
+      });
+    });
+  }, []);
 
   // Function to generate QR code images for tickets
   const generateQRCodeImages = useCallback(async (ticketsData: Ticket[]) => {
@@ -76,10 +105,9 @@ export default function ConfirmationContent() {
 
     for (let i = 0; i < updatedTickets.length; i++) {
       try {
-        // Parse the stored JSON string
-        const qrContent = updatedTickets[i].qrCodeData;
-        // Generate QR code image
-        const qrImage = await generateQRCodeDataURL(qrContent);
+        const qrImage = await generateQRCodeDataURL(
+          updatedTickets[i].qrCodeData
+        );
         updatedTickets[i].qrCodeImage = qrImage;
       } catch (error) {
         console.error(`Error generating QR code for ticket ${i}:`, error);
@@ -89,6 +117,375 @@ export default function ConfirmationContent() {
     return updatedTickets;
   }, []);
 
+  // ==================================
+  // Function to generate and download a PDF ticket
+  const generatePDF = async (ticket: Ticket) => {
+    try {
+      setIsGeneratingPDF(true);
+
+      if (!ticket.qrCodeImage) {
+        // Generate QR code if not already available
+        const qrImage = await generateQRCodeDataURL(ticket.qrCodeData);
+        ticket.qrCodeImage = qrImage;
+      }
+
+      // Create a temporary div to render the ticket
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.left = "-9999px";
+      tempDiv.style.top = "-9999px";
+      tempDiv.style.width = "800px"; // Set width similar to your ticket display
+
+      // Add ticket HTML with styling
+      tempDiv.innerHTML = `
+      <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; width: 800px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+        <div style="display: flex;">
+          <!-- Main ticket content -->
+          <div style="width: 75%; background-color: white;">
+            <!-- Header with blue background -->
+            <div style="background-color: #1e3a8a; color: white; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-weight: bold; font-size: 1.25rem; margin: 0;">UNITE EXPO 2025</h3>
+                <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">Uganda Next Investment & Trade Expo</p>
+              </div>
+              <div style="text-align: right;">
+                <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">${
+                  ticket.ticketCategory?.name || "Single Event Ticket"
+                }</p>
+              </div>
+            </div>
+
+            <!-- Attendee name and contact -->
+            <div style="padding: 1rem;">
+              <h4 style="font-size: 1.25rem; font-weight: bold; color: #111827; margin: 0 0 0.5rem 0;">${
+                ticket.attendeeName
+              }</h4>
+              <p style="color: #4b5563; margin: 0 0 0.25rem 0;">${
+                ticket.attendeeEmail
+              }</p>
+              ${
+                ticket.attendeePhone
+                  ? `<p style="color: #4b5563; margin: 0;">${ticket.attendeePhone}</p>`
+                  : ""
+              }
+            </div>
+
+            <!-- Ticket details -->
+            <div style="padding: 0 1rem 1rem 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket Type</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.name || "Single Event Ticket"
+                  }</p>
+                </div>
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket #</p>
+                  <p style="font-weight: 500; font-size: 0.875rem; word-break: break-all; margin: 0;">${
+                    ticket.ticketNumber
+                  }</p>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid From</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.validFrom
+                      ? new Date(
+                          ticket.ticketCategory.validFrom
+                        ).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "12 April 2025"
+                  }</p>
+                </div>
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid Until</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.validUntil
+                      ? new Date(
+                          ticket.ticketCategory.validUntil
+                        ).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "30 April 2025"
+                  }</p>
+                </div>
+              </div>
+
+              <!-- Location with icon -->
+              <div style="display: flex; align-items: center; margin-top: 1rem;">
+                <svg style="height: 1rem; width: 1rem; color: #6b7280; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                </svg>
+                <span style="font-size: 0.875rem; color: #4b5563;">Kampala International Convention Centre, Uganda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div style="border-left: 1px dashed #d1d5db;"></div>
+
+          <!-- QR code section -->
+          <div style="width: 25%; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+            <p style="font-weight: bold; text-align: center; margin: 0 0 0.75rem 0;">ADMIT ONE</p>
+
+            <div style="width: 100%; aspect-ratio: 1; margin-bottom: 0.75rem;">
+              <img src="${
+                ticket.qrCodeImage
+              }" alt="Ticket QR Code" style="width: 100%; height: 100%; object-fit: contain;" />
+            </div>
+
+            <p style="font-size: 0.75rem; text-align: center; color: #4b5563; margin: 0 0 0.25rem 0;">SCAN TO VERIFY</p>
+            <p style="font-size: 0.75rem; text-align: center; font-weight: bold; margin: 0;">UNITE EXPO 2025</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+      // Add to document body temporarily
+      document.body.appendChild(tempDiv);
+
+      // Use html2canvas to capture the ticket
+      const canvas = await html2canvas(tempDiv, {
+        scale: 2, // Higher scale for better quality
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      // Remove temporary div
+      document.body.removeChild(tempDiv);
+
+      // Convert canvas to image data
+      const imageData = canvas.toDataURL("image/png");
+
+      // Dynamically import pdfmake
+      const pdfMakeModule = await import("pdfmake/build/pdfmake");
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Create simplified document definition that just includes the image
+      const docDefinition = {
+        pageSize: "A4",
+        pageOrientation: "landscape",
+        content: [
+          {
+            image: imageData,
+            width: 750,
+          },
+        ],
+        pageMargins: [30, 30, 30, 30],
+      };
+
+      // Generate and download the PDF
+      pdfMake
+        .createPdf(docDefinition)
+        .download(`UNITE-Expo-Ticket-${ticket.ticketNumber}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Error generating PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  // Function to generate and download all tickets as PDF
+  const generateAllPDFs = async () => {
+    try {
+      setIsGeneratingPDF(true);
+
+      // Ensure all tickets have QR codes
+      const ticketsWithQR = await generateQRCodeImages(tickets);
+
+      // Array to hold all the image data
+      const ticketImages = [];
+
+      // Process each ticket one by one
+      for (const ticket of ticketsWithQR) {
+        // Create a temporary div for this ticket
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.left = "-9999px";
+        tempDiv.style.top = "-9999px";
+        tempDiv.style.width = "800px";
+
+        // Add ticket HTML with styling (same as in generatePDF)
+        tempDiv.innerHTML = `
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; width: 800px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+          <div style="display: flex;">
+            <!-- Main ticket content -->
+            <div style="width: 75%; background-color: white;">
+              <!-- Header with blue background -->
+              <div style="background-color: #1e3a8a; color: white; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 style="font-weight: bold; font-size: 1.25rem; margin: 0;">UNITE EXPO 2025</h3>
+                  <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">Uganda Next Investment & Trade Expo</p>
+                </div>
+                <div style="text-align: right;">
+                  <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">${
+                    ticket.ticketCategory?.name || "Single Event Ticket"
+                  }</p>
+                </div>
+              </div>
+
+              <!-- Attendee name and contact -->
+              <div style="padding: 1rem;">
+                <h4 style="font-size: 1.25rem; font-weight: bold; color: #111827; margin: 0 0 0.5rem 0;">${
+                  ticket.attendeeName
+                }</h4>
+                <p style="color: #4b5563; margin: 0 0 0.25rem 0;">${
+                  ticket.attendeeEmail
+                }</p>
+                ${
+                  ticket.attendeePhone
+                    ? `<p style="color: #4b5563; margin: 0;">${ticket.attendeePhone}</p>`
+                    : ""
+                }
+              </div>
+
+              <!-- Ticket details -->
+              <div style="padding: 0 1rem 1rem 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket Type</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.name || "Single Event Ticket"
+                    }</p>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket #</p>
+                    <p style="font-weight: 500; font-size: 0.875rem; word-break: break-all; margin: 0;">${
+                      ticket.ticketNumber
+                    }</p>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid From</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.validFrom
+                        ? new Date(
+                            ticket.ticketCategory.validFrom
+                          ).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "12 April 2025"
+                    }</p>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid Until</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.validUntil
+                        ? new Date(
+                            ticket.ticketCategory.validUntil
+                          ).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "30 April 2025"
+                    }</p>
+                  </div>
+                </div>
+
+                <!-- Location with icon -->
+                <div style="display: flex; align-items: center; margin-top: 1rem;">
+                  <svg style="height: 1rem; width: 1rem; color: #6b7280; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                  </svg>
+                  <span style="font-size: 0.875rem; color: #4b5563;">Kampala International Convention Centre, Uganda</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div style="border-left: 1px dashed #d1d5db;"></div>
+
+            <!-- QR code section -->
+            <div style="width: 25%; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+              <p style="font-weight: bold; text-align: center; margin: 0 0 0.75rem 0;">ADMIT ONE</p>
+
+              <div style="width: 100%; aspect-ratio: 1; margin-bottom: 0.75rem;">
+                <img src="${
+                  ticket.qrCodeImage
+                }" alt="Ticket QR Code" style="width: 100%; height: 100%; object-fit: contain;" />
+              </div>
+
+              <p style="font-size: 0.75rem; text-align: center; color: #4b5563; margin: 0 0 0.25rem 0;">SCAN TO VERIFY</p>
+              <p style="font-size: 0.75rem; text-align: center; font-weight: bold; margin: 0;">UNITE EXPO 2025</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+        // Add to document body temporarily
+        document.body.appendChild(tempDiv);
+
+        // Use html2canvas to capture the ticket
+        const canvas = await html2canvas(tempDiv, {
+          scale: 2, // Higher scale for better quality
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        // Remove temporary div
+        document.body.removeChild(tempDiv);
+
+        // Convert canvas to image data
+        const imageData = canvas.toDataURL("image/png");
+
+        // Add the image data to our array
+        ticketImages.push(imageData);
+      }
+
+      // Dynamically import pdfmake
+      const pdfMakeModule = await import("pdfmake/build/pdfmake");
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Create content array with each ticket image on its own page
+      const content = [];
+
+      // Add each ticket image to the content array with a page break after (except the last one)
+      ticketImages.forEach((imageData, index) => {
+        // Add the image
+        content.push({
+          image: imageData,
+          width: 750,
+        });
+
+        // Add a page break after each image except the last one
+        if (index < ticketImages.length - 1) {
+          content.push({ text: "", pageBreak: "after" });
+        }
+      });
+
+      // Create document definition
+      const docDefinition = {
+        pageSize: "A4",
+        pageOrientation: "landscape",
+        content: content,
+        pageMargins: [30, 30, 30, 30],
+      };
+
+      // Generate and download the PDF
+      pdfMake.createPdf(docDefinition).download("UNITE-Expo-All-Tickets.pdf");
+    } catch (error) {
+      console.error("Error generating PDFs:", error);
+      alert("Error generating PDFs. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+  // ===================================
   useEffect(() => {
     if (!orderTrackingId) {
       setError("No order tracking ID found in URL");
@@ -188,7 +585,7 @@ export default function ConfirmationContent() {
                 ) {
                   // Check if tickets already exist for this purchase
                   const ticketsResponse = await fetchAPI(
-                    `/tickets?filters[purchase][referenceNumber][$eq]=${data.merchantReference}`
+                    `/tickets?filters[purchase][referenceNumber][$eq]=${data.merchantReference}&populate=ticketCategory`
                   );
 
                   if (
@@ -346,14 +743,12 @@ export default function ConfirmationContent() {
           .toString()
           .padStart(4, "0")}`;
 
-        // Create the QR code content as JSON strings
-
+        // Create the QR code content as JSON string
         const qrContent = {
           ticketNumber: ticketNumber,
           event: "UNITE",
         };
         const qrCodeData = JSON.stringify(qrContent);
-        console.log("QR code data:", qrCodeData);
 
         // Updated code (using documentId):
         const ticketData = {
@@ -383,15 +778,17 @@ export default function ConfirmationContent() {
 
             // Generate the QR code image for display
             const ticket = ticketResponse.data;
+
             try {
+              ticket.ticketCategory = ticketCategory;
               ticket.qrCodeImage = await generateQRCodeDataURL(
                 ticket.qrCodeData
               );
+              generatedTickets.push(ticket);
             } catch (qrError) {
               console.error("Error generating QR code image:", qrError);
+              generatedTickets.push(ticket);
             }
-
-            generatedTickets.push(ticket);
           }
         } catch (ticketError) {
           console.error(`Error creating ticket ${i + 1}:`, ticketError);
@@ -510,12 +907,12 @@ export default function ConfirmationContent() {
 
   return (
     <div className="bg-white min-h-screen py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Navigation */}
         <div className="mb-6">
           <Link
             href="/tickets"
-            className="text-green-600 hover:text-green-700 inline-flex items-center text-sm font-medium"
+            className="text-blue-900 hover:text-blue-700 inline-flex items-center text-sm font-medium"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -701,13 +1098,66 @@ export default function ConfirmationContent() {
             {/* Tickets Section - if payment was successful */}
             {isPaymentSuccessful && (
               <div className="mt-8">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Your Tickets
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium text-gray-900">
+                    Your Tickets
+                  </h2>
+
+                  {tickets.length > 0 && (
+                    <button
+                      onClick={generateAllPDFs}
+                      disabled={isGeneratingPDF || !pdfMakeLoaded}
+                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded bg-blue-900 text-white hover:bg-blue-800"
+                    >
+                      {isGeneratingPDF ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Processing...
+                        </span>
+                      ) : (
+                        <>
+                          <svg
+                            className="mr-1 h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                            />
+                          </svg>
+                          Download All
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
 
                 {isGeneratingTickets ? (
                   <div className="text-center py-8">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-none border-4 border-solid border-green-500 border-r-transparent"></div>
+                    <div className="inline-block h-8 w-8 animate-spin rounded-none border-4 border-solid border-blue-500 border-r-transparent"></div>
                     <p className="mt-2 text-gray-600">
                       Generating your tickets...
                     </p>
@@ -715,158 +1165,210 @@ export default function ConfirmationContent() {
                 ) : tickets.length > 0 ? (
                   <div className="space-y-6">
                     {tickets.map((ticket, index) => (
-                      <div
-                        key={ticket.id}
-                        className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
-                      >
-                        {/* Ticket header */}
-                        <div className="bg-green-600 px-4 py-2 text-white flex justify-between items-center">
-                          <h3 className="font-bold text-white text-lg">
-                            UNITE Expo 2025
-                          </h3>
-                          <span className="text-xs bg-white text-green-800 px-2 py-1 rounded-full">
-                            Ticket #{index + 1}
-                          </span>
+                      <div key={ticket.id} className="mb-6">
+                        {/* Download button above ticket */}
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={() => generatePDF(ticket)}
+                            disabled={isGeneratingPDF || !pdfMakeLoaded}
+                            className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded bg-blue-900 text-white hover:bg-blue-800"
+                          >
+                            {isGeneratingPDF ? (
+                              <span className="flex items-center">
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Processing...
+                              </span>
+                            ) : (
+                              <>
+                                <svg
+                                  className="mr-1 h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                                  />
+                                </svg>
+                                Download Ticket
+                              </>
+                            )}
+                          </button>
                         </div>
 
-                        {/* Ticket content */}
-                        <div className="p-4 flex flex-col md:flex-row">
-                          {/* QR Code */}
-                          <div className="mb-4 md:mb-0 md:mr-6 flex-shrink-0 flex flex-col items-center">
-                            <div className="bg-white p-2 border border-gray-200 rounded">
-                              {ticket.qrCodeImage ? (
-                                <img
-                                  src={ticket.qrCodeImage}
-                                  alt="Ticket QR Code"
-                                  className="w-32 h-32"
-                                  onError={(e) => {
-                                    e.currentTarget.style.display = "none";
-                                    e.currentTarget.parentElement.innerHTML =
-                                      "QR Code loading...";
-                                  }}
-                                />
-                              ) : (
-                                <div className="w-32 h-32 flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
-                                  Loading QR...
+                        {/* Ticket with proper ratio */}
+                        <div
+                          className="border border-gray-200 rounded-lg overflow-hidden shadow-sm w-full"
+                          style={{ maxWidth: "800px" }}
+                        >
+                          <div className="flex">
+                            {/* Main ticket content */}
+                            <div className="w-3/4 bg-white">
+                              {/* Header with blue background */}
+                              <div className="bg-blue-900 text-white py-3 px-5 flex justify-between items-center">
+                                <div>
+                                  <h3 className="font-bold text-xl">
+                                    UNITE EXPO 2025
+                                  </h3>
+                                  <p className="text-xs text-gray-300">
+                                    Uganda Next Investment & Trade Expo
+                                  </p>
                                 </div>
-                              )}
-                            </div>
-                            <p className="mt-2 text-xs text-gray-500 text-center">
-                              Scan to verify ticket
-                            </p>
-                          </div>
+                                <div className="text-right">
+                                  <p className="text-xs text-gray-300">
+                                    {ticket.ticketCategory?.name ||
+                                      "Single Event Ticket"}
+                                  </p>
+                                </div>
+                              </div>
 
-                          {/* Ticket details */}
-                          <div className="flex-grow">
-                            <div className="mb-4 pb-3 border-b border-gray-100">
-                              <h4 className="font-bold text-gray-900 text-lg">
-                                {ticket.attendeeName}
-                              </h4>
-                              <p className="text-green-600 font-medium">
-                                {ticket.ticketNumber}
-                              </p>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                              <div>
-                                <p className="text-sm text-gray-500">Email</p>
-                                <p className="text-sm text-gray-900">
+                              {/* Attendee name and contact */}
+                              <div className="p-4">
+                                <h4 className="text-xl font-bold text-gray-900">
+                                  {ticket.attendeeName}
+                                </h4>
+                                <p className="text-gray-600">
                                   {ticket.attendeeEmail}
                                 </p>
-                              </div>
-
-                              {ticket.attendeePhone && (
-                                <div>
-                                  <p className="text-sm text-gray-500">Phone</p>
-                                  <p className="text-sm text-gray-900">
+                                {ticket.attendeePhone && (
+                                  <p className="text-gray-600">
                                     {ticket.attendeePhone}
                                   </p>
-                                </div>
-                              )}
+                                )}
+                              </div>
 
-                              {ticket.attendeeOrganization && (
-                                <div>
-                                  <p className="text-sm text-gray-500">
-                                    Organization
-                                  </p>
-                                  <p className="text-sm text-gray-900">
-                                    {ticket.attendeeOrganization}
-                                  </p>
+                              {/* Ticket details in 2x2 grid */}
+                              <div className="px-4 pb-4">
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Ticket Type
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.name ||
+                                        "Single Event Ticket"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Ticket #
+                                    </p>
+                                    <p className="font-medium text-sm break-all">
+                                      {ticket.ticketNumber}
+                                    </p>
+                                  </div>
                                 </div>
-                              )}
 
-                              <div>
-                                <p className="text-sm text-gray-500">Status</p>
-                                <p className="text-sm">
-                                  <span
-                                    className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
-                                      ticket.isCheckedIn
-                                        ? "bg-blue-100 text-blue-800"
-                                        : "bg-green-100 text-green-800"
-                                    }`}
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Valid From
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.validFrom
+                                        ? new Date(
+                                            ticket.ticketCategory.validFrom
+                                          ).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "12 April 2025"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Valid Until
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.validUntil
+                                        ? new Date(
+                                            ticket.ticketCategory.validUntil
+                                          ).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "30 April 2025"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Location with icon */}
+                                <div className="flex items-center mt-4">
+                                  <svg
+                                    className="h-4 w-4 text-gray-500 mr-2"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
                                   >
-                                    {ticket.isCheckedIn
-                                      ? "Checked In"
-                                      : "Not Checked In"}
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                  </svg>
+                                  <span className="text-sm text-gray-600">
+                                    Kampala International Convention Centre,
+                                    Uganda
                                   </span>
-                                </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
 
-                        {/* Ticket footer */}
-                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-end">
-                          <button
-                            type="button"
-                            className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center"
-                            onClick={() =>
-                              alert("Download functionality coming soon!")
-                            }
-                          >
-                            <svg
-                              className="mr-1 h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                              />
-                            </svg>
-                            Download Ticket
-                          </button>
+                            {/* Separator */}
+                            <div className="border-l border-dashed border-gray-300"></div>
+
+                            {/* QR code section */}
+                            <div className="w-1/4 bg-gray-50 flex flex-col items-center justify-center p-4">
+                              <p className="font-bold text-center mb-3">
+                                ADMIT ONE
+                              </p>
+
+                              <div className="w-full aspect-square mb-3">
+                                {ticket.qrCodeImage ? (
+                                  <img
+                                    src={ticket.qrCodeImage}
+                                    alt="Ticket QR Code"
+                                    className="w-full h-full object-contain"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-gray-200 animate-pulse">
+                                    <span className="text-gray-400 text-xs">
+                                      Loading...
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <p className="text-xs text-center text-gray-600 mb-1">
+                                SCAN TO VERIFY
+                              </p>
+                              <p className="text-xs text-center font-bold">
+                                UNITE EXPO 2025
+                              </p>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     ))}
-
-                    <div className="mt-6 text-center">
-                      <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded"
-                        onClick={() =>
-                          alert("Ticket download functionality coming soon!")
-                        }
-                      >
-                        <svg
-                          className="mr-2 h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                          />
-                        </svg>
-                        Download All Tickets
-                      </button>
-                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-6 border border-gray-200 bg-gray-50 rounded-lg">
@@ -880,7 +1382,7 @@ export default function ConfirmationContent() {
                         purchaseDetails &&
                         generateTickets(purchaseDetails, orderTrackingId || "")
                       }
-                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded"
+                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-blue-900 text-white hover:bg-blue-800 rounded"
                       disabled={!purchaseDetails || isGeneratingTickets}
                     >
                       Generate Tickets Manually
@@ -916,7 +1418,7 @@ export default function ConfirmationContent() {
                       <div className="mt-2 text-sm text-green-700">
                         <p>
                           Your payment has been successfully processed. Your
-                          tickets will be sent to your email shortly.
+                          tickets are ready for download above.
                         </p>
                       </div>
                     </div>

@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
+import { generateQRCodeContent, generateQRCodeDataURL } from "@/lib/qrcode";
 
 interface PaymentDetails {
   success: boolean;
@@ -40,6 +41,16 @@ interface Attendee {
   organization: string;
 }
 
+interface TicketCategory {
+  id: number;
+  documentId: string;
+  name: string;
+  price: number;
+  currency: string;
+  validFrom: string;
+  validUntil: string;
+}
+
 interface Ticket {
   id: number;
   documentId: string;
@@ -50,6 +61,8 @@ interface Ticket {
   attendeeOrganization: string;
   isCheckedIn: boolean;
   qrCodeData: string;
+  qrCodeImage?: string; // For storing generated QR code image
+  ticketCategory?: TicketCategory;
 }
 
 export default function ConfirmationContent() {
@@ -67,6 +80,732 @@ export default function ConfirmationContent() {
     useState<PurchaseDetails | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isGeneratingTickets, setIsGeneratingTickets] = useState(false);
+  const [pdfMakeLoaded, setPdfMakeLoaded] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // Load pdfmake library
+  useEffect(() => {
+    // Only import pdfmake in the browser
+    import("pdfmake/build/pdfmake").then((pdfMakeModule) => {
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Import fonts
+      import("pdfmake/build/vfs_fonts").then((pdfFontsModule) => {
+        const pdfFonts = pdfFontsModule.default || pdfFontsModule;
+        pdfMake.vfs = pdfFonts.pdfMake ? pdfFonts.pdfMake.vfs : pdfFonts.vfs;
+        setPdfMakeLoaded(true);
+      });
+    });
+  }, []);
+
+  // Function to generate QR code images for tickets
+  const generateQRCodeImages = useCallback(async (ticketsData: Ticket[]) => {
+    const updatedTickets = [...ticketsData];
+
+    for (let i = 0; i < updatedTickets.length; i++) {
+      try {
+        const qrImage = await generateQRCodeDataURL(
+          updatedTickets[i].qrCodeData
+        );
+        updatedTickets[i].qrCodeImage = qrImage;
+      } catch (error) {
+        console.error(`Error generating QR code for ticket ${i}:`, error);
+      }
+    }
+
+    return updatedTickets;
+  }, []);
+
+  // Function to generate and download a PDF ticket
+  const generatePDF = async (ticket: Ticket) => {
+    try {
+      setIsGeneratingPDF(true);
+
+      if (!ticket.qrCodeImage) {
+        // Generate QR code if not already available
+        const qrImage = await generateQRCodeDataURL(ticket.qrCodeData);
+        ticket.qrCodeImage = qrImage;
+      }
+
+      // Dynamically import pdfmake
+      const pdfMakeModule = await import("pdfmake/build/pdfmake");
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Prepare ticket data
+      const ticketData = {
+        ticketNumber: ticket.ticketNumber,
+        eventName: "UNITE EXPO 2025",
+        eventTagline: "Uganda Next Investment & Trade Expo",
+        attendeeName: ticket.attendeeName,
+        attendeeEmail: ticket.attendeeEmail,
+        attendeePhone: ticket.attendeePhone || "",
+        ticketCategory: ticket.ticketCategory?.name || "General Admission",
+        validFrom: ticket.ticketCategory?.validFrom
+          ? new Date(ticket.ticketCategory.validFrom).toLocaleDateString(
+              undefined,
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            )
+          : "",
+        validUntil: ticket.ticketCategory?.validUntil
+          ? new Date(ticket.ticketCategory.validUntil).toLocaleDateString(
+              undefined,
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            )
+          : "",
+        price: ticket.ticketCategory
+          ? new Intl.NumberFormat("en-UG", {
+              style: "decimal",
+              minimumFractionDigits: 0,
+            }).format(ticket.ticketCategory.price) +
+            " " +
+            (ticket.ticketCategory.currency || "UGX")
+          : "",
+        eventLocation: "Kampala International Convention Centre, Uganda",
+      };
+
+      // Define the document definition
+      // CHANGE 2: Replace the PDF generation document definition with this updated version
+
+      const docDefinition = {
+        pageSize: { width: 600, height: 220 }, // Shorter height to match UI
+        pageMargins: [0, 0, 0, 0],
+        content: [
+          {
+            columns: [
+              // Main content (left + middle)
+              {
+                width: "*",
+                stack: [
+                  // Header background
+                  {
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 450,
+                        h: 60,
+                        color: "#1e3a8a", // Dark blue (royal blue)
+                      },
+                    ],
+                    absolutePosition: { x: 0, y: 0 },
+                  },
+
+                  // Event name & tagline
+                  {
+                    text: ticketData.eventName,
+                    style: "eventName",
+                    absolutePosition: { x: 20, y: 15 },
+                  },
+                  {
+                    text: ticketData.eventTagline,
+                    style: "eventTagline",
+                    absolutePosition: { x: 20, y: 38 },
+                  },
+
+                  // Ticket type in header
+                  {
+                    text: ticketData.ticketCategory,
+                    style: "headerTicketType",
+                    absolutePosition: { x: 350, y: 25 },
+                  },
+
+                  // Attendee name and contact info
+                  {
+                    text: ticketData.attendeeName,
+                    style: "attendeeName",
+                    absolutePosition: { x: 20, y: 80 },
+                  },
+                  {
+                    text: ticketData.attendeeEmail,
+                    style: "attendeeEmail",
+                    absolutePosition: { x: 20, y: 100 },
+                  },
+                  {
+                    text: ticketData.attendeePhone,
+                    style: "attendeePhone",
+                    absolutePosition: { x: 20, y: 115 },
+                  },
+
+                  // Ticket info - headers (first row) - removed PRICE
+                  {
+                    text: "TICKET TYPE",
+                    style: "labelText",
+                    absolutePosition: { x: 20, y: 145 },
+                  },
+                  {
+                    text: "TICKET #",
+                    style: "labelText",
+                    absolutePosition: { x: 230, y: 145 },
+                  },
+
+                  // Ticket info - values (first row) - removed PRICE
+                  {
+                    text: ticketData.ticketCategory,
+                    style: "valueText",
+                    absolutePosition: { x: 20, y: 160 },
+                  },
+                  {
+                    text: ticketData.ticketNumber,
+                    style: "valueText",
+                    absolutePosition: { x: 230, y: 160 },
+                  },
+
+                  // Ticket info - headers (second row) - removed STATUS
+                  {
+                    text: "VALID FROM",
+                    style: "labelText",
+                    absolutePosition: { x: 20, y: 185 },
+                  },
+                  {
+                    text: "VALID UNTIL",
+                    style: "labelText",
+                    absolutePosition: { x: 230, y: 185 },
+                  },
+
+                  // Ticket info - values (second row) - removed STATUS
+                  {
+                    text: ticketData.validFrom,
+                    style: "valueText",
+                    absolutePosition: { x: 20, y: 200 },
+                  },
+                  {
+                    text: ticketData.validUntil,
+                    style: "valueText",
+                    absolutePosition: { x: 230, y: 200 },
+                  },
+
+                  // Location info with icon
+                  {
+                    columns: [
+                      {
+                        width: 15,
+                        svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#666"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+                      },
+                      {
+                        width: "auto",
+                        text: ticketData.eventLocation,
+                        style: "locationText",
+                      },
+                    ],
+                    absolutePosition: { x: 20, y: 190 },
+                  },
+
+                  // Dotted line separator
+                  {
+                    canvas: [
+                      {
+                        type: "line",
+                        x1: 450,
+                        y1: 0,
+                        x2: 450,
+                        y2: 220,
+                        dash: { length: 2, space: 2 },
+                        lineWidth: 1,
+                        lineColor: "#aaaaaa",
+                      },
+                    ],
+                  },
+                ],
+              },
+
+              // QR code section (right side) - increased width
+              {
+                width: 150,
+                stack: [
+                  // QR background
+                  {
+                    canvas: [
+                      {
+                        type: "rect",
+                        x: 0,
+                        y: 0,
+                        w: 150,
+                        h: 220,
+                        color: "#f8f8f8", // Light gray background
+                      },
+                    ],
+                    absolutePosition: { x: 450, y: 0 },
+                  },
+
+                  // Admit one text
+                  {
+                    text: "ADMIT ONE",
+                    style: "admitText",
+                    absolutePosition: { x: 485, y: 30 },
+                  },
+
+                  // QR code - square dimensions
+                  {
+                    image: ticket.qrCodeImage || "",
+                    width: 100,
+                    height: 100,
+                    absolutePosition: { x: 475, y: 60 },
+                  },
+
+                  // Scan text
+                  {
+                    text: "SCAN TO VERIFY",
+                    style: "scanText",
+                    absolutePosition: { x: 480, y: 170 },
+                  },
+
+                  // Event name at bottom of QR section
+                  {
+                    text: "UNITE EXPO 2025",
+                    style: "qrEventName",
+                    absolutePosition: { x: 475, y: 190 },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        styles: {
+          eventName: {
+            fontSize: 20,
+            bold: true,
+            color: "white",
+          },
+          eventTagline: {
+            fontSize: 12,
+            color: "#cccccc",
+          },
+          headerTicketType: {
+            fontSize: 12,
+            color: "white",
+            alignment: "right",
+          },
+          attendeeName: {
+            fontSize: 18,
+            bold: true,
+            color: "#333333",
+          },
+          attendeeEmail: {
+            fontSize: 12,
+            color: "#666666",
+          },
+          attendeePhone: {
+            fontSize: 12,
+            color: "#666666",
+          },
+          labelText: {
+            fontSize: 10,
+            color: "#888888",
+            bold: false,
+          },
+          valueText: {
+            fontSize: 12,
+            color: "#333333",
+            bold: false,
+          },
+          locationText: {
+            fontSize: 11,
+            color: "#666666",
+            italics: true,
+          },
+          termsText: {
+            fontSize: 9,
+            color: "#999999",
+            italics: true,
+          },
+          admitText: {
+            fontSize: 14,
+            bold: true,
+            color: "#333333",
+          },
+          scanText: {
+            fontSize: 10,
+            color: "#666666",
+          },
+          qrEventName: {
+            fontSize: 12,
+            bold: true,
+            color: "#333333",
+          },
+        },
+      };
+
+      // Make sure to apply the same changes to the generateAllPDFs function docDefinition as well
+
+      // Generate and download the PDF
+      pdfMake
+        .createPdf(docDefinition)
+        .download(`UNITE-Expo-Ticket-${ticket.ticketNumber}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      alert("Error generating PDF. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
+
+  // Function to generate and download all tickets as PDF
+  const generateAllPDFs = async () => {
+    try {
+      setIsGeneratingPDF(true);
+
+      // Ensure all tickets have QR codes
+      const ticketsWithQR = await generateQRCodeImages(tickets);
+
+      // Dynamically import pdfmake
+      const pdfMakeModule = await import("pdfmake/build/pdfmake");
+      const pdfMake = pdfMakeModule.default || pdfMakeModule;
+
+      // Create document definition with all tickets
+      const docDefinition = {
+        pageSize: { width: 600, height: 280 },
+        pageMargins: [0, 0, 0, 0],
+        content: [],
+      };
+
+      // Add each ticket to document
+      for (let i = 0; i < ticketsWithQR.length; i++) {
+        const ticket = ticketsWithQR[i];
+
+        // Prepare ticket data
+        const ticketData = {
+          ticketNumber: ticket.ticketNumber,
+          eventName: "UNITE EXPO 2025",
+          eventTagline: "Uganda Next Investment & Trade Expo",
+          attendeeName: ticket.attendeeName,
+          attendeeEmail: ticket.attendeeEmail,
+          attendeePhone: ticket.attendeePhone || "",
+          ticketCategory: ticket.ticketCategory?.name || "General Admission",
+          validFrom: ticket.ticketCategory?.validFrom
+            ? new Date(ticket.ticketCategory.validFrom).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }
+              )
+            : "",
+          validUntil: ticket.ticketCategory?.validUntil
+            ? new Date(ticket.ticketCategory.validUntil).toLocaleDateString(
+                undefined,
+                {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                }
+              )
+            : "",
+          price: ticket.ticketCategory
+            ? new Intl.NumberFormat("en-UG", {
+                style: "decimal",
+                minimumFractionDigits: 0,
+              }).format(ticket.ticketCategory.price) +
+              " " +
+              (ticket.ticketCategory.currency || "UGX")
+            : "",
+          eventLocation: "Kampala International Convention Centre, Uganda",
+        };
+
+        // Create ticket page
+        const ticketPage = {
+          columns: [
+            // Main content (left + middle)
+            {
+              width: "*",
+              stack: [
+                // Header background
+                {
+                  canvas: [
+                    {
+                      type: "rect",
+                      x: 0,
+                      y: 0,
+                      w: 430,
+                      h: 60,
+                      color: "#1e3a8a", // Dark blue
+                    },
+                  ],
+                  absolutePosition: { x: 0, y: 0 },
+                },
+
+                // Event name & tagline
+                {
+                  text: ticketData.eventName,
+                  style: "eventName",
+                  absolutePosition: { x: 20, y: 15 },
+                },
+                {
+                  text: ticketData.eventTagline,
+                  style: "eventTagline",
+                  absolutePosition: { x: 20, y: 38 },
+                },
+
+                // Attendee name and contact info
+                {
+                  text: ticketData.attendeeName,
+                  style: "attendeeName",
+                  absolutePosition: { x: 20, y: 80 },
+                },
+                {
+                  text: ticketData.attendeeEmail,
+                  style: "attendeeEmail",
+                  absolutePosition: { x: 20, y: 100 },
+                },
+                {
+                  text: ticketData.attendeePhone,
+                  style: "attendeePhone",
+                  absolutePosition: { x: 20, y: 115 },
+                },
+
+                // Ticket info - headers (first row)
+                {
+                  text: "TICKET TYPE",
+                  style: "labelText",
+                  absolutePosition: { x: 20, y: 145 },
+                },
+                {
+                  text: "TICKET #",
+                  style: "labelText",
+                  absolutePosition: { x: 170, y: 145 },
+                },
+                {
+                  text: "PRICE",
+                  style: "labelText",
+                  absolutePosition: { x: 320, y: 145 },
+                },
+
+                // Ticket info - values (first row)
+                {
+                  text: ticketData.ticketCategory,
+                  style: "valueText",
+                  absolutePosition: { x: 20, y: 160 },
+                },
+                {
+                  text: ticketData.ticketNumber,
+                  style: "valueText",
+                  absolutePosition: { x: 170, y: 160 },
+                },
+                {
+                  text: ticketData.price,
+                  style: "valueText",
+                  absolutePosition: { x: 320, y: 160 },
+                },
+
+                // Ticket info - headers (second row)
+                {
+                  text: "VALID FROM",
+                  style: "labelText",
+                  absolutePosition: { x: 20, y: 190 },
+                },
+                {
+                  text: "VALID UNTIL",
+                  style: "labelText",
+                  absolutePosition: { x: 170, y: 190 },
+                },
+                {
+                  text: "STATUS",
+                  style: "labelText",
+                  absolutePosition: { x: 320, y: 190 },
+                },
+
+                // Ticket info - values (second row)
+                {
+                  text: ticketData.validFrom,
+                  style: "valueText",
+                  absolutePosition: { x: 20, y: 205 },
+                },
+                {
+                  text: ticketData.validUntil,
+                  style: "valueText",
+                  absolutePosition: { x: 170, y: 205 },
+                },
+                {
+                  text: ticket.isCheckedIn ? "CHECKED IN" : "NOT CHECKED IN",
+                  style: "statusText",
+                  absolutePosition: { x: 320, y: 205 },
+                },
+
+                // Location info with icon
+                {
+                  columns: [
+                    {
+                      width: 15,
+                      svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#666"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
+                    },
+                    {
+                      width: "auto",
+                      text: ticketData.eventLocation,
+                      style: "locationText",
+                    },
+                  ],
+                  absolutePosition: { x: 20, y: 235 },
+                },
+
+                // Terms text
+                {
+                  text: "Present this ticket at the entrance. Ticket is non-transferable and non-refundable.",
+                  style: "termsText",
+                  absolutePosition: { x: 20, y: 255 },
+                },
+
+                // Dotted line separator
+                {
+                  canvas: [
+                    {
+                      type: "line",
+                      x1: 430,
+                      y1: 0,
+                      x2: 430,
+                      y2: 280,
+                      dash: { length: 2, space: 2 },
+                      lineWidth: 1,
+                      lineColor: "#aaaaaa",
+                    },
+                  ],
+                },
+              ],
+            },
+
+            // QR code section (right side)
+            {
+              width: 170,
+              stack: [
+                // QR background
+                {
+                  canvas: [
+                    {
+                      type: "rect",
+                      x: 0,
+                      y: 0,
+                      w: 170,
+                      h: 280,
+                      color: "#f8f8f8", // Light gray background
+                    },
+                  ],
+                  absolutePosition: { x: 430, y: 0 },
+                },
+
+                // Admit one text
+                {
+                  text: "ADMIT ONE",
+                  style: "admitText",
+                  absolutePosition: { x: 480, y: 30 },
+                },
+
+                // QR code
+                {
+                  image: ticket.qrCodeImage || "",
+                  width: 130,
+                  height: 130,
+                  absolutePosition: { x: 450, y: 70 },
+                },
+
+                // Scan text
+                {
+                  text: "SCAN TO VERIFY",
+                  style: "scanText",
+                  absolutePosition: { x: 470, y: 210 },
+                },
+
+                // Event name at bottom of QR section
+                {
+                  text: "UNITE EXPO 2025",
+                  style: "qrEventName",
+                  absolutePosition: { x: 465, y: 230 },
+                },
+              ],
+            },
+          ],
+        };
+
+        // Add ticket to document
+        docDefinition.content.push(ticketPage);
+
+        // Add page break if not the last ticket
+        if (i < ticketsWithQR.length - 1) {
+          docDefinition.content.push({ text: "", pageBreak: "after" });
+        }
+      }
+
+      // Add styles
+      docDefinition.styles = {
+        eventName: {
+          fontSize: 20,
+          bold: true,
+          color: "white",
+        },
+        eventTagline: {
+          fontSize: 12,
+          color: "#cccccc",
+        },
+        attendeeName: {
+          fontSize: 18,
+          bold: true,
+          color: "#333333",
+        },
+        attendeeEmail: {
+          fontSize: 12,
+          color: "#666666",
+        },
+        attendeePhone: {
+          fontSize: 12,
+          color: "#666666",
+        },
+        labelText: {
+          fontSize: 10,
+          color: "#888888",
+          bold: false,
+        },
+        valueText: {
+          fontSize: 13,
+          color: "#333333",
+          bold: false,
+        },
+        statusText: {
+          fontSize: 13,
+          bold: true,
+          color: "#2e7d32", // Green color
+        },
+        locationText: {
+          fontSize: 11,
+          color: "#666666",
+          italics: true,
+        },
+        termsText: {
+          fontSize: 9,
+          color: "#999999",
+          italics: true,
+        },
+        admitText: {
+          fontSize: 14,
+          bold: true,
+          color: "#333333",
+        },
+        scanText: {
+          fontSize: 10,
+          color: "#666666",
+        },
+        qrEventName: {
+          fontSize: 12,
+          bold: true,
+          color: "#333333",
+        },
+      };
+
+      // Generate and download the PDF
+      pdfMake.createPdf(docDefinition).download(`UNITE-Expo-All-Tickets.pdf`);
+    } catch (error) {
+      console.error("Error generating PDFs:", error);
+      alert("Error generating PDFs. Please try again.");
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   useEffect(() => {
     if (!orderTrackingId) {
@@ -167,7 +906,7 @@ export default function ConfirmationContent() {
                 ) {
                   // Check if tickets already exist for this purchase
                   const ticketsResponse = await fetchAPI(
-                    `/tickets?filters[purchase][referenceNumber][$eq]=${data.merchantReference}`
+                    `/tickets?filters[purchase][referenceNumber][$eq]=${data.merchantReference}&populate=ticketCategory`
                   );
 
                   if (
@@ -177,7 +916,10 @@ export default function ConfirmationContent() {
                   ) {
                     // Tickets already exist, just show them
                     console.log("Tickets already exist for this purchase");
-                    setTickets(ticketsResponse.data);
+                    const ticketsWithQR = await generateQRCodeImages(
+                      ticketsResponse.data
+                    );
+                    setTickets(ticketsWithQR);
                   } else {
                     // No tickets exist, generate them
                     await generateTickets(
@@ -204,7 +946,7 @@ export default function ConfirmationContent() {
     };
 
     checkPaymentStatus();
-  }, [orderTrackingId]);
+  }, [orderTrackingId, generateQRCodeImages]);
 
   // Generate tickets for a successful purchase
   const generateTickets = async (
@@ -322,8 +1064,12 @@ export default function ConfirmationContent() {
           .toString()
           .padStart(4, "0")}`;
 
-        // Generate QR code data (just use ticket number for now)
-        const qrCodeData = ticketNumber;
+        // Create the QR code content as JSON string
+        const qrContent = {
+          ticketNumber: ticketNumber,
+          event: "UNITE",
+        };
+        const qrCodeData = JSON.stringify(qrContent);
 
         // Updated code (using documentId):
         const ticketData = {
@@ -350,7 +1096,20 @@ export default function ConfirmationContent() {
 
           if (ticketResponse && ticketResponse.data) {
             console.log("Ticket created:", ticketResponse.data);
-            generatedTickets.push(ticketResponse.data);
+
+            // Generate the QR code image for display
+            const ticket = ticketResponse.data;
+
+            try {
+              ticket.ticketCategory = ticketCategory;
+              ticket.qrCodeImage = await generateQRCodeDataURL(
+                ticket.qrCodeData
+              );
+              generatedTickets.push(ticket);
+            } catch (qrError) {
+              console.error("Error generating QR code image:", qrError);
+              generatedTickets.push(ticket);
+            }
           }
         } catch (ticketError) {
           console.error(`Error creating ticket ${i + 1}:`, ticketError);
@@ -469,12 +1228,12 @@ export default function ConfirmationContent() {
 
   return (
     <div className="bg-white min-h-screen py-12">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Back Navigation */}
         <div className="mb-6">
           <Link
             href="/tickets"
-            className="text-green-600 hover:text-green-700 inline-flex items-center text-sm font-medium"
+            className="text-blue-900 hover:text-blue-700 inline-flex items-center text-sm font-medium"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -493,7 +1252,7 @@ export default function ConfirmationContent() {
         </div>
 
         {/* Payment Confirmation */}
-        <div className="bg-white border border-gray-200">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
           {/* Header */}
           <div
             className={`px-6 py-5 border-b ${
@@ -660,84 +1419,280 @@ export default function ConfirmationContent() {
             {/* Tickets Section - if payment was successful */}
             {isPaymentSuccessful && (
               <div className="mt-8">
-                <h2 className="text-lg font-medium text-gray-900 mb-4">
-                  Your Tickets
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium text-gray-900">
+                    Your Tickets
+                  </h2>
+
+                  {tickets.length > 0 && (
+                    <button
+                      onClick={generateAllPDFs}
+                      disabled={isGeneratingPDF || !pdfMakeLoaded}
+                      className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded bg-blue-900 text-white hover:bg-blue-800"
+                    >
+                      {isGeneratingPDF ? (
+                        <span className="flex items-center">
+                          <svg
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            ></circle>
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            ></path>
+                          </svg>
+                          Processing...
+                        </span>
+                      ) : (
+                        <>
+                          <svg
+                            className="mr-1 h-4 w-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                            />
+                          </svg>
+                          Download All
+                        </>
+                      )}
+                    </button>
+                  )}
+                </div>
 
                 {isGeneratingTickets ? (
                   <div className="text-center py-8">
-                    <div className="inline-block h-8 w-8 animate-spin rounded-none border-4 border-solid border-green-500 border-r-transparent"></div>
+                    <div className="inline-block h-8 w-8 animate-spin rounded-none border-4 border-solid border-blue-500 border-r-transparent"></div>
                     <p className="mt-2 text-gray-600">
                       Generating your tickets...
                     </p>
                   </div>
                 ) : tickets.length > 0 ? (
-                  <div className="space-y-4">
-                    {tickets.map((ticket) => (
-                      <div
-                        key={ticket.id}
-                        className="border border-gray-200 p-4 bg-gray-50"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-gray-900">
-                              {ticket.attendeeName}
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                              {ticket.attendeeEmail}
-                            </p>
-                            {ticket.attendeePhone && (
-                              <p className="text-sm text-gray-500">
-                                {ticket.attendeePhone}
-                              </p>
+                  <div className="space-y-6">
+                    {tickets.map((ticket, index) => (
+                      <div key={ticket.id} className="mb-6">
+                        {/* Download button above ticket */}
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={() => generatePDF(ticket)}
+                            disabled={isGeneratingPDF || !pdfMakeLoaded}
+                            className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded bg-blue-900 text-white hover:bg-blue-800"
+                          >
+                            {isGeneratingPDF ? (
+                              <span className="flex items-center">
+                                <svg
+                                  className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                  ></circle>
+                                  <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                  ></path>
+                                </svg>
+                                Processing...
+                              </span>
+                            ) : (
+                              <>
+                                <svg
+                                  className="mr-1 h-4 w-4"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  stroke="currentColor"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                                  />
+                                </svg>
+                                Download Ticket
+                              </>
                             )}
-                            {ticket.attendeeOrganization && (
-                              <p className="text-sm text-gray-500">
-                                {ticket.attendeeOrganization}
+                          </button>
+                        </div>
+
+                        {/* Ticket with proper ratio */}
+                        <div
+                          className="border border-gray-200 rounded-lg overflow-hidden shadow-sm w-full"
+                          style={{ maxWidth: "800px" }}
+                        >
+                          <div className="flex">
+                            {/* Main ticket content */}
+                            <div className="w-3/4 bg-white">
+                              {/* Header with blue background */}
+                              <div className="bg-blue-900 text-white py-3 px-5 flex justify-between items-center">
+                                <div>
+                                  <h3 className="font-bold text-xl">
+                                    UNITE EXPO 2025
+                                  </h3>
+                                  <p className="text-xs text-gray-300">
+                                    Uganda Next Investment & Trade Expo
+                                  </p>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-xs text-gray-300">
+                                    {ticket.ticketCategory?.name ||
+                                      "Single Event Ticket"}
+                                  </p>
+                                </div>
+                              </div>
+
+                              {/* Attendee name and contact */}
+                              <div className="p-4">
+                                <h4 className="text-xl font-bold text-gray-900">
+                                  {ticket.attendeeName}
+                                </h4>
+                                <p className="text-gray-600">
+                                  {ticket.attendeeEmail}
+                                </p>
+                                {ticket.attendeePhone && (
+                                  <p className="text-gray-600">
+                                    {ticket.attendeePhone}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Ticket details in 2x2 grid */}
+                              <div className="px-4 pb-4">
+                                <div className="grid grid-cols-2 gap-4 mb-4">
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Ticket Type
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.name ||
+                                        "Single Event Ticket"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Ticket #
+                                    </p>
+                                    <p className="font-medium text-sm break-all">
+                                      {ticket.ticketNumber}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Valid From
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.validFrom
+                                        ? new Date(
+                                            ticket.ticketCategory.validFrom
+                                          ).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "12 April 2025"}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-xs text-gray-500 uppercase">
+                                      Valid Until
+                                    </p>
+                                    <p className="font-medium">
+                                      {ticket.ticketCategory?.validUntil
+                                        ? new Date(
+                                            ticket.ticketCategory.validUntil
+                                          ).toLocaleDateString(undefined, {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                          })
+                                        : "30 April 2025"}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Location with icon */}
+                                <div className="flex items-center mt-4">
+                                  <svg
+                                    className="h-4 w-4 text-gray-500 mr-2"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                  >
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                  </svg>
+                                  <span className="text-sm text-gray-600">
+                                    Kampala International Convention Centre,
+                                    Uganda
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Separator */}
+                            <div className="border-l border-dashed border-gray-300"></div>
+
+                            {/* QR code section */}
+                            <div className="w-1/4 bg-gray-50 flex flex-col items-center justify-center p-4">
+                              <p className="font-bold text-center mb-3">
+                                ADMIT ONE
                               </p>
-                            )}
-                          </div>
-                          <div className="text-right">
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800">
-                              {ticket.isCheckedIn
-                                ? "Checked In"
-                                : "Not Checked In"}
-                            </span>
-                            <p className="text-sm text-gray-500 mt-1">
-                              Ticket #: {ticket.ticketNumber}
-                            </p>
+
+                              <div className="w-full aspect-square mb-3">
+                                {ticket.qrCodeImage ? (
+                                  <img
+                                    src={ticket.qrCodeImage}
+                                    alt="Ticket QR Code"
+                                    className="w-full h-full object-contain"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center bg-gray-200 animate-pulse">
+                                    <span className="text-gray-400 text-xs">
+                                      Loading...
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+
+                              <p className="text-xs text-center text-gray-600 mb-1">
+                                SCAN TO VERIFY
+                              </p>
+                              <p className="text-xs text-center font-bold">
+                                UNITE EXPO 2025
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     ))}
-
-                    <div className="mt-4 text-center">
-                      <button
-                        type="button"
-                        className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700"
-                        onClick={() =>
-                          alert("Ticket download functionality coming soon!")
-                        }
-                      >
-                        <svg
-                          className="mr-2 h-5 w-5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
-                          />
-                        </svg>
-                        Download Tickets
-                      </button>
-                    </div>
                   </div>
                 ) : (
-                  <div className="text-center py-6 border border-gray-200 bg-gray-50">
+                  <div className="text-center py-6 border border-gray-200 bg-gray-50 rounded-lg">
                     <p className="text-gray-600">
                       No tickets have been generated yet. This might take a few
                       moments.
@@ -748,7 +1703,7 @@ export default function ConfirmationContent() {
                         purchaseDetails &&
                         generateTickets(purchaseDetails, orderTrackingId || "")
                       }
-                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-blue-900 text-white hover:bg-blue-800 rounded"
                       disabled={!purchaseDetails || isGeneratingTickets}
                     >
                       Generate Tickets Manually
@@ -761,7 +1716,7 @@ export default function ConfirmationContent() {
             {/* Actions */}
             <div className="mt-8">
               {isPaymentSuccessful ? (
-                <div className="border border-green-200 bg-green-50 p-4">
+                <div className="border border-green-200 bg-green-50 p-4 rounded-lg">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
@@ -784,14 +1739,14 @@ export default function ConfirmationContent() {
                       <div className="mt-2 text-sm text-green-700">
                         <p>
                           Your payment has been successfully processed. Your
-                          tickets will be sent to your email shortly.
+                          tickets are ready for download above.
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="border border-red-200 bg-red-50 p-4">
+                <div className="border border-red-200 bg-red-50 p-4 rounded-lg">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
@@ -820,7 +1775,7 @@ export default function ConfirmationContent() {
                       <div className="mt-4">
                         <Link
                           href="/tickets"
-                          className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-red-600 text-white hover:bg-red-700"
+                          className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-red-600 text-white hover:bg-red-700 rounded"
                         >
                           Try Again
                         </Link>
@@ -837,7 +1792,7 @@ export default function ConfirmationContent() {
         <div className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
