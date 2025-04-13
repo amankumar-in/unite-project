@@ -224,6 +224,82 @@
         └── .env.production
         └── .eslintrc.json
         └── .gitignore
+            └── app-build-manifest.json
+            └── 📁build
+            └── build-manifest.json
+                └── 📁chunks
+                    └── [root-of-the-server]__04d7a048._.js
+                    └── [root-of-the-server]__04d7a048._.js.map
+                    └── [root-of-the-server]__05f88b00._.js
+                    └── [root-of-the-server]__05f88b00._.js.map
+                    └── [turbopack]_runtime.js
+                    └── [turbopack]_runtime.js.map
+                    └── node_modules_b5d1def4._.js
+                    └── node_modules_b5d1def4._.js.map
+                    └── postcss_config_mjs_transform_ts_f0ffbaad._.js
+                    └── postcss_config_mjs_transform_ts_f0ffbaad._.js.map
+            └── 📁cache
+                └── .rscinfo
+            └── fallback-build-manifest.json
+            └── package.json
+            └── 📁server
+                └── 📁app
+                └── app-paths-manifest.json
+                    └── 📁_not-found
+                        └── 📁page
+                        └── page_client-reference-manifest.js
+                        └── page.js
+                        └── page.js.map
+                            └── app-build-manifest.json
+                            └── app-paths-manifest.json
+                            └── build-manifest.json
+                            └── next-font-manifest.json
+                            └── react-loadable-manifest.json
+                            └── server-reference-manifest.json
+                    └── 📁about
+                        └── 📁faq
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁mission-vision
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁organizers
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
+                        └── 📁page
+                        └── page_client-reference-manifest.js
+                        └── page.js
+                        └── page.js.map
+                            └── app-build-manifest.json
+                            └── app-paths-manifest.json
+                            └── build-manifest.json
+                            └── next-font-manifest.json
+                            └── react-loadable-manifest.json
+                            └── server-reference-manifest.json
                     └── 📁api
                         └── 📁test-env
                             └── 📁route
@@ -562,6 +638,17 @@
                                 └── next-font-manifest.json
                                 └── react-loadable-manifest.json
                                 └── server-reference-manifest.json
+                        └── 📁test-qrcode
+                            └── 📁page
+                            └── page_client-reference-manifest.js
+                            └── page.js
+                            └── page.js.map
+                                └── app-build-manifest.json
+                                └── app-paths-manifest.json
+                                └── build-manifest.json
+                                └── next-font-manifest.json
+                                └── react-loadable-manifest.json
+                                └── server-reference-manifest.json
                     └── 📁venue
                         └── 📁[slug]
                             └── 📁page
@@ -649,9 +736,11 @@
                     └── page.tsx
                 └── 📁tickets
                     └── 📁buy
+                        └── BuyTicketContent copy.tsx
                         └── BuyTicketContent.tsx
                         └── page.tsx
                     └── 📁confirmation
+                        └── ConfirmationContent copy.tsx
                         └── ConfirmationContent.tsx
                         └── page.tsx
                     └── 📁ipn-notification
@@ -669,6 +758,8 @@
                         └── page.tsx
                     └── 📁test-payment
                         └── page.tsx
+                    └── 📁test-qrcode
+                        └── page.tsx
                 └── 📁venue
                     └── 📁[slug]
                         └── page.tsx
@@ -682,6 +773,7 @@
             └── 📁lib
                 └── 📁api
                     └── api-config.ts
+                └── qrcode.ts
                 └── react-query-provider.tsx
         └── tsconfig.json
     └── .DS_Store

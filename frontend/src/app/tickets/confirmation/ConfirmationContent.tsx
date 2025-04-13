@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
+import { generateQRCodeContent, generateQRCodeDataURL } from "@/lib/qrcode";
 
 interface PaymentDetails {
   success: boolean;
@@ -50,6 +51,7 @@ interface Ticket {
   attendeeOrganization: string;
   isCheckedIn: boolean;
   qrCodeData: string;
+  qrCodeImage?: string; // For storing generated QR code image
 }
 
 export default function ConfirmationContent() {
@@ -67,6 +69,25 @@ export default function ConfirmationContent() {
     useState<PurchaseDetails | null>(null);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isGeneratingTickets, setIsGeneratingTickets] = useState(false);
+
+  // Function to generate QR code images for tickets
+  const generateQRCodeImages = useCallback(async (ticketsData: Ticket[]) => {
+    const updatedTickets = [...ticketsData];
+
+    for (let i = 0; i < updatedTickets.length; i++) {
+      try {
+        // Parse the stored JSON string
+        const qrContent = updatedTickets[i].qrCodeData;
+        // Generate QR code image
+        const qrImage = await generateQRCodeDataURL(qrContent);
+        updatedTickets[i].qrCodeImage = qrImage;
+      } catch (error) {
+        console.error(`Error generating QR code for ticket ${i}:`, error);
+      }
+    }
+
+    return updatedTickets;
+  }, []);
 
   useEffect(() => {
     if (!orderTrackingId) {
@@ -177,7 +198,10 @@ export default function ConfirmationContent() {
                   ) {
                     // Tickets already exist, just show them
                     console.log("Tickets already exist for this purchase");
-                    setTickets(ticketsResponse.data);
+                    const ticketsWithQR = await generateQRCodeImages(
+                      ticketsResponse.data
+                    );
+                    setTickets(ticketsWithQR);
                   } else {
                     // No tickets exist, generate them
                     await generateTickets(
@@ -204,7 +228,7 @@ export default function ConfirmationContent() {
     };
 
     checkPaymentStatus();
-  }, [orderTrackingId]);
+  }, [orderTrackingId, generateQRCodeImages]);
 
   // Generate tickets for a successful purchase
   const generateTickets = async (
@@ -322,8 +346,14 @@ export default function ConfirmationContent() {
           .toString()
           .padStart(4, "0")}`;
 
-        // Generate QR code data (just use ticket number for now)
-        const qrCodeData = ticketNumber;
+        // Create the QR code content as JSON strings
+
+        const qrContent = {
+          ticketNumber: ticketNumber,
+          event: "UNITE",
+        };
+        const qrCodeData = JSON.stringify(qrContent);
+        console.log("QR code data:", qrCodeData);
 
         // Updated code (using documentId):
         const ticketData = {
@@ -350,7 +380,18 @@ export default function ConfirmationContent() {
 
           if (ticketResponse && ticketResponse.data) {
             console.log("Ticket created:", ticketResponse.data);
-            generatedTickets.push(ticketResponse.data);
+
+            // Generate the QR code image for display
+            const ticket = ticketResponse.data;
+            try {
+              ticket.qrCodeImage = await generateQRCodeDataURL(
+                ticket.qrCodeData
+              );
+            } catch (qrError) {
+              console.error("Error generating QR code image:", qrError);
+            }
+
+            generatedTickets.push(ticket);
           }
         } catch (ticketError) {
           console.error(`Error creating ticket ${i + 1}:`, ticketError);
@@ -493,7 +534,7 @@ export default function ConfirmationContent() {
         </div>
 
         {/* Payment Confirmation */}
-        <div className="bg-white border border-gray-200">
+        <div className="bg-white border border-gray-200 shadow-sm rounded-lg overflow-hidden">
           {/* Header */}
           <div
             className={`px-6 py-5 border-b ${
@@ -672,49 +713,140 @@ export default function ConfirmationContent() {
                     </p>
                   </div>
                 ) : tickets.length > 0 ? (
-                  <div className="space-y-4">
-                    {tickets.map((ticket) => (
+                  <div className="space-y-6">
+                    {tickets.map((ticket, index) => (
                       <div
                         key={ticket.id}
-                        className="border border-gray-200 p-4 bg-gray-50"
+                        className="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow"
                       >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-medium text-gray-900">
-                              {ticket.attendeeName}
-                            </h3>
-                            <p className="text-sm text-gray-500">
-                              {ticket.attendeeEmail}
+                        {/* Ticket header */}
+                        <div className="bg-green-600 px-4 py-2 text-white flex justify-between items-center">
+                          <h3 className="font-bold text-white text-lg">
+                            UNITE Expo 2025
+                          </h3>
+                          <span className="text-xs bg-white text-green-800 px-2 py-1 rounded-full">
+                            Ticket #{index + 1}
+                          </span>
+                        </div>
+
+                        {/* Ticket content */}
+                        <div className="p-4 flex flex-col md:flex-row">
+                          {/* QR Code */}
+                          <div className="mb-4 md:mb-0 md:mr-6 flex-shrink-0 flex flex-col items-center">
+                            <div className="bg-white p-2 border border-gray-200 rounded">
+                              {ticket.qrCodeImage ? (
+                                <img
+                                  src={ticket.qrCodeImage}
+                                  alt="Ticket QR Code"
+                                  className="w-32 h-32"
+                                  onError={(e) => {
+                                    e.currentTarget.style.display = "none";
+                                    e.currentTarget.parentElement.innerHTML =
+                                      "QR Code loading...";
+                                  }}
+                                />
+                              ) : (
+                                <div className="w-32 h-32 flex items-center justify-center bg-gray-100 text-gray-400 text-sm">
+                                  Loading QR...
+                                </div>
+                              )}
+                            </div>
+                            <p className="mt-2 text-xs text-gray-500 text-center">
+                              Scan to verify ticket
                             </p>
-                            {ticket.attendeePhone && (
-                              <p className="text-sm text-gray-500">
-                                {ticket.attendeePhone}
-                              </p>
-                            )}
-                            {ticket.attendeeOrganization && (
-                              <p className="text-sm text-gray-500">
-                                {ticket.attendeeOrganization}
-                              </p>
-                            )}
                           </div>
-                          <div className="text-right">
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-green-100 text-green-800">
-                              {ticket.isCheckedIn
-                                ? "Checked In"
-                                : "Not Checked In"}
-                            </span>
-                            <p className="text-sm text-gray-500 mt-1">
-                              Ticket #: {ticket.ticketNumber}
-                            </p>
+
+                          {/* Ticket details */}
+                          <div className="flex-grow">
+                            <div className="mb-4 pb-3 border-b border-gray-100">
+                              <h4 className="font-bold text-gray-900 text-lg">
+                                {ticket.attendeeName}
+                              </h4>
+                              <p className="text-green-600 font-medium">
+                                {ticket.ticketNumber}
+                              </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                              <div>
+                                <p className="text-sm text-gray-500">Email</p>
+                                <p className="text-sm text-gray-900">
+                                  {ticket.attendeeEmail}
+                                </p>
+                              </div>
+
+                              {ticket.attendeePhone && (
+                                <div>
+                                  <p className="text-sm text-gray-500">Phone</p>
+                                  <p className="text-sm text-gray-900">
+                                    {ticket.attendeePhone}
+                                  </p>
+                                </div>
+                              )}
+
+                              {ticket.attendeeOrganization && (
+                                <div>
+                                  <p className="text-sm text-gray-500">
+                                    Organization
+                                  </p>
+                                  <p className="text-sm text-gray-900">
+                                    {ticket.attendeeOrganization}
+                                  </p>
+                                </div>
+                              )}
+
+                              <div>
+                                <p className="text-sm text-gray-500">Status</p>
+                                <p className="text-sm">
+                                  <span
+                                    className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${
+                                      ticket.isCheckedIn
+                                        ? "bg-blue-100 text-blue-800"
+                                        : "bg-green-100 text-green-800"
+                                    }`}
+                                  >
+                                    {ticket.isCheckedIn
+                                      ? "Checked In"
+                                      : "Not Checked In"}
+                                  </span>
+                                </p>
+                              </div>
+                            </div>
                           </div>
+                        </div>
+
+                        {/* Ticket footer */}
+                        <div className="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-end">
+                          <button
+                            type="button"
+                            className="text-green-600 hover:text-green-800 text-sm font-medium flex items-center"
+                            onClick={() =>
+                              alert("Download functionality coming soon!")
+                            }
+                          >
+                            <svg
+                              className="mr-1 h-4 w-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                              />
+                            </svg>
+                            Download Ticket
+                          </button>
                         </div>
                       </div>
                     ))}
 
-                    <div className="mt-4 text-center">
+                    <div className="mt-6 text-center">
                       <button
                         type="button"
-                        className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                        className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded"
                         onClick={() =>
                           alert("Ticket download functionality coming soon!")
                         }
@@ -732,12 +864,12 @@ export default function ConfirmationContent() {
                             d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
                           />
                         </svg>
-                        Download Tickets
+                        Download All Tickets
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-6 border border-gray-200 bg-gray-50">
+                  <div className="text-center py-6 border border-gray-200 bg-gray-50 rounded-lg">
                     <p className="text-gray-600">
                       No tickets have been generated yet. This might take a few
                       moments.
@@ -748,7 +880,7 @@ export default function ConfirmationContent() {
                         purchaseDetails &&
                         generateTickets(purchaseDetails, orderTrackingId || "")
                       }
-                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700"
+                      className="mt-4 inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-green-600 text-white hover:bg-green-700 rounded"
                       disabled={!purchaseDetails || isGeneratingTickets}
                     >
                       Generate Tickets Manually
@@ -761,7 +893,7 @@ export default function ConfirmationContent() {
             {/* Actions */}
             <div className="mt-8">
               {isPaymentSuccessful ? (
-                <div className="border border-green-200 bg-green-50 p-4">
+                <div className="border border-green-200 bg-green-50 p-4 rounded-lg">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
@@ -791,7 +923,7 @@ export default function ConfirmationContent() {
                   </div>
                 </div>
               ) : (
-                <div className="border border-red-200 bg-red-50 p-4">
+                <div className="border border-red-200 bg-red-50 p-4 rounded-lg">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <svg
@@ -820,7 +952,7 @@ export default function ConfirmationContent() {
                       <div className="mt-4">
                         <Link
                           href="/tickets"
-                          className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-red-600 text-white hover:bg-red-700"
+                          className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-red-600 text-white hover:bg-red-700 rounded"
                         >
                           Try Again
                         </Link>
@@ -837,7 +969,7 @@ export default function ConfirmationContent() {
         <div className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300"
+            className="inline-flex items-center px-4 py-2 border-0 text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300 rounded"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
