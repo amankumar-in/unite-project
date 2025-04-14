@@ -134,13 +134,13 @@ function HeroSection() {
               Secure your place at Uganda's premier investment and trade expo
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button variant="primary" href="/contact">
+              <Button variant="primary" href="#tickets">
                 View Ticket Options
               </Button>
               <Button
                 variant="dark"
                 buttonType="outline"
-                href="#group-registration"
+                href="/contact"
                 className="dark:border-white dark:text-white"
               >
                 Group Registration
