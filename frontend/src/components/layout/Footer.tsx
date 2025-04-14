@@ -1,11 +1,22 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
+import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-gray-900 text-white">
+    <footer className="bg-black text-white">
       <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        {/* Logo Section */}
+        <div className="flex items-center mb-10">
+          <Logo forceMode="dark" />
+          <Chip variant="primary" size="sm" className="ml-2">
+            2025
+          </Chip>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* About section */}
           <div className="col-span-1 md:col-span-1">
@@ -55,7 +66,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  href="/faq"
+                  href="/about/faq"
                   className="text-gray-300 hover:text-white text-sm"
                 >
                   FAQs
@@ -70,7 +81,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-300">
               <li className="flex items-start">
                 <svg
-                  className="h-5 w-5 mr-2 text-green-500"
+                  className="h-5 w-5 mr-2 text-yellow-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -92,7 +103,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start">
                 <svg
-                  className="h-5 w-5 mr-2 text-green-500"
+                  className="h-5 w-5 mr-2 text-yellow-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -108,7 +119,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start">
                 <svg
-                  className="h-5 w-5 mr-2 text-green-500"
+                  className="h-5 w-5 mr-2 text-yellow-500"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -135,15 +146,12 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="Your email"
-                className="px-3 py-2 bg-gray-800 border border-gray-700 focus:ring-green-500 focus:border-green-500 block w-full rounded-md text-sm"
+                className="px-3 py-2 bg-gray-800 border border-gray-700 block w-full text-sm"
                 required
               />
-              <button
-                type="submit"
-                className="bg-green-600 px-4 py-2 rounded-md text-white text-sm font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
+              <Button variant="primary" buttonType="solid" size="sm">
                 Subscribe
-              </button>
+              </Button>
             </form>
           </div>
         </div>
