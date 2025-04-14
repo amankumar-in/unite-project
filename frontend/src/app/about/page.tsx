@@ -39,7 +39,7 @@ function HeroSection() {
               opportunities in one of Africa's most dynamic economies.
             </p>
             <div className="flex flex-wrap gap-4">
-              <Button variant="primary" href="#mission">
+              <Button variant="primary" href="/about/mission-vision">
                 Our Mission
               </Button>
               <Button
