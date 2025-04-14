@@ -84,7 +84,7 @@ const HeroSection = () => (
         <div className="max-w-xl">
           <div className="inline-flex items-center bg-blue-600 px-4 py-2 mb-6">
             <span className="text-sm text-white uppercase tracking-wider font-medium">
-              March 15-18, 2025 • Kampala, Uganda
+              July 7-14, 2025 • Kampala, Uganda
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
@@ -146,7 +146,7 @@ const KeyMetricsSection = () => (
         <div className="flex flex-col justify-center p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
-              45+
+              50+
             </div>
           </div>
           <div className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-300 mt-2">
@@ -159,7 +159,7 @@ const KeyMetricsSection = () => (
         <div className="flex flex-col justify-center p-8 md:p-12">
           <div className="flex items-center">
             <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
-              200+
+              300+
             </div>
           </div>
           <div className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-300 mt-2">
