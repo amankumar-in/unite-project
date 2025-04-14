@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
+import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 
 interface Event {
   id: number;
@@ -130,10 +132,12 @@ export default function SponsorDetailPage({
   // Loading state
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
+      <div className="flex justify-center items-center min-h-[60vh] bg-white dark:bg-gray-900">
         <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
-          <p className="mt-2 text-gray-600">Loading sponsor details...</p>
+          <div className="inline-block h-10 w-10 border-2 border-yellow-500 border-t-transparent animate-spin"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-300">
+            Loading sponsor details...
+          </p>
         </div>
       </div>
     );
@@ -142,11 +146,11 @@ export default function SponsorDetailPage({
   // Error state
   if (error || !sponsor) {
     return (
-      <div className="flex justify-center items-center min-h-[60vh]">
+      <main className="bg-white dark:bg-gray-900 min-h-[60vh] flex items-center justify-center">
         <div className="text-center max-w-md px-4">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mb-3">
+          <div className="bg-black dark:bg-white w-16 h-16 mx-auto flex items-center justify-center mb-6">
             <svg
-              className="w-6 h-6 text-red-600"
+              className="w-8 h-8 text-white dark:text-black"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
@@ -160,501 +164,435 @@ export default function SponsorDetailPage({
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             Sponsor Not Found
           </h2>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             {error || "We couldn't find the sponsor you're looking for."}
           </p>
-          <Link
-            href="/sponsors"
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-          >
+          <Button variant="primary" href="/sponsors">
             Back to Sponsors
-          </Link>
+          </Button>
         </div>
-      </div>
+      </main>
     );
   }
 
-  // Set tier color
-  const getTierColor = (tier: string) => {
-    switch (tier) {
-      case "Platinum":
-        return {
-          bg: "bg-purple-100",
-          text: "text-purple-800",
-          border: "border-purple-200",
-          accent: "bg-purple-600",
-          light: "bg-purple-50",
-        };
-      case "Gold":
-        return {
-          bg: "bg-amber-100",
-          text: "text-amber-800",
-          border: "border-amber-200",
-          accent: "bg-amber-500",
-          light: "bg-amber-50",
-        };
-      case "Silver":
-        return {
-          bg: "bg-slate-100",
-          text: "text-slate-800",
-          border: "border-slate-200",
-          accent: "bg-slate-500",
-          light: "bg-slate-50",
-        };
-      default:
-        return {
-          bg: "bg-green-100",
-          text: "text-green-800",
-          border: "border-green-200",
-          accent: "bg-green-600",
-          light: "bg-green-50",
-        };
-    }
-  };
-
-  const tierColor = getTierColor(sponsor.Tier);
-
   return (
-    <div className="bg-white min-h-screen">
-      {/* Hero section with logo and title */}
-      <div
-        className={`${tierColor.light} pt-8 pb-12 border-b ${tierColor.border}`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center md:flex-row md:items-start gap-6">
-            {/* Logo */}
-            <div className="relative flex-shrink-0">
-              <div
-                className={`absolute inset-0 -m-2 rounded-full ${tierColor.bg} blur-sm opacity-60`}
-              ></div>
-              <div className="relative bg-white p-4 rounded-lg shadow-sm border border-gray-200 w-40 h-40 flex items-center justify-center">
-                {sponsor.Logo ? (
-                  <img
-                    src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
-                    alt={sponsor.Name}
-                    className="max-h-32 max-w-32 object-contain"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null;
-                      target.style.display = "none";
-                      const parent = target.parentElement;
-                      if (parent) {
-                        const fallback = document.createElement("div");
-                        fallback.className =
-                          "h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-xl font-semibold";
-                        fallback.textContent = sponsor.Name.substring(0, 2);
-                        parent.appendChild(fallback);
-                      }
-                    }}
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-gray-100 text-gray-500 text-xl font-semibold">
-                    {sponsor.Name.substring(0, 2).toUpperCase()}
-                  </div>
-                )}
+    <main className="bg-white dark:bg-gray-900">
+      {/* Back Navigation */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <Link
+          href="/sponsors"
+          className="flex items-center text-black dark:text-white hover:text-yellow-500 dark:hover:text-yellow-500 font-medium"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="mr-2 h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Back to Sponsors
+        </Link>
+      </div>
+
+      {/* Sponsor Header Section */}
+      <section className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Sponsor Logo */}
+            <div className="lg:col-span-3">
+              <div className="relative">
+                <div className="aspect-square w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 flex items-center justify-center">
+                  {sponsor.Logo ? (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
+                      alt={sponsor.Name}
+                      className="max-h-32 max-w-full object-contain"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-black dark:bg-white text-white dark:text-black text-4xl font-bold">
+                      {sponsor.Name.substring(0, 2).toUpperCase()}
+                    </div>
+                  )}
+                </div>
+                {/* Accent elements */}
+                <div className="absolute bottom-0 left-0 w-12 h-12 bg-blue-600"></div>
               </div>
             </div>
 
-            {/* Sponsor Info */}
-            <div className="flex-1 text-center md:text-left">
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-                  {sponsor.Name}
-                </h1>
-                <div className="flex flex-wrap gap-2">
-                  <span
-                    className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${tierColor.bg} ${tierColor.text}`}
-                  >
-                    {sponsor.Tier} Sponsor
-                  </span>
-                  {sponsor.Featured && (
-                    <span className="px-2.5 py-0.5 bg-green-100 text-green-800 text-sm font-medium rounded-full">
-                      Featured
-                    </span>
-                  )}
-                </div>
+            {/* Sponsor Details */}
+            <div className="lg:col-span-6">
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+                <Chip 
+                  variant={
+                    sponsor.Tier === "Platinum" 
+                      ? "primary" 
+                      : sponsor.Tier === "Gold" 
+                      ? "secondary" 
+                      : "outline"
+                  } 
+                  size="md"
+                >
+                  {sponsor.Tier} Partner
+                </Chip>
+                {sponsor.Featured && (
+                  <Chip variant="black" size="md">
+                    Featured
+                  </Chip>
+                )}
               </div>
-
-              {/* Description Preview */}
-              <p className="text-gray-600 mt-2 mb-4 max-w-3xl">
-                {sponsor.Description.length > 140
-                  ? `${sponsor.Description.substring(0, 140)}...`
+              
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
+                {sponsor.Name}
+              </h1>
+              
+              <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                {sponsor.Description.length > 200
+                  ? `${sponsor.Description.substring(0, 200)}...`
                   : sponsor.Description}
               </p>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-4">
+              <div className="flex flex-wrap gap-4">
                 {sponsor.Website && (
-                  <a
-                    href={
-                      sponsor.Website.startsWith("http")
-                        ? sponsor.Website
-                        : `https://${sponsor.Website}`
+                  <Button 
+                    variant="primary" 
+                    href={sponsor.Website.startsWith("http")
+                      ? sponsor.Website
+                      : `https://${sponsor.Website}`
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white ${tierColor.accent} hover:opacity-90 transition-opacity`}
                   >
-                    <svg
-                      className="h-4 w-4 mr-2"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9"
-                      />
-                    </svg>
                     Visit Website
-                  </a>
+                  </Button>
                 )}
-                <Link
+                <Button 
+                  variant="dark" 
+                  buttonType="outline" 
                   href="/contact"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                  className="dark:border-white dark:text-white"
                 >
-                  <svg
-                    className="h-4 w-4 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                  Contact
-                </Link>
+                  Contact Partner
+                </Button>
+              </div>
+            </div>
 
-                <Link
-                  href="/sponsors"
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  <svg
-                    className="h-4 w-4 mr-2"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                  All Sponsors
-                </Link>
+            {/* Sponsorship Stats */}
+            <div className="lg:col-span-3">
+              <div className="bg-black text-white dark:bg-white dark:text-black p-8 relative">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-blue-600"></div>
+                <h3 className="text-2xl font-bold mb-4">Partner Info</h3>
+                <ul className="space-y-3">
+                  <li className="flex items-start">
+                    <span className="w-4 h-4 inline-block bg-yellow-500 mt-1 mr-3 flex-shrink-0"></span>
+                    <div>
+                      <p className="font-bold">Partnership Level</p>
+                      <p className="text-sm">{sponsor.Tier} Partner</p>
+                    </div>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="w-4 h-4 inline-block bg-yellow-500 mt-1 mr-3 flex-shrink-0"></span>
+                    <div>
+                      <p className="font-bold">Joined</p>
+                      <p className="text-sm">{formatDate(sponsor.createdAt)}</p>
+                    </div>
+                  </li>
+                  {sponsor.events && (
+                    <li className="flex items-start">
+                      <span className="w-4 h-4 inline-block bg-yellow-500 mt-1 mr-3 flex-shrink-0"></span>
+                      <div>
+                        <p className="font-bold">Supporting</p>
+                        <p className="text-sm">
+                          {sponsor.events.length}{" "}
+                          {sponsor.events.length === 1 ? "Event" : "Events"}
+                        </p>
+                      </div>
+                    </li>
+                  )}
+                </ul>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Main Content Area */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Sponsored Events */}
-          <div className="lg:col-span-2">
-            {/* Sponsored Events Section */}
-            {sponsor.events && sponsor.events.length > 0 ? (
-              <div>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center">
-                    <svg
-                      className="h-6 w-6 mr-2 text-gray-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                      />
-                    </svg>
-                    Sponsored Events
-                  </h2>
-                  <span
-                    className={`px-3 py-1 ${tierColor.bg} ${tierColor.text} rounded-full text-sm font-medium`}
-                  >
-                    {sponsor.events.length}{" "}
-                    {sponsor.events.length === 1 ? "Event" : "Events"}
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 gap-6">
-                  {sponsor.events.map((event) => (
-                    <Link
-                      href={`/events/${event.Slug}`}
-                      key={event.id}
-                      className="block group"
-                    >
-                      <div className="flex flex-col md:flex-row border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                        {/* Event Image - Using image from the additional query */}
-                        <div className="md:w-1/3 lg:w-1/4 bg-gray-100 relative">
-                          {eventImages[event.Slug] ? (
-                            <img
-                              src={`${process.env.NEXT_PUBLIC_API_URL}${
-                                eventImages[event.Slug]
-                              }`}
-                              alt={event.Title}
-                              className="w-full h-48 md:h-full object-cover"
-                            />
-                          ) : (
-                            <div className="w-full h-48 md:h-full flex items-center justify-center bg-gray-200">
-                              <span className="text-gray-400 text-lg font-semibold">
-                                UNITE 2025
-                              </span>
-                            </div>
-                          )}
-                          <div className="absolute top-2 left-2">
-                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800">
-                              {event.Enumeration}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Event Details */}
-                        <div className="flex-1 p-4 md:p-6 flex flex-col justify-between">
-                          <div>
-                            <h3 className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors mb-2">
-                              {event.Title}
-                            </h3>
-                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                              {event.ShortDescription}
-                            </p>
-                          </div>
-
-                          <div className="mt-auto">
-                            <div className="flex flex-wrap items-center text-sm text-gray-500 gap-x-4 gap-y-2">
-                              <div className="flex items-center">
-                                <svg
-                                  className="h-4 w-4 mr-1 text-green-500"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                  />
-                                </svg>
-                                <span>{formatDate(event.StartDate)}</span>
-                              </div>
-
-                              <div className="flex items-center">
-                                <svg
-                                  className="h-4 w-4 mr-1 text-green-500"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                  />
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                  />
-                                </svg>
-                                <span className="line-clamp-1">
-                                  {event.Location}
-                                </span>
-                              </div>
-                            </div>
-
-                            <div className="mt-4 flex justify-end">
-                              <span className="inline-flex items-center text-sm font-medium text-green-600 group-hover:text-green-700">
-                                View Event Details
-                                <svg
-                                  className="ml-1 h-4 w-4"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M9 5l7 7-7 7"
-                                  />
-                                </svg>
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div
-                className={`p-8 rounded-lg border ${tierColor.border} text-center`}
-              >
-                <svg
-                  className="mx-auto h-12 w-12 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <h3 className="mt-2 text-lg font-medium text-gray-900">
-                  No Events
-                </h3>
-                <p className="mt-1 text-sm text-gray-500">
-                  This sponsor isn't associated with any specific events yet.
-                </p>
-              </div>
-            )}
-
-            {/* About Section */}
-            <div className={`mt-12 p-8 rounded-lg border ${tierColor.border}`}>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                <svg
-                  className="h-6 w-6 mr-2 text-gray-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+      {/* Main Content */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            {/* Left Column - About & Vision */}
+            <div className="lg:col-span-2">
+              <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
+              <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
                 About {sponsor.Name}
               </h2>
-              <div className="prose prose-sm max-w-none text-gray-700">
-                <p>{sponsor.Description}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column - Sponsor Info */}
-          <div className="lg:col-span-1 space-y-6">
-            {/* Tier Card */}
-            <div
-              className={`rounded-lg border ${tierColor.border} overflow-hidden`}
-            >
-              <div className={`p-4 ${tierColor.bg}`}>
-                <div className="text-center">
-                  <span className={`text-xl font-bold ${tierColor.text}`}>
-                    {sponsor.Tier} Sponsor
-                  </span>
-                  <p className="text-xs text-gray-600 mt-1">UNITE Expo 2025</p>
-                </div>
+              <div className="text-gray-600 dark:text-gray-300 space-y-6">
+                {/* Split the description into paragraphs for better readability */}
+                {sponsor.Description.split('\n\n').map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
+                ))}
               </div>
 
-              <div className="p-5">
-                <p className="text-sm text-gray-600">
-                  {sponsor.Tier === "Platinum" &&
-                    "Platinum sponsors receive maximum visibility and premium placement throughout the event, including prominent logo placement, speaking opportunities, and exclusive networking access."}
-                  {sponsor.Tier === "Gold" &&
-                    "Gold sponsors enjoy high visibility with logo placement on key materials, exhibition space, and special recognition during the event."}
-                  {sponsor.Tier === "Silver" &&
-                    "Silver sponsors receive brand exposure through logo placement on event materials and website recognition."}
-                </p>
-              </div>
-            </div>
+              {/* Partnership Benefits Section */}
+              <div className="mt-16">
+                <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                  Partnership Benefits
+                </h2>
 
-            {/* Quick Info */}
-            <div className="rounded-lg border border-gray-200 overflow-hidden">
-              <div className="p-5 border-b border-gray-200 bg-gray-50">
-                <h3 className="text-lg font-medium text-gray-900">
-                  Quick Information
-                </h3>
-              </div>
-
-              <div className="p-5 space-y-4">
-                {sponsor.Website && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">
-                      Website
-                    </h4>
-                    <a
-                      href={
-                        sponsor.Website.startsWith("http")
-                          ? sponsor.Website
-                          : `https://${sponsor.Website}`
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline break-words"
-                    >
-                      {sponsor.Website}
-                    </a>
-                  </div>
-                )}
-
-                <div>
-                  <h4 className="text-sm font-medium text-gray-500 mb-1">
-                    Sponsor Since
-                  </h4>
-                  <p className="text-gray-900">
-                    {formatDate(sponsor.createdAt)}
-                  </p>
-                </div>
-
-                {sponsor.events && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-500 mb-1">
-                      Sponsoring
-                    </h4>
-                    <p className="text-gray-900">
-                      {sponsor.events.length || 0}{" "}
-                      {(sponsor.events.length || 0) === 1 ? "Event" : "Events"}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                      <span className="text-blue-600 text-4xl font-bold block mb-3">
+                        01
+                      </span>
+                      Brand Visibility
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Tier === "Platinum"
+                        ? "Premium logo placement across all event materials, digital platforms, and venue signage with maximum exposure."
+                        : sponsor.Tier === "Gold"
+                        ? "Prominent logo placement across select event materials, digital platforms, and venue signage."
+                        : "Logo placement on event website and select digital materials."}
                     </p>
                   </div>
-                )}
+
+                  <div className="bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                      <span className="text-blue-600 text-4xl font-bold block mb-3">
+                        02
+                      </span>
+                      Event Engagement
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Tier === "Platinum"
+                        ? "Keynote speaking opportunity, premium exhibition space, and exclusive networking events with VIP attendees."
+                        : sponsor.Tier === "Gold"
+                        ? "Panel participation opportunity, standard exhibition space, and access to networking events."
+                        : "Exhibition space and standard networking opportunities."}
+                    </p>
+                  </div>
+
+                  <div className="bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                      <span className="text-blue-600 text-4xl font-bold block mb-3">
+                        03
+                      </span>
+                      Digital Presence
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Tier === "Platinum"
+                        ? "Featured content on event website, social media spotlight, and inclusion in all email communications."
+                        : sponsor.Tier === "Gold"
+                        ? "Company profile on event website, social media mentions, and inclusion in select email communications."
+                        : "Basic company listing on event website."}
+                    </p>
+                  </div>
+
+                  <div className="bg-white dark:bg-gray-800 p-6 border border-gray-200 dark:border-gray-600">
+                    <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+                      <span className="text-blue-600 text-4xl font-bold block mb-3">
+                        04
+                      </span>
+                      Access & Insights
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Tier === "Platinum"
+                        ? "VIP access to all event areas, complimentary tickets for clients, and post-event data insights package."
+                        : sponsor.Tier === "Gold"
+                        ? "Premium access to main event areas, select complimentary tickets, and basic post-event metrics."
+                        : "Standard event access and limited complimentary tickets."}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Become a Sponsor */}
-            <div className="rounded-lg border border-gray-200 bg-gray-50 overflow-hidden">
-              <div className="p-5">
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Become a Sponsor
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Join leading organizations in supporting UNITE Expo 2025 and
-                  gain visibility for your brand.
+            {/* Right Column - Sponsored Events & CTA */}
+            <div className="lg:col-span-1">
+              {/* Sponsored Events */}
+              {sponsor.events && sponsor.events.length > 0 ? (
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 mb-8">
+                  <div className="p-6 border-b border-gray-200 dark:border-gray-600">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                      Sponsored Events
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Name} is supporting the following events at UNITE Expo 2025:
+                    </p>
+                  </div>
+                  <div className="p-0">
+                    <ul>
+                      {sponsor.events.map((event, index) => (
+                        <li 
+                          key={event.id} 
+                          className={index !== sponsor.events!.length - 1 ? "border-b border-gray-200 dark:border-gray-600" : ""}
+                        >
+                          <Link
+                            href={`/events/${event.Slug}`}
+                            className="block p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                          >
+                            <div className="flex justify-between items-start">
+                              <div>
+                                <h4 className="font-bold text-gray-900 dark:text-white group-hover:text-yellow-500 transition-colors mb-2">
+                                  {event.Title}
+                                </h4>
+                                <div className="flex items-center text-sm text-gray-600 dark:text-gray-300 mb-2">
+                                  <svg
+                                    className="h-4 w-4 mr-2 text-yellow-500"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  {formatDate(event.StartDate)}
+                                </div>
+                                <Chip variant="primary" size="sm">
+                                  {event.Enumeration}
+                                </Chip>
+                              </div>
+                              <svg
+                                className="h-5 w-5 text-gray-400 group-hover:text-yellow-500 transition-colors mt-1"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-6 mb-8">
+                  <div className="mb-4">
+                    <div className="h-12 w-12 bg-gray-100 dark:bg-gray-700 text-gray-400 dark:text-gray-500 flex items-center justify-center mb-4">
+                      <svg
+                        className="h-6 w-6"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                      No Events Yet
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300">
+                      {sponsor.Name} hasn't been linked to any specific events yet.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Become a Sponsor CTA */}
+              <div className="bg-black text-white dark:bg-white dark:text-black p-8 relative">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-500"></div>
+                <h3 className="text-2xl font-bold mb-4">Join as a Partner</h3>
+                <p className="mb-6">
+                  Become a UNITE Expo 2025 partner and connect your brand with Uganda's premier investment and trade exhibition.
                 </p>
-                <Link
-                  href="/contact"
-                  className="block w-full text-center px-4 py-2 border border-transparent rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 text-sm font-medium transition-colors"
+                <Button 
+                  variant="light" 
+                  buttonType="outline" 
+                  href="/contact" 
+                  className="border-white text-white dark:border-black dark:text-black"
                 >
-                  Request Information
-                </Link>
+                  Sponsorship Inquiries
+                </Button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Partnership Tiers CTA */}
+      <section className="py-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div className="lg:col-span-7">
+              <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+              <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+                Partnership Opportunities
+              </h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
+                UNITE Expo 2025 offers various partnership levels designed to meet different marketing objectives and budgets. Each tier provides a unique set of benefits and exposure opportunities.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <Button variant="primary" href="/sponsors">
+                  View All Partners
+                </Button>
+                <Button 
+                  variant="dark" 
+                  buttonType="outline" 
+                  href="/contact"
+                  className="dark:border-white dark:text-white"
+                >
+                  Partnership Inquiry
+                </Button>
+              </div>
+            </div>
+            <div className="lg:col-span-5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-6 flex flex-col items-center">
+                  <div className="bg-yellow-500 h-8 w-full mb-4"></div>
+                  <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                    Platinum
+                  </h3>
+                  <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+                    Premium visibility & engagement
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-6 flex flex-col items-center">
+                  <div className="bg-gray-200 dark:bg-gray-600 h-8 w-full mb-4"></div>
+                  <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                    Gold
+                  </h3>
+                  <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+                    Enhanced presence
+                  </p>
+                </div>
+                <div className="bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 p-6 flex flex-col items-center">
+                  <div className="bg-gray-400 dark:bg-gray-500 h-8 w-full mb-4"></div>
+                  <h3 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-2">
+                    Silver
+                  </h3>
+                  <p className="text-sm text-center text-gray-600 dark:text-gray-300">
+                    Targeted exposure
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

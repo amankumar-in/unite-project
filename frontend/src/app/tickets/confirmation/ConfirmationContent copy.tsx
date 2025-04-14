@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import html2canvas from "html2canvas";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
@@ -116,6 +117,7 @@ export default function ConfirmationContent() {
     return updatedTickets;
   }, []);
 
+  // ==================================
   // Function to generate and download a PDF ticket
   const generatePDF = async (ticket: Ticket) => {
     try {
@@ -127,314 +129,158 @@ export default function ConfirmationContent() {
         ticket.qrCodeImage = qrImage;
       }
 
+      // Create a temporary div to render the ticket
+      const tempDiv = document.createElement("div");
+      tempDiv.style.position = "absolute";
+      tempDiv.style.left = "-9999px";
+      tempDiv.style.top = "-9999px";
+      tempDiv.style.width = "800px"; // Set width similar to your ticket display
+
+      // Add ticket HTML with styling
+      tempDiv.innerHTML = `
+      <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; width: 800px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+        <div style="display: flex;">
+          <!-- Main ticket content -->
+          <div style="width: 75%; background-color: white;">
+            <!-- Header with blue background -->
+            <div style="background-color: #1e3a8a; color: white; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-weight: bold; font-size: 1.25rem; margin: 0;">UNITE EXPO 2025</h3>
+                <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">Uganda Next Investment & Trade Expo</p>
+              </div>
+              <div style="text-align: right;">
+                <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">${
+                  ticket.ticketCategory?.name || "Single Event Ticket"
+                }</p>
+              </div>
+            </div>
+
+            <!-- Attendee name and contact -->
+            <div style="padding: 1rem;">
+              <h4 style="font-size: 1.25rem; font-weight: bold; color: #111827; margin: 0 0 0.5rem 0;">${
+                ticket.attendeeName
+              }</h4>
+              <p style="color: #4b5563; margin: 0 0 0.25rem 0;">${
+                ticket.attendeeEmail
+              }</p>
+              ${
+                ticket.attendeePhone
+                  ? `<p style="color: #4b5563; margin: 0;">${ticket.attendeePhone}</p>`
+                  : ""
+              }
+            </div>
+
+            <!-- Ticket details -->
+            <div style="padding: 0 1rem 1rem 1rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket Type</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.name || "Single Event Ticket"
+                  }</p>
+                </div>
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket #</p>
+                  <p style="font-weight: 500; font-size: 0.875rem; word-break: break-all; margin: 0;">${
+                    ticket.ticketNumber
+                  }</p>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid From</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.validFrom
+                      ? new Date(
+                          ticket.ticketCategory.validFrom
+                        ).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "12 April 2025"
+                  }</p>
+                </div>
+                <div>
+                  <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid Until</p>
+                  <p style="font-weight: 500; margin: 0;">${
+                    ticket.ticketCategory?.validUntil
+                      ? new Date(
+                          ticket.ticketCategory.validUntil
+                        ).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "30 April 2025"
+                  }</p>
+                </div>
+              </div>
+
+              <!-- Location with icon -->
+              <div style="display: flex; align-items: center; margin-top: 1rem;">
+                <svg style="height: 1rem; width: 1rem; color: #6b7280; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                </svg>
+                <span style="font-size: 0.875rem; color: #4b5563;">Kampala International Convention Centre, Uganda</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div style="border-left: 1px dashed #d1d5db;"></div>
+
+          <!-- QR code section -->
+          <div style="width: 25%; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+            <p style="font-weight: bold; text-align: center; margin: 0 0 0.75rem 0;">ADMIT ONE</p>
+
+            <div style="width: 100%; aspect-ratio: 1; margin-bottom: 0.75rem;">
+              <img src="${
+                ticket.qrCodeImage
+              }" alt="Ticket QR Code" style="width: 100%; height: 100%; object-fit: contain;" />
+            </div>
+
+            <p style="font-size: 0.75rem; text-align: center; color: #4b5563; margin: 0 0 0.25rem 0;">SCAN TO VERIFY</p>
+            <p style="font-size: 0.75rem; text-align: center; font-weight: bold; margin: 0;">UNITE EXPO 2025</p>
+          </div>
+        </div>
+      </div>
+    `;
+
+      // Add to document body temporarily
+      document.body.appendChild(tempDiv);
+
+      // Use html2canvas to capture the ticket
+      const canvas = await html2canvas(tempDiv, {
+        scale: 2, // Higher scale for better quality
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      // Remove temporary div
+      document.body.removeChild(tempDiv);
+
+      // Convert canvas to image data
+      const imageData = canvas.toDataURL("image/png");
+
       // Dynamically import pdfmake
       const pdfMakeModule = await import("pdfmake/build/pdfmake");
       const pdfMake = pdfMakeModule.default || pdfMakeModule;
 
-      // Prepare ticket data
-      const ticketData = {
-        ticketNumber: ticket.ticketNumber,
-        eventName: "UNITE EXPO 2025",
-        eventTagline: "Uganda Next Investment & Trade Expo",
-        attendeeName: ticket.attendeeName,
-        attendeeEmail: ticket.attendeeEmail,
-        attendeePhone: ticket.attendeePhone || "",
-        ticketCategory: ticket.ticketCategory?.name || "General Admission",
-        validFrom: ticket.ticketCategory?.validFrom
-          ? new Date(ticket.ticketCategory.validFrom).toLocaleDateString(
-              undefined,
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            )
-          : "",
-        validUntil: ticket.ticketCategory?.validUntil
-          ? new Date(ticket.ticketCategory.validUntil).toLocaleDateString(
-              undefined,
-              {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              }
-            )
-          : "",
-        price: ticket.ticketCategory
-          ? new Intl.NumberFormat("en-UG", {
-              style: "decimal",
-              minimumFractionDigits: 0,
-            }).format(ticket.ticketCategory.price) +
-            " " +
-            (ticket.ticketCategory.currency || "UGX")
-          : "",
-        eventLocation: "Kampala International Convention Centre, Uganda",
-      };
-
-      // Define the document definition
-      // CHANGE 2: Replace the PDF generation document definition with this updated version
-
+      // Create simplified document definition that just includes the image
       const docDefinition = {
-        pageSize: { width: 600, height: 220 }, // Shorter height to match UI
-        pageMargins: [0, 0, 0, 0],
+        pageSize: "A4",
+        pageOrientation: "landscape",
         content: [
           {
-            columns: [
-              // Main content (left + middle)
-              {
-                width: "*",
-                stack: [
-                  // Header background
-                  {
-                    canvas: [
-                      {
-                        type: "rect",
-                        x: 0,
-                        y: 0,
-                        w: 450,
-                        h: 60,
-                        color: "#1e3a8a", // Dark blue (royal blue)
-                      },
-                    ],
-                    absolutePosition: { x: 0, y: 0 },
-                  },
-
-                  // Event name & tagline
-                  {
-                    text: ticketData.eventName,
-                    style: "eventName",
-                    absolutePosition: { x: 20, y: 15 },
-                  },
-                  {
-                    text: ticketData.eventTagline,
-                    style: "eventTagline",
-                    absolutePosition: { x: 20, y: 38 },
-                  },
-
-                  // Ticket type in header
-                  {
-                    text: ticketData.ticketCategory,
-                    style: "headerTicketType",
-                    absolutePosition: { x: 350, y: 25 },
-                  },
-
-                  // Attendee name and contact info
-                  {
-                    text: ticketData.attendeeName,
-                    style: "attendeeName",
-                    absolutePosition: { x: 20, y: 80 },
-                  },
-                  {
-                    text: ticketData.attendeeEmail,
-                    style: "attendeeEmail",
-                    absolutePosition: { x: 20, y: 100 },
-                  },
-                  {
-                    text: ticketData.attendeePhone,
-                    style: "attendeePhone",
-                    absolutePosition: { x: 20, y: 115 },
-                  },
-
-                  // Ticket info - headers (first row) - removed PRICE
-                  {
-                    text: "TICKET TYPE",
-                    style: "labelText",
-                    absolutePosition: { x: 20, y: 145 },
-                  },
-                  {
-                    text: "TICKET #",
-                    style: "labelText",
-                    absolutePosition: { x: 230, y: 145 },
-                  },
-
-                  // Ticket info - values (first row) - removed PRICE
-                  {
-                    text: ticketData.ticketCategory,
-                    style: "valueText",
-                    absolutePosition: { x: 20, y: 160 },
-                  },
-                  {
-                    text: ticketData.ticketNumber,
-                    style: "valueText",
-                    absolutePosition: { x: 230, y: 160 },
-                  },
-
-                  // Ticket info - headers (second row) - removed STATUS
-                  {
-                    text: "VALID FROM",
-                    style: "labelText",
-                    absolutePosition: { x: 20, y: 185 },
-                  },
-                  {
-                    text: "VALID UNTIL",
-                    style: "labelText",
-                    absolutePosition: { x: 230, y: 185 },
-                  },
-
-                  // Ticket info - values (second row) - removed STATUS
-                  {
-                    text: ticketData.validFrom,
-                    style: "valueText",
-                    absolutePosition: { x: 20, y: 200 },
-                  },
-                  {
-                    text: ticketData.validUntil,
-                    style: "valueText",
-                    absolutePosition: { x: 230, y: 200 },
-                  },
-
-                  // Location info with icon
-                  {
-                    columns: [
-                      {
-                        width: 15,
-                        svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#666"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
-                      },
-                      {
-                        width: "auto",
-                        text: ticketData.eventLocation,
-                        style: "locationText",
-                      },
-                    ],
-                    absolutePosition: { x: 20, y: 190 },
-                  },
-
-                  // Dotted line separator
-                  {
-                    canvas: [
-                      {
-                        type: "line",
-                        x1: 450,
-                        y1: 0,
-                        x2: 450,
-                        y2: 220,
-                        dash: { length: 2, space: 2 },
-                        lineWidth: 1,
-                        lineColor: "#aaaaaa",
-                      },
-                    ],
-                  },
-                ],
-              },
-
-              // QR code section (right side) - increased width
-              {
-                width: 150,
-                stack: [
-                  // QR background
-                  {
-                    canvas: [
-                      {
-                        type: "rect",
-                        x: 0,
-                        y: 0,
-                        w: 150,
-                        h: 220,
-                        color: "#f8f8f8", // Light gray background
-                      },
-                    ],
-                    absolutePosition: { x: 450, y: 0 },
-                  },
-
-                  // Admit one text
-                  {
-                    text: "ADMIT ONE",
-                    style: "admitText",
-                    absolutePosition: { x: 485, y: 30 },
-                  },
-
-                  // QR code - square dimensions
-                  {
-                    image: ticket.qrCodeImage || "",
-                    width: 100,
-                    height: 100,
-                    absolutePosition: { x: 475, y: 60 },
-                  },
-
-                  // Scan text
-                  {
-                    text: "SCAN TO VERIFY",
-                    style: "scanText",
-                    absolutePosition: { x: 480, y: 170 },
-                  },
-
-                  // Event name at bottom of QR section
-                  {
-                    text: "UNITE EXPO 2025",
-                    style: "qrEventName",
-                    absolutePosition: { x: 475, y: 190 },
-                  },
-                ],
-              },
-            ],
+            image: imageData,
+            width: 750,
           },
         ],
-        styles: {
-          eventName: {
-            fontSize: 20,
-            bold: true,
-            color: "white",
-          },
-          eventTagline: {
-            fontSize: 12,
-            color: "#cccccc",
-          },
-          headerTicketType: {
-            fontSize: 12,
-            color: "white",
-            alignment: "right",
-          },
-          attendeeName: {
-            fontSize: 18,
-            bold: true,
-            color: "#333333",
-          },
-          attendeeEmail: {
-            fontSize: 12,
-            color: "#666666",
-          },
-          attendeePhone: {
-            fontSize: 12,
-            color: "#666666",
-          },
-          labelText: {
-            fontSize: 10,
-            color: "#888888",
-            bold: false,
-          },
-          valueText: {
-            fontSize: 12,
-            color: "#333333",
-            bold: false,
-          },
-          locationText: {
-            fontSize: 11,
-            color: "#666666",
-            italics: true,
-          },
-          termsText: {
-            fontSize: 9,
-            color: "#999999",
-            italics: true,
-          },
-          admitText: {
-            fontSize: 14,
-            bold: true,
-            color: "#333333",
-          },
-          scanText: {
-            fontSize: 10,
-            color: "#666666",
-          },
-          qrEventName: {
-            fontSize: 12,
-            bold: true,
-            color: "#333333",
-          },
-        },
+        pageMargins: [30, 30, 30, 30],
       };
-
-      // Make sure to apply the same changes to the generateAllPDFs function docDefinition as well
 
       // Generate and download the PDF
       pdfMake
@@ -456,349 +302,182 @@ export default function ConfirmationContent() {
       // Ensure all tickets have QR codes
       const ticketsWithQR = await generateQRCodeImages(tickets);
 
+      // Array to hold all the image data
+      const ticketImages = [];
+
+      // Process each ticket one by one
+      for (const ticket of ticketsWithQR) {
+        // Create a temporary div for this ticket
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.left = "-9999px";
+        tempDiv.style.top = "-9999px";
+        tempDiv.style.width = "800px";
+
+        // Add ticket HTML with styling (same as in generatePDF)
+        tempDiv.innerHTML = `
+        <div style="border: 1px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden; width: 800px; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);">
+          <div style="display: flex;">
+            <!-- Main ticket content -->
+            <div style="width: 75%; background-color: white;">
+              <!-- Header with blue background -->
+              <div style="background-color: #1e3a8a; color: white; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <h3 style="font-weight: bold; font-size: 1.25rem; margin: 0;">UNITE EXPO 2025</h3>
+                  <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">Uganda Next Investment & Trade Expo</p>
+                </div>
+                <div style="text-align: right;">
+                  <p style="font-size: 0.75rem; color: #d1d5db; margin: 0;">${
+                    ticket.ticketCategory?.name || "Single Event Ticket"
+                  }</p>
+                </div>
+              </div>
+
+              <!-- Attendee name and contact -->
+              <div style="padding: 1rem;">
+                <h4 style="font-size: 1.25rem; font-weight: bold; color: #111827; margin: 0 0 0.5rem 0;">${
+                  ticket.attendeeName
+                }</h4>
+                <p style="color: #4b5563; margin: 0 0 0.25rem 0;">${
+                  ticket.attendeeEmail
+                }</p>
+                ${
+                  ticket.attendeePhone
+                    ? `<p style="color: #4b5563; margin: 0;">${ticket.attendeePhone}</p>`
+                    : ""
+                }
+              </div>
+
+              <!-- Ticket details -->
+              <div style="padding: 0 1rem 1rem 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket Type</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.name || "Single Event Ticket"
+                    }</p>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Ticket #</p>
+                    <p style="font-weight: 500; font-size: 0.875rem; word-break: break-all; margin: 0;">${
+                      ticket.ticketNumber
+                    }</p>
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid From</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.validFrom
+                        ? new Date(
+                            ticket.ticketCategory.validFrom
+                          ).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "12 April 2025"
+                    }</p>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; margin: 0 0 0.25rem 0;">Valid Until</p>
+                    <p style="font-weight: 500; margin: 0;">${
+                      ticket.ticketCategory?.validUntil
+                        ? new Date(
+                            ticket.ticketCategory.validUntil
+                          ).toLocaleDateString(undefined, {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          })
+                        : "30 April 2025"
+                    }</p>
+                  </div>
+                </div>
+
+                <!-- Location with icon -->
+                <div style="display: flex; align-items: center; margin-top: 1rem;">
+                  <svg style="height: 1rem; width: 1rem; color: #6b7280; margin-right: 0.5rem;" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                  </svg>
+                  <span style="font-size: 0.875rem; color: #4b5563;">Kampala International Convention Centre, Uganda</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Separator -->
+            <div style="border-left: 1px dashed #d1d5db;"></div>
+
+            <!-- QR code section -->
+            <div style="width: 25%; background-color: #f9fafb; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1rem;">
+              <p style="font-weight: bold; text-align: center; margin: 0 0 0.75rem 0;">ADMIT ONE</p>
+
+              <div style="width: 100%; aspect-ratio: 1; margin-bottom: 0.75rem;">
+                <img src="${
+                  ticket.qrCodeImage
+                }" alt="Ticket QR Code" style="width: 100%; height: 100%; object-fit: contain;" />
+              </div>
+
+              <p style="font-size: 0.75rem; text-align: center; color: #4b5563; margin: 0 0 0.25rem 0;">SCAN TO VERIFY</p>
+              <p style="font-size: 0.75rem; text-align: center; font-weight: bold; margin: 0;">UNITE EXPO 2025</p>
+            </div>
+          </div>
+        </div>
+      `;
+
+        // Add to document body temporarily
+        document.body.appendChild(tempDiv);
+
+        // Use html2canvas to capture the ticket
+        const canvas = await html2canvas(tempDiv, {
+          scale: 2, // Higher scale for better quality
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+        });
+
+        // Remove temporary div
+        document.body.removeChild(tempDiv);
+
+        // Convert canvas to image data
+        const imageData = canvas.toDataURL("image/png");
+
+        // Add the image data to our array
+        ticketImages.push(imageData);
+      }
+
       // Dynamically import pdfmake
       const pdfMakeModule = await import("pdfmake/build/pdfmake");
       const pdfMake = pdfMakeModule.default || pdfMakeModule;
 
-      // Create document definition with all tickets
-      const docDefinition = {
-        pageSize: { width: 600, height: 280 },
-        pageMargins: [0, 0, 0, 0],
-        content: [],
-      };
+      // Create content array with each ticket image on its own page
+      const content = [];
 
-      // Add each ticket to document
-      for (let i = 0; i < ticketsWithQR.length; i++) {
-        const ticket = ticketsWithQR[i];
+      // Add each ticket image to the content array with a page break after (except the last one)
+      ticketImages.forEach((imageData, index) => {
+        // Add the image
+        content.push({
+          image: imageData,
+          width: 750,
+        });
 
-        // Prepare ticket data
-        const ticketData = {
-          ticketNumber: ticket.ticketNumber,
-          eventName: "UNITE EXPO 2025",
-          eventTagline: "Uganda Next Investment & Trade Expo",
-          attendeeName: ticket.attendeeName,
-          attendeeEmail: ticket.attendeeEmail,
-          attendeePhone: ticket.attendeePhone || "",
-          ticketCategory: ticket.ticketCategory?.name || "General Admission",
-          validFrom: ticket.ticketCategory?.validFrom
-            ? new Date(ticket.ticketCategory.validFrom).toLocaleDateString(
-                undefined,
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }
-              )
-            : "",
-          validUntil: ticket.ticketCategory?.validUntil
-            ? new Date(ticket.ticketCategory.validUntil).toLocaleDateString(
-                undefined,
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                }
-              )
-            : "",
-          price: ticket.ticketCategory
-            ? new Intl.NumberFormat("en-UG", {
-                style: "decimal",
-                minimumFractionDigits: 0,
-              }).format(ticket.ticketCategory.price) +
-              " " +
-              (ticket.ticketCategory.currency || "UGX")
-            : "",
-          eventLocation: "Kampala International Convention Centre, Uganda",
-        };
-
-        // Create ticket page
-        const ticketPage = {
-          columns: [
-            // Main content (left + middle)
-            {
-              width: "*",
-              stack: [
-                // Header background
-                {
-                  canvas: [
-                    {
-                      type: "rect",
-                      x: 0,
-                      y: 0,
-                      w: 430,
-                      h: 60,
-                      color: "#1e3a8a", // Dark blue
-                    },
-                  ],
-                  absolutePosition: { x: 0, y: 0 },
-                },
-
-                // Event name & tagline
-                {
-                  text: ticketData.eventName,
-                  style: "eventName",
-                  absolutePosition: { x: 20, y: 15 },
-                },
-                {
-                  text: ticketData.eventTagline,
-                  style: "eventTagline",
-                  absolutePosition: { x: 20, y: 38 },
-                },
-
-                // Attendee name and contact info
-                {
-                  text: ticketData.attendeeName,
-                  style: "attendeeName",
-                  absolutePosition: { x: 20, y: 80 },
-                },
-                {
-                  text: ticketData.attendeeEmail,
-                  style: "attendeeEmail",
-                  absolutePosition: { x: 20, y: 100 },
-                },
-                {
-                  text: ticketData.attendeePhone,
-                  style: "attendeePhone",
-                  absolutePosition: { x: 20, y: 115 },
-                },
-
-                // Ticket info - headers (first row)
-                {
-                  text: "TICKET TYPE",
-                  style: "labelText",
-                  absolutePosition: { x: 20, y: 145 },
-                },
-                {
-                  text: "TICKET #",
-                  style: "labelText",
-                  absolutePosition: { x: 170, y: 145 },
-                },
-                {
-                  text: "PRICE",
-                  style: "labelText",
-                  absolutePosition: { x: 320, y: 145 },
-                },
-
-                // Ticket info - values (first row)
-                {
-                  text: ticketData.ticketCategory,
-                  style: "valueText",
-                  absolutePosition: { x: 20, y: 160 },
-                },
-                {
-                  text: ticketData.ticketNumber,
-                  style: "valueText",
-                  absolutePosition: { x: 170, y: 160 },
-                },
-                {
-                  text: ticketData.price,
-                  style: "valueText",
-                  absolutePosition: { x: 320, y: 160 },
-                },
-
-                // Ticket info - headers (second row)
-                {
-                  text: "VALID FROM",
-                  style: "labelText",
-                  absolutePosition: { x: 20, y: 190 },
-                },
-                {
-                  text: "VALID UNTIL",
-                  style: "labelText",
-                  absolutePosition: { x: 170, y: 190 },
-                },
-                {
-                  text: "STATUS",
-                  style: "labelText",
-                  absolutePosition: { x: 320, y: 190 },
-                },
-
-                // Ticket info - values (second row)
-                {
-                  text: ticketData.validFrom,
-                  style: "valueText",
-                  absolutePosition: { x: 20, y: 205 },
-                },
-                {
-                  text: ticketData.validUntil,
-                  style: "valueText",
-                  absolutePosition: { x: 170, y: 205 },
-                },
-                {
-                  text: ticket.isCheckedIn ? "CHECKED IN" : "NOT CHECKED IN",
-                  style: "statusText",
-                  absolutePosition: { x: 320, y: 205 },
-                },
-
-                // Location info with icon
-                {
-                  columns: [
-                    {
-                      width: 15,
-                      svg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#666"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>',
-                    },
-                    {
-                      width: "auto",
-                      text: ticketData.eventLocation,
-                      style: "locationText",
-                    },
-                  ],
-                  absolutePosition: { x: 20, y: 235 },
-                },
-
-                // Terms text
-                {
-                  text: "Present this ticket at the entrance. Ticket is non-transferable and non-refundable.",
-                  style: "termsText",
-                  absolutePosition: { x: 20, y: 255 },
-                },
-
-                // Dotted line separator
-                {
-                  canvas: [
-                    {
-                      type: "line",
-                      x1: 430,
-                      y1: 0,
-                      x2: 430,
-                      y2: 280,
-                      dash: { length: 2, space: 2 },
-                      lineWidth: 1,
-                      lineColor: "#aaaaaa",
-                    },
-                  ],
-                },
-              ],
-            },
-
-            // QR code section (right side)
-            {
-              width: 170,
-              stack: [
-                // QR background
-                {
-                  canvas: [
-                    {
-                      type: "rect",
-                      x: 0,
-                      y: 0,
-                      w: 170,
-                      h: 280,
-                      color: "#f8f8f8", // Light gray background
-                    },
-                  ],
-                  absolutePosition: { x: 430, y: 0 },
-                },
-
-                // Admit one text
-                {
-                  text: "ADMIT ONE",
-                  style: "admitText",
-                  absolutePosition: { x: 480, y: 30 },
-                },
-
-                // QR code
-                {
-                  image: ticket.qrCodeImage || "",
-                  width: 130,
-                  height: 130,
-                  absolutePosition: { x: 450, y: 70 },
-                },
-
-                // Scan text
-                {
-                  text: "SCAN TO VERIFY",
-                  style: "scanText",
-                  absolutePosition: { x: 470, y: 210 },
-                },
-
-                // Event name at bottom of QR section
-                {
-                  text: "UNITE EXPO 2025",
-                  style: "qrEventName",
-                  absolutePosition: { x: 465, y: 230 },
-                },
-              ],
-            },
-          ],
-        };
-
-        // Add ticket to document
-        docDefinition.content.push(ticketPage);
-
-        // Add page break if not the last ticket
-        if (i < ticketsWithQR.length - 1) {
-          docDefinition.content.push({ text: "", pageBreak: "after" });
+        // Add a page break after each image except the last one
+        if (index < ticketImages.length - 1) {
+          content.push({ text: "", pageBreak: "after" });
         }
-      }
+      });
 
-      // Add styles
-      docDefinition.styles = {
-        eventName: {
-          fontSize: 20,
-          bold: true,
-          color: "white",
-        },
-        eventTagline: {
-          fontSize: 12,
-          color: "#cccccc",
-        },
-        attendeeName: {
-          fontSize: 18,
-          bold: true,
-          color: "#333333",
-        },
-        attendeeEmail: {
-          fontSize: 12,
-          color: "#666666",
-        },
-        attendeePhone: {
-          fontSize: 12,
-          color: "#666666",
-        },
-        labelText: {
-          fontSize: 10,
-          color: "#888888",
-          bold: false,
-        },
-        valueText: {
-          fontSize: 13,
-          color: "#333333",
-          bold: false,
-        },
-        statusText: {
-          fontSize: 13,
-          bold: true,
-          color: "#2e7d32", // Green color
-        },
-        locationText: {
-          fontSize: 11,
-          color: "#666666",
-          italics: true,
-        },
-        termsText: {
-          fontSize: 9,
-          color: "#999999",
-          italics: true,
-        },
-        admitText: {
-          fontSize: 14,
-          bold: true,
-          color: "#333333",
-        },
-        scanText: {
-          fontSize: 10,
-          color: "#666666",
-        },
-        qrEventName: {
-          fontSize: 12,
-          bold: true,
-          color: "#333333",
-        },
+      // Create document definition
+      const docDefinition = {
+        pageSize: "A4",
+        pageOrientation: "landscape",
+        content: content,
+        pageMargins: [30, 30, 30, 30],
       };
 
       // Generate and download the PDF
-      pdfMake.createPdf(docDefinition).download(`UNITE-Expo-All-Tickets.pdf`);
+      pdfMake.createPdf(docDefinition).download("UNITE-Expo-All-Tickets.pdf");
     } catch (error) {
       console.error("Error generating PDFs:", error);
       alert("Error generating PDFs. Please try again.");
@@ -806,7 +485,7 @@ export default function ConfirmationContent() {
       setIsGeneratingPDF(false);
     }
   };
-
+  // ===================================
   useEffect(() => {
     if (!orderTrackingId) {
       setError("No order tracking ID found in URL");
@@ -1128,7 +807,75 @@ export default function ConfirmationContent() {
         console.error("Error removing localStorage data:", error);
       }
 
-      // TODO: Send email notification with ticket details
+      // After tickets are successfully generated, send them via email
+      // After tickets are successfully generated, send them via email
+      if (generatedTickets.length > 0) {
+        try {
+          console.log("Starting email process for:", purchase.buyerEmail);
+
+          // Build confirmation URL
+          const baseUrl = window.location.origin;
+          const confirmationUrl = `${baseUrl}/tickets/confirmation?OrderTrackingId=${orderTrackingId}&OrderMerchantReference=${purchase.referenceNumber}`;
+
+          console.log("Confirmation URL:", confirmationUrl);
+
+          // Prepare email data
+          const emailData = {
+            email: purchase.buyerEmail,
+            name: purchase.buyerName,
+            subject: "Your UNITE Expo 2025 Tickets",
+            ticketDetails: generatedTickets.map((ticket) => ({
+              ticketNumber: ticket.ticketNumber,
+              attendeeName: ticket.attendeeName,
+              attendeeEmail: ticket.attendeeEmail,
+              ticketCategory: ticket.ticketCategory,
+            })),
+            eventDate: "April 12-30, 2025",
+            eventLocation: "Kampala International Convention Centre, Uganda",
+            confirmationUrl: confirmationUrl,
+          };
+
+          console.log(
+            "Preparing to send email with data:",
+            JSON.stringify(emailData, null, 2)
+          );
+
+          // Send email with link to tickets rather than attaching PDF
+          console.log("Calling email API endpoint...");
+          const emailResponse = await fetch("/api/tickets/send-email", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(emailData),
+          });
+
+          console.log("Email API response status:", emailResponse.status);
+
+          const emailResult = await emailResponse.json();
+          console.log("Email API response body:", emailResult);
+
+          if (emailResult.success) {
+            console.log("Email sent successfully:", emailResult.messageId);
+          } else {
+            console.error("Failed to send email:", emailResult.message);
+          }
+        } catch (emailError) {
+          console.error("Error in email sending process:", emailError);
+          console.error(
+            "Error details:",
+            emailError instanceof Error
+              ? emailError.message
+              : String(emailError)
+          );
+          console.error(
+            "Error stack:",
+            emailError instanceof Error
+              ? emailError.stack
+              : "No stack available"
+          );
+        }
+      }
     } catch (error) {
       console.error("Error generating tickets:", error);
     } finally {
