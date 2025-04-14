@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { fetchAPI } from "@/lib/api/api-config";
+import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 
 interface TicketCategory {
   id: number;
@@ -100,284 +102,360 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="bg-white">
-      {/* Hero Section */}
-      <section className="bg-green-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
-          <div className="text-center">
-            <h1 className="text-3xl font-extrabold sm:text-4xl md:text-5xl">
+    <main className="bg-white dark:bg-gray-900">
+      <HeroSection />
+      <TicketsSection
+        ticketCategories={ticketCategories}
+        loading={loading}
+        error={error}
+        formatCurrency={formatCurrency}
+        renderDescription={renderDescription}
+      />
+      <FAQsSection />
+      <GroupRegistrationSection />
+    </main>
+  );
+}
+
+// -------------------------------------------------------------------
+// Hero Section
+// -------------------------------------------------------------------
+function HeroSection() {
+  return (
+    <section className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 text-gray-900 dark:text-white">
               UNITE Expo 2025 Tickets
             </h1>
-            <p className="mt-4 text-xl text-green-100 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Secure your place at Uganda's premier investment and trade expo
             </p>
+            <div className="flex flex-wrap gap-4">
+              <Button variant="primary" href="/contact">
+                View Ticket Options
+              </Button>
+              <Button
+                variant="dark"
+                buttonType="outline"
+                href="#group-registration"
+                className="dark:border-white dark:text-white"
+              >
+                Group Registration
+              </Button>
+            </div>
+          </div>
+          <div className="bg-black text-white dark:bg-white dark:text-black p-8 border border-gray-200 dark:border-gray-600">
+            <div className="relative">
+              <div className="absolute top-0 right-0 w-12 h-12 bg-blue-600"></div>
+              <h2 className="text-2xl font-bold mb-6">Key Dates</h2>
+              <ul className="space-y-4">
+                <li className="flex items-start">
+                  <div className="bg-yellow-500 text-black h-8 w-8 flex items-center justify-center mr-4 flex-shrink-0">
+                    <span>1</span>
+                  </div>
+                  <div>
+                    <p className="font-bold">Early Bird Ends</p>
+                    <p>May 31, 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-yellow-500 text-black h-8 w-8 flex items-center justify-center mr-4 flex-shrink-0">
+                    <span>2</span>
+                  </div>
+                  <div>
+                    <p className="font-bold">General Registration</p>
+                    <p>May 1 - June 28, 2025</p>
+                  </div>
+                </li>
+                <li className="flex items-start">
+                  <div className="bg-yellow-500 text-black h-8 w-8 flex items-center justify-center mr-4 flex-shrink-0">
+                    <span>3</span>
+                  </div>
+                  <div>
+                    <p className="font-bold">Event Dates</p>
+                    <p>July 7-14, 2025</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      {/* Tickets Section */}
-      <section className="py-12 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Choose Your Ticket
-            </h2>
-            <p className="mt-4 text-xl text-gray-600">
-              Select the ticket option that best suits your needs
+// -------------------------------------------------------------------
+// Tickets Section
+// -------------------------------------------------------------------
+function TicketsSection({
+  ticketCategories,
+  loading,
+  error,
+  formatCurrency,
+  renderDescription,
+}: {
+  ticketCategories: TicketCategory[];
+  loading: boolean;
+  error: string | null;
+  formatCurrency: (amount: number, currency: string) => string;
+  renderDescription: (description: any[]) => React.ReactNode;
+}) {
+  return (
+    <section
+      id="tickets"
+      className="py-16 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <span className="inline-block mb-3 h-1 w-16 bg-blue-600 mx-auto"></span>
+          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            Choose Your Ticket
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Select the ticket option that best suits your needs
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center py-16">
+            <div className="inline-block h-8 w-8 animate-spin border-2 border-solid border-yellow-500 border-r-transparent"></div>
+            <p className="ml-4 text-gray-600 dark:text-gray-300">
+              Loading ticket options...
             </p>
           </div>
-
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-green-500 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading ticket options...</p>
-            </div>
-          ) : error ? (
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-100">
-                <svg
-                  className="w-8 h-8 text-red-600"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-              </div>
-              <p className="mt-4 text-lg font-medium text-gray-900">
-                Error Loading Ticket Options
-              </p>
-              <p className="mt-2 text-gray-600">{error}</p>
-              <button
-                onClick={() => window.location.reload()}
-                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
+        ) : error ? (
+          <div className="border border-gray-200 dark:border-gray-600 p-8 bg-white dark:bg-gray-800 text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 dark:bg-gray-700 mb-4">
+              <svg
+                className="w-8 h-8 text-yellow-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Try Again
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
             </div>
-          ) : ticketCategories.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-lg text-gray-600">
-                No ticket options available at this time. Please check back
-                later.
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-              {ticketCategories
-                .filter((ticket) => ticket.isActive)
-                .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
-                .map((ticket) => (
-                  <div
-                    key={ticket.documentId}
-                    className={`bg-white rounded-lg overflow-hidden shadow-md border ${
-                      ticket.isFeatured ? "border-green-500" : "border-gray-200"
-                    } flex flex-col h-full`}
-                  >
-                    {/* Featured badge */}
-                    {ticket.isFeatured && (
-                      <div className="bg-green-500 text-white text-center py-2 px-4 text-sm font-semibold">
-                        FEATURED
-                      </div>
-                    )}
-
-                    {/* Ticket content */}
-                    <div className="p-6 flex-grow">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3">
-                        {ticket.name}
-                      </h3>
-
-                      <div className="text-3xl font-bold text-green-600 mb-4">
-                        {formatCurrency(ticket.price, ticket.currency)}
-                      </div>
-
-                      <div className="text-gray-600 mb-6">
-                        {renderDescription(ticket.description)}
-                      </div>
-
-                      <div className="text-sm text-gray-500 mt-4">
-                        <p>
-                          Valid until:{" "}
-                          {new Date(ticket.validUntil).toLocaleDateString()}
-                        </p>
-                        <p>
-                          Maximum purchase: {ticket.maxPurchaseQuantity} tickets
-                        </p>
-                      </div>
+            <p className="text-lg font-bold text-gray-900 dark:text-white mb-2">
+              Error Loading Ticket Options
+            </p>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">{error}</p>
+            <Button variant="primary" onClick={() => window.location.reload()}>
+              Try Again
+            </Button>
+          </div>
+        ) : ticketCategories.length === 0 ? (
+          <div className="border border-gray-200 dark:border-gray-600 p-8 bg-white dark:bg-gray-800 text-center">
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              No ticket options available at this time. Please check back later.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {ticketCategories
+              .filter((ticket) => ticket.isActive)
+              .sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0))
+              .map((ticket) => (
+                <div
+                  key={ticket.documentId}
+                  className={`bg-white dark:bg-gray-800 border ${
+                    ticket.isFeatured
+                      ? "border-yellow-500"
+                      : "border-gray-200 dark:border-gray-600"
+                  } flex flex-col h-full`}
+                >
+                  {/* Featured indicator */}
+                  {ticket.isFeatured && (
+                    <div className="bg-yellow-500 text-black p-2 text-center font-bold">
+                      FEATURED
                     </div>
+                  )}
 
-                    {/* Buy button */}
-                    <div className="p-6 bg-gray-50 border-t border-gray-200">
-                      <Link
-                        href={`/tickets/buy?categoryId=${ticket.documentId}`}
-                        className={`w-full flex justify-center items-center px-4 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white ${
-                          ticket.isFeatured
-                            ? "bg-green-600 hover:bg-green-700"
-                            : "bg-gray-600 hover:bg-gray-700"
-                        } transition-colors`}
-                      >
-                        Purchase Now
-                      </Link>
+                  {/* Ticket header */}
+                  <div className="p-6 bg-black text-white dark:bg-white dark:text-black">
+                    <h3 className="text-2xl font-bold mb-2">{ticket.name}</h3>
+                    <div className="flex items-baseline">
+                      <span className="text-3xl font-bold text-yellow-500 mr-2">
+                        {formatCurrency(ticket.price, ticket.currency)}
+                      </span>
+                      <span className="text-sm opacity-75">per person</span>
                     </div>
                   </div>
-                ))}
-            </div>
-          )}
-        </div>
-      </section>
 
-      {/* FAQs Section */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">
-              Frequently Asked Questions
-            </h2>
-            <p className="mt-4 text-xl text-gray-600">
-              Common questions about tickets and attendance
-            </p>
+                  {/* Ticket content */}
+                  <div className="p-6 flex-grow border-t border-gray-200 dark:border-gray-600">
+                    <div className="text-gray-600 dark:text-gray-300 mb-6">
+                      {renderDescription(ticket.description)}
+                    </div>
+
+                    <div className="space-y-2 mb-6">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-yellow-500 mr-2"></div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          Valid until:{" "}
+                          {new Date(ticket.validUntil).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-yellow-500 mr-2"></div>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                          Max purchase: {ticket.maxPurchaseQuantity} tickets
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Purchase button */}
+                  <div className="p-6 border-t border-gray-200 dark:border-gray-600">
+                    <Button
+                      variant={ticket.isFeatured ? "primary" : "dark"}
+                      href={`/tickets/buy?categoryId=${ticket.documentId}`}
+                      className="w-full dark:border-white dark:text-white"
+                    >
+                      Purchase Now
+                    </Button>
+                  </div>
+                </div>
+              ))}
           </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
-          <div className="max-w-3xl mx-auto divide-y divide-gray-200">
-            <div className="py-6">
-              <h3 className="text-lg font-medium text-gray-900">
-                What's included in the All-Access Pass?
-              </h3>
-              <p className="mt-2 text-gray-600">
-                The All-Access Pass provides entry to all events at UNITE Expo
-                2025, including keynote speeches, workshops, networking events,
-                and the exhibition area. You'll also receive priority check-in
-                and complimentary refreshments.
-              </p>
-            </div>
-            <div className="py-6">
-              <h3 className="text-lg font-medium text-gray-900">
-                Can I purchase tickets at the venue?
-              </h3>
-              <p className="mt-2 text-gray-600">
-                We strongly recommend purchasing tickets online in advance to
-                guarantee your spot, as certain events may sell out. Limited
-                tickets may be available at the venue, subject to availability.
-              </p>
-            </div>
-            <div className="py-6">
-              <h3 className="text-lg font-medium text-gray-900">
-                What is the refund policy?
-              </h3>
-              <p className="mt-2 text-gray-600">
-                Tickets can be refunded up to 14 days before the event. After
-                that, tickets are non-refundable but can be transferred to
-                another attendee by contacting our support team.
-              </p>
-            </div>
-          </div>
+// -------------------------------------------------------------------
+// FAQs Section
+// -------------------------------------------------------------------
+function FAQsSection() {
+  const faqs = [
+    {
+      question: "What's included in the All-Access Pass?",
+      answer:
+        "The All-Access Pass provides entry to all events at UNITE Expo 2025, including keynote speeches, workshops, networking events, and the exhibition area. You'll also receive priority check-in and complimentary refreshments.",
+    },
+    {
+      question: "Can I purchase tickets at the venue?",
+      answer:
+        "We strongly recommend purchasing tickets online in advance to guarantee your spot, as certain events may sell out. Limited tickets may be available at the venue, subject to availability.",
+    },
+    {
+      question: "What is the refund policy?",
+      answer:
+        "Tickets can be refunded up to 14 days before the event. After that, tickets are non-refundable but can be transferred to another attendee by contacting our support team.",
+    },
+  ];
+
+  return (
+    <section className="py-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12">
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500 mx-auto"></span>
+          <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+            Frequently Asked Questions
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Common questions about tickets and attendance
+          </p>
         </div>
-      </section>
 
-      {/* Group Registration */}
-      <section className="py-12 bg-green-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900">
-                Group Registration
-              </h2>
-              <p className="mt-4 text-lg text-gray-600">
-                Coming with a team of 5 or more? Contact us for special group
-                rates and custom packages that can be tailored to your
-                organization's needs.
-              </p>
-              <div className="mt-8">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700"
-                >
-                  Contact for Group Bookings
-                </Link>
-              </div>
-            </div>
-            <div className="mt-10 lg:mt-0">
-              <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">
-                  Group Benefits
+        <div className="max-w-3xl mx-auto space-y-1">
+          {faqs.map((faq, index) => (
+            <div
+              key={index}
+              className="border border-gray-200 dark:border-gray-600"
+            >
+              <div className="p-6 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {faq.question}
                 </h3>
-                <ul className="space-y-3 text-gray-600">
-                  <li className="flex">
-                    <svg
-                      className="h-5 w-5 mr-2 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Discounted rates for 5+ attendees</span>
-                  </li>
-                  <li className="flex">
-                    <svg
-                      className="h-5 w-5 mr-2 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Reserved seating at keynote events</span>
-                  </li>
-                  <li className="flex">
-                    <svg
-                      className="h-5 w-5 mr-2 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Dedicated liaison for your group</span>
-                  </li>
-                  <li className="flex">
-                    <svg
-                      className="h-5 w-5 mr-2 text-green-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                    <span>Simplified billing with a single invoice</span>
-                  </li>
-                </ul>
               </div>
+              <div className="p-6 bg-white dark:bg-gray-800">
+                <p className="text-gray-600 dark:text-gray-300">{faq.answer}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="text-center mt-8">
+          <Button variant="primary" buttonType="outline" href="/about/faq">
+            View All FAQs
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// -------------------------------------------------------------------
+// Group Registration Section
+// -------------------------------------------------------------------
+function GroupRegistrationSection() {
+  const benefits = [
+    "Discounted rates for 5+ attendees",
+    "Reserved seating at keynote events",
+    "Dedicated liaison for your group",
+    "Simplified billing with a single invoice",
+  ];
+
+  return (
+    <section
+      id="group-registration"
+      className="py-16 bg-gray-50 dark:bg-gray-700"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+          <div>
+            <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
+            <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">
+              Group Registration
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
+              Coming with a team of 5 or more? Contact us for special group
+              rates and custom packages that can be tailored to your
+              organization's needs.
+            </p>
+            <Button variant="primary" href="/contact">
+              Contact for Group Bookings
+            </Button>
+          </div>
+
+          <div className="bg-black text-white dark:bg-white dark:text-black border border-gray-200 dark:border-gray-600 p-8">
+            <div className="relative mb-6">
+              <div className="absolute top-0 right-0 w-12 h-12 bg-yellow-500"></div>
+              <h3 className="text-2xl font-bold">Group Benefits</h3>
+            </div>
+
+            <ul className="space-y-4">
+              {benefits.map((benefit, index) => (
+                <li key={index} className="flex items-start">
+                  <div className="bg-yellow-500 text-black h-8 w-8 flex items-center justify-center mr-4 flex-shrink-0">
+                    <span>{index + 1}</span>
+                  </div>
+                  <span className="pt-1">{benefit}</span>
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-8 p-4 border border-yellow-500">
+              <p className="text-lg font-bold mb-1">Corporate Packages</p>
+              <p>
+                Special pricing and exclusive benefits available for corporate
+                teams. Custom packages start at 10+ attendees.
+              </p>
             </div>
           </div>
         </div>
-      </section>
-    </div>
+      </div>
+    </section>
   );
 }
