@@ -365,13 +365,13 @@ export default function ConfirmationContent() {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                   <div>
                     <p style="font-size: 12px; text-transform: uppercase; color: #6b7280; margin: 0 0 4px 0;">Ticket Type</p>
-                    <p style="font-weight: 500; margin: 0;">${
+                    <p style="font-weight: 500; margin: 0; color:#000">${
                       ticket.ticketCategory?.name || "Single Event Ticket"
                     }</p>
                   </div>
                   <div>
                     <p style="font-size: 12px; text-transform: uppercase; color: #6b7280; margin: 0 0 4px 0;">Ticket #</p>
-                    <p style="font-weight: 500; font-size: 14px; word-break: break-all; margin: 0; color: red !important">${
+                    <p style="font-weight: 500; font-size: 14px; word-break: break-all; margin: 0; color:#000">${
                       ticket.ticketNumber
                     }</p>
                   </div>
@@ -379,7 +379,7 @@ export default function ConfirmationContent() {
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
                   <div>
                     <p style="font-size: 12px; text-transform: uppercase; color: #6b7280; margin: 0 0 4px 0;">Valid From</p>
-                    <p style="font-weight: 500; margin: 0;">${
+                    <p style="font-weight: 500; margin: 0; color:#000">${
                       ticket.ticketCategory?.validFrom
                         ? new Date(
                             ticket.ticketCategory.validFrom
@@ -393,7 +393,7 @@ export default function ConfirmationContent() {
                   </div>
                   <div>
                     <p style="font-size: 12px; text-transform: uppercase; color: #6b7280; margin: 0 0 4px 0;">Valid Until</p>
-                    <p style="font-weight: 500; margin: 0;">${
+                    <p style="font-weight: 500; margin: 0; color:#000">${
                       ticket.ticketCategory?.validUntil
                         ? new Date(
                             ticket.ticketCategory.validUntil
