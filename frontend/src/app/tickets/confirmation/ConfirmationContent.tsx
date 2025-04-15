@@ -340,10 +340,10 @@ export default function ConfirmationContent() {
               <div style="background-color: #2563eb; color: white; padding: 16px; display: flex; justify-content: space-between; align-items: center;">
                 <div>
                   <h3 style="font-weight: bold; font-size: 20px; margin: 0;">UNITE EXPO 2025</h3>
-                  <p style="font-size: 14px; margin: 0; color: #f59e0b;">Uganda Next Investment & Trade Expo</p>
+                  <p style="font-size: 14px; margin: 0; color: #fff;">Uganda Next Investment & Trade Expo</p>
                 </div>
                 <div style="text-align: right;">
-                  <p style="font-size: 14px; margin: 0; color: #f59e0b;">${
+                  <p style="font-size: 14px; margin: 0; color: #fff;">${
                     ticket.ticketCategory?.name || "Single Event Ticket"
                   }</p>
                 </div>
