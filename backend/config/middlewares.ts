@@ -34,6 +34,7 @@ export default [
         "http://localhost:3000",
         "http://localhost:1337",
         "http://192.168.1.19:3000",
+        "http://192.168.1.23:3000",
         process.env.FRONTEND_URL || "https://unite-frontend.onrender.com",
       ],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
