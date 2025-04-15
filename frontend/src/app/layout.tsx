@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     siteName: "UNITE 2025",
     images: [
       {
-        url: "../../public/og-image1.jpg",
+        url: "/og-image1.jpg",
         width: 1200,
         height: 630,
         alt: "UNITE 2025 - Uganda Next Investment & Trade Expo",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
       "Showcasing trade partnerships and International Collaboration in Uganda",
     images: [
       {
-        url: "../../public/og-image2.jpg",
+        url: "/og-image2.jpg",
         width: 1200,
         height: 600,
         alt: "UNITE 2025 - Uganda Next Investment & Trade Expo",
