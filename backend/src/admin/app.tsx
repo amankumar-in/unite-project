@@ -24,8 +24,8 @@ export default {
         "Auth.form.welcome.title": "Welcome to UNITE Console", // Changes the welcome message
         "Auth.form.welcome.subtitle": "Log in to your account", // Changes the subtitle
         "app.components.LeftMenu.navbrand.title": "UNITE Dashboard",
-        "HomePage.head.title": "Homepage | UNITE",
-
+        "HomePage.head.title": "Homepage | UNITE Expo",
+        "Content Manager": "Content Manager - UNITE Expo",
 
         // You can add more translation overrides here
       },
