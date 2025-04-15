@@ -1,7 +1,7 @@
 // src/admin/app.js
-import AuthLogo from "./extensions/logo.png";
-import MenuLogo from "./extensions/logo.png";
-import favicon from "./extensions/logo.png";
+import AuthLogo from "/logo.png";
+import MenuLogo from "/logo.png";
+import favicon from "/logo.png";
 
 export default {
   config: {
