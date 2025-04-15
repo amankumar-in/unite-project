@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { fetchAPI } from "@/lib/api/api-config";
 import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 
 // -------------------------------------------------------------------
 // Type Definitions
@@ -68,20 +68,22 @@ const formatDate = (dateString: string) => {
 // -------------------------------------------------------------------
 
 const HeroSection = () => (
-  <section className="relative bg-white dark:bg-gray-900">
-    <div className="relative h-[70vh] overflow-hidden">
-      {/* Background image with demo path to public/next.svg */}
-      <div className="absolute inset-0">
-        <Image
-          src="/next.svg"
-          alt="Background image"
-          fill
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/70 to-transparent"></div>
+  <section className="relative">
+    <div className="relative h-[80vh] overflow-hidden">
+      {/* Background using CSS instead of Next.js Image */}
+      <div
+        className="absolute inset-0 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/images/kampala-skyline.jpg')",
+        }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: "rgba(0, 0, 0, 0.7)" }}
+        ></div>
       </div>
       <div className="relative h-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
-        <div className="max-w-xl">
+        <div className="max-w-2xl">
           <div className="inline-flex items-center bg-blue-600 px-4 py-2 mb-6">
             <span className="text-sm text-white uppercase tracking-wider font-medium">
               July 7-14, 2025 • Kampala, Uganda
@@ -91,12 +93,12 @@ const HeroSection = () => (
             UGANDA NEXT INVESTMENT & TRADE EXPO
           </h1>
           <p className="text-xl text-gray-100 mb-8">
-            The official platform for regional economic cooperation and
-            investment promotion
+            Connect with East Africa's fastest growing economy and explore $1
+            billion+ in investment opportunities
           </p>
           <div className="flex flex-wrap gap-4">
             <Button variant="primary" size="lg" href="/tickets">
-              Register Now
+              Get Tickets
             </Button>
             <Button
               variant="light"
@@ -104,7 +106,7 @@ const HeroSection = () => (
               size="lg"
               href="/about"
             >
-              Program Details
+              Learn More
             </Button>
           </div>
         </div>
@@ -120,14 +122,14 @@ const KeyMetricsSection = () => (
         <div className="flex flex-col justify-center p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
-              $35B
+              $2.9B
             </div>
           </div>
           <div className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-300 mt-2">
-            GDP (2023)
+            FDI in 2023
           </div>
           <div className="text-gray-600 dark:text-gray-300 mt-2">
-            Uganda's growing economy with 5.3% annual growth rate
+            79% surge making Uganda Africa's top FDI destination
           </div>
         </div>
         <div className="flex flex-col justify-center p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
@@ -146,6 +148,19 @@ const KeyMetricsSection = () => (
         <div className="flex flex-col justify-center p-8 md:p-12 border-b md:border-b-0 md:border-r border-gray-200 dark:border-gray-700">
           <div className="flex items-center">
             <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
+              10.8%
+            </div>
+          </div>
+          <div className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-300 mt-2">
+            Projected Growth
+          </div>
+          <div className="text-gray-600 dark:text-gray-300 mt-2">
+            IMF forecast for 2025/26 with new oil production
+          </div>
+        </div>
+        <div className="flex flex-col justify-center p-8 md:p-12">
+          <div className="flex items-center">
+            <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
               50+
             </div>
           </div>
@@ -153,20 +168,7 @@ const KeyMetricsSection = () => (
             Participating Countries
           </div>
           <div className="text-gray-600 dark:text-gray-300 mt-2">
-            International delegations and trade representatives
-          </div>
-        </div>
-        <div className="flex flex-col justify-center p-8 md:p-12">
-          <div className="flex items-center">
-            <div className="text-blue-600 text-4xl md:text-5xl font-bold mr-3">
-              300+
-            </div>
-          </div>
-          <div className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-300 mt-2">
-            Exhibition Booths
-          </div>
-          <div className="text-gray-600 dark:text-gray-300 mt-2">
-            Showcasing public and private sector organizations
+            International delegations and investors joining UNITE 2025
           </div>
         </div>
       </div>
@@ -174,75 +176,340 @@ const KeyMetricsSection = () => (
   </section>
 );
 
-const AboutSection = () => (
-  <section className="py-16 md:py-24 bg-white dark:bg-gray-800">
+const AboutExpoSection = () => (
+  <section className="py-16 md:py-24 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12 md:col-span-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div>
           <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
-            Why UNITE Expo 2025?
+            About UNITE 2025
           </h2>
           <p className="text-lg mb-8 text-gray-600 dark:text-gray-300">
-            Uganda Next - Investment & Trade Expo (UNITE) 2025 is the premier
+            UNITE (Uganda Next - Investment & Trade Expo) 2025 is the premier
             platform connecting international investors with Uganda's growing
-            economy.
+            economy. This week-long expo serves as the official platform for
+            regional economic cooperation and investment promotion.
           </p>
           <p className="text-lg mb-8 text-gray-600 dark:text-gray-300">
-            Located in the heart of East Africa, Uganda offers strategic access
-            to a market of over 300 million people, abundant natural resources,
-            and one of the world's youngest populations.
+            With high-level support from the government and private sector,
+            UNITE 2025 convenes business leaders, innovators, and policymakers
+            from around the globe to explore opportunities across Uganda's
+            rapidly growing economy.
           </p>
           <Button variant="primary" buttonType="outline" href="/about">
-            More About UNITE
+            Learn More
           </Button>
         </div>
-        <div className="col-span-12 md:col-span-7">
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-white dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-              <span className="text-yellow-500 text-4xl font-bold block mb-3">
+        <div className="relative">
+          <div
+            className="aspect-video bg-cover bg-center relative border border-gray-200 dark:border-gray-700"
+            style={{ backgroundImage: "url('/images/conference-hall.jpg')" }}
+          ></div>
+          <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-yellow-500 -z-10"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const WhyUgandaSection = () => (
+  <section className="py-16 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="text-center mb-12">
+        <span className="inline-block mb-3 h-1 w-16 bg-blue-600 mx-auto"></span>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+          Why Uganda?
+        </h2>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          Uganda offers compelling advantages for international investors
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-8">
+          <span className="inline-block bg-yellow-500 px-3 py-1 text-black text-sm uppercase tracking-wider mb-4">
+            Strategic Location
+          </span>
+          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+            Gateway to East Africa
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            Uganda offers strategic access to the East African Community (EAC),
+            a regional common market of over 300 million consumers through
+            harmonized trade policies and strategic trade corridors.
+          </p>
+          <div
+            className="aspect-video bg-cover bg-center mt-6"
+            style={{ backgroundImage: "url('/images/east-africa-map.jpg')" }}
+          ></div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-8">
+          <span className="inline-block bg-yellow-500 px-3 py-1 text-black text-sm uppercase tracking-wider mb-4">
+            Robust Growth
+          </span>
+          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+            Economic Powerhouse
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            One of Africa's fastest-growing economies with consistent 5% annual
+            growth. The IMF projects 10.8% GDP growth in 2025/26 with new oil
+            production beginning. FDI inflows surged 79% to $2.9 billion in
+            2023.
+          </p>
+          <div
+            className="aspect-video bg-cover bg-center mt-6"
+            style={{
+              backgroundImage: "url('/images/economic-powerhouse.jpeg')",
+            }}
+          ></div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-8">
+          <span className="inline-block bg-yellow-500 px-3 py-1 text-black text-sm uppercase tracking-wider mb-4">
+            Natural Resources
+          </span>
+          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+            Resource Rich
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            Uganda has 6.5 billion barrels in oil reserves set to begin
+            production by 2025. It's the world's 8th largest coffee producer
+            (2nd in Africa) and a leading exporter of tea, fish, and other
+            commodities.
+          </p>
+          <div
+            className="aspect-video bg-cover bg-center mt-6"
+            style={{ backgroundImage: "url('/images/natural-resources.jpg')" }}
+          ></div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 p-8">
+          <span className="inline-block bg-yellow-500 px-3 py-1 text-black text-sm uppercase tracking-wider mb-4">
+            Investment Climate
+          </span>
+          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
+            Investor-Friendly Policies
+          </h3>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            A One-Stop Center provides quick services: investment licensing (24
+            hours), business registration (4 hours). Generous incentives include
+            a 10-year tax holiday for strategic-sector investments.
+          </p>
+          <div
+            className="aspect-video bg-cover bg-center mt-6"
+            style={{ backgroundImage: "url('/images/business-meeting.jpg')" }}
+          ></div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const FullWidthBannerSection = () => (
+  <section className="relative py-24">
+    <div
+      className="absolute inset-0 bg-cover bg-center"
+      style={{ backgroundImage: "url('/images/uganda-landscape.jpg')" }}
+    >
+      <div
+        className="absolute inset-0"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+      ></div>
+    </div>
+    <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 className="text-4xl md:text-5xl font-bold mb-6 text-white">
+        Uganda's Journey to A Digital Age
+      </h2>
+      <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
+        UNITE 2025 is part of Uganda's broader strategy to attract $5 billion in
+        foreign direct investment by 2026, diversify the economy, and create
+        sustainable jobs for its growing population.
+      </p>
+      <Button variant="primary" size="lg" href="/tickets">
+        Register For UNITE
+      </Button>
+    </div>
+  </section>
+);
+
+const StrategicSectorsSection = () => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+        <div>
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            Strategic Investment Sectors
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-4">
+            Discover high-potential sectors driving Uganda's economic
+            transformation
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          buttonType="outline"
+          href="/about"
+          className="mt-4 md:mt-0"
+        >
+          Explore All Sectors
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Coffee & Agriculture Sector */}
+        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-5">
+            <div
+              className="aspect-square md:col-span-2 bg-cover bg-center"
+              style={{
+                backgroundImage: "url('/images/coffee-beans.jpg')",
+              }}
+            ></div>
+            <div className="p-6 md:col-span-3">
+              <span className="text-yellow-500 text-3xl font-bold block mb-3">
                 01
               </span>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Strategic Location
+                Coffee & Agriculture
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Gateway to East Africa with access to multiple regional markets
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Uganda is the world's 8th largest coffee producer and 2nd in
+                Africa. Opportunities include value-added processing, commercial
+                farming, and agro-exports with $1.5B+ annual agricultural
+                exports.
               </p>
+              <ul className="space-y-2 mb-4">
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    World's 8th largest coffee producer
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    30% of national GDP from agriculture
+                  </span>
+                </li>
+              </ul>
             </div>
-            <div className="bg-white dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-              <span className="text-yellow-500 text-4xl font-bold block mb-3">
+          </div>
+        </div>
+
+        {/* Energy & Oil Sector */}
+        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-5">
+            <div className="p-6 md:col-span-3">
+              <span className="text-yellow-500 text-3xl font-bold block mb-3">
                 02
               </span>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Young Population
+                Energy & Oil
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Median age of 16.7 years with a rapidly growing middle class
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                With 6.5 billion barrels in oil reserves and production
+                beginning in 2025, Uganda's energy sector will drive
+                double-digit economic growth with $15B+ in energy sector
+                investments underway.
               </p>
+              <ul className="space-y-2 mb-4">
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    6.5 billion barrels of oil reserves
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    East African Crude Oil Pipeline development
+                  </span>
+                </li>
+              </ul>
             </div>
-            <div className="bg-white dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-              <span className="text-yellow-500 text-4xl font-bold block mb-3">
+            <div
+              className="aspect-square md:col-span-2 bg-cover bg-center"
+              style={{ backgroundImage: "url('/images/oil-production.jpg')" }}
+            ></div>
+          </div>
+        </div>
+
+        {/* Technology & Innovation Sector */}
+        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-5">
+            <div
+              className="aspect-square md:col-span-2 bg-cover bg-center"
+              style={{ backgroundImage: "url('/images/technology-hub.jpg')" }}
+            ></div>
+            <div className="p-6 md:col-span-3">
+              <span className="text-yellow-500 text-3xl font-bold block mb-3">
                 03
               </span>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Natural Resources
+                Technology & Innovation
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Abundant agricultural land, minerals, and energy potential
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Uganda's emerging tech ecosystem is fueled by one of the world's
+                youngest populations, with a median age of just 16.7 years.
+                Opportunities in tech hubs, BPO, software development, and
+                digital infrastructure.
               </p>
+              <ul className="space-y-2 mb-4">
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    Vibrant startup and innovation hubs
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    Rapidly growing middle class
+                  </span>
+                </li>
+              </ul>
             </div>
-            <div className="bg-white dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-              <span className="text-yellow-500 text-4xl font-bold block mb-3">
+          </div>
+        </div>
+
+        {/* Tourism & Hospitality Sector */}
+        <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600">
+          <div className="grid grid-cols-1 md:grid-cols-5">
+            <div className="p-6 md:col-span-3">
+              <span className="text-yellow-500 text-3xl font-bold block mb-3">
                 04
               </span>
               <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-white">
-                Tech Innovation
+                Tourism & Hospitality
               </h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Emerging technology hub with growing startup ecosystem
+              <p className="text-gray-600 dark:text-gray-300 mb-4">
+                Home to exceptional biodiversity and natural attractions, Uganda
+                offers significant opportunities in eco-tourism, luxury
+                accommodation, adventure tourism, and cultural tourism
+                investments.
               </p>
+              <ul className="space-y-2 mb-4">
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    World-renowned wildlife and natural beauty
+                  </span>
+                </li>
+                <li className="flex items-start">
+                  <div className="h-5 w-5 bg-blue-600 mt-0.5 mr-3 flex-shrink-0"></div>
+                  <span className="text-gray-600 dark:text-gray-300">
+                    Growing international tourism interest
+                  </span>
+                </li>
+              </ul>
             </div>
+            <div
+              className="aspect-square md:col-span-2 bg-cover bg-center"
+              style={{ backgroundImage: "url('/images/tourism-wildlife.jpg')" }}
+            ></div>
           </div>
         </div>
       </div>
@@ -250,142 +517,336 @@ const AboutSection = () => (
   </section>
 );
 
-const InvestmentMetricsSection = () => (
-  <section className="bg-white dark:bg-gray-800 py-16 border-t border-b border-gray-200 dark:border-gray-700">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-12 gap-8">
-        <div className="col-span-12 md:col-span-4">
-          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
-            Investment Opportunities
-          </h2>
-          <p className="text-lg mb-8 text-gray-600 dark:text-gray-300">
-            UNITE Expo 2025 showcases diverse investment opportunities across
-            Uganda's most promising sectors, connecting you directly with key
-            stakeholders.
-          </p>
-          <Button variant="primary" buttonType="outline" href="/contact">
-            Become an Exhibitor
-          </Button>
-        </div>
-        <div className="col-span-12 md:col-span-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="bg-gray-50 dark:bg-gray-700 p-6 relative">
-              <div className="absolute top-0 right-0 h-12 w-12 bg-yellow-500"></div>
-              <div className="text-3xl font-bold mb-1 text-gray-900 dark:text-white">
-                120+
-              </div>
-              <div className="text-sm uppercase tracking-wider text-gray-600 dark:text-gray-300">
-                Franchise Opportunities
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-6 relative">
-              <div className="absolute top-0 right-0 h-12 w-12 bg-gray-900"></div>
-              <div className="text-3xl font-bold mb-1 text-gray-900 dark:text-white">
-                80+
-              </div>
-              <div className="text-sm uppercase tracking-wider text-gray-600 dark:text-gray-300">
-                Funding Partnerships
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-6 relative">
-              <div className="absolute top-0 right-0 h-12 w-12 bg-yellow-500"></div>
-              <div className="text-3xl font-bold mb-1 text-gray-900 dark:text-white">
-                200+
-              </div>
-              <div className="text-sm uppercase tracking-wider text-gray-600 dark:text-gray-300">
-                Supplier Connections
-              </div>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-700 p-6 relative">
-              <div className="absolute top-0 right-0 h-12 w-12 bg-gray-900"></div>
-              <div className="text-3xl font-bold mb-1 text-gray-900 dark:text-white">
-                50+
-              </div>
-              <div className="text-sm uppercase tracking-wider text-gray-600 dark:text-gray-300">
-                Joint Ventures
-              </div>
-            </div>
-          </div>
-        </div>
+const MiddleCTASection = () => (
+  <section className="bg-blue-600 py-16">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
+        Early Bird Registration Now Open
+      </h2>
+      <p className="text-xl text-white mb-8 max-w-3xl mx-auto">
+        Secure your place at East Africa's premier investment summit with early
+        bird rates available until December 31, 2024
+      </p>
+      <div className="flex flex-col sm:flex-row justify-center gap-4">
+        <Button variant="primary" size="lg" href="/tickets">
+          Get Tickets
+        </Button>
+        <Button variant="light" buttonType="outline" size="lg" href="/contact">
+          Contact Us
+        </Button>
       </div>
     </div>
   </section>
 );
 
-const GovernmentPartnersSection = () => (
-  <section className="bg-white dark:bg-gray-800 py-16 border-t border-gray-200 dark:border-gray-700">
+const ImageGallerySection = () => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
-        <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
+      <div className="text-center mb-12">
+        <span className="inline-block mb-3 h-1 w-16 bg-yellow-500 mx-auto"></span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-          Organizing Partners
+          Discover Uganda
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          UNITE Expo 2025 is organized by the following governmental bodies and
-          agencies
+          A land of opportunity and natural beauty
         </p>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div className="flex flex-col items-center">
-          <div className="h-24 flex items-center justify-center mb-4">
-            <div className="bg-gray-100 dark:bg-gray-700 h-20 w-full flex items-center justify-center border border-gray-200 dark:border-gray-600">
-              <span className="text-gray-400 text-xs">Ministry Logo</span>
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-center text-gray-900 dark:text-white">
-            Ministry of Trade, Industry and Cooperatives
-          </h3>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+        <div
+          className="aspect-square bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/kampala-skyline.jpg')" }}
+        ></div>
+        <div
+          className="aspect-square col-span-2 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/coffee-beans.jpg')" }}
+        ></div>
+        <div
+          className="aspect-square bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/technology-hub.jpg')" }}
+        ></div>
+      </div>
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div
+          className="aspect-square bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/oil-production.jpg')" }}
+        ></div>
+        <div
+          className="aspect-square bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/images/economic-powerhouse.jpg')",
+          }}
+        ></div>
+        <div
+          className="aspect-square col-span-2 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/natural-resources.jpg')" }}
+        ></div>
+      </div>
+    </div>
+  </section>
+);
+
+const ImageSliderSection = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 5;
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev === totalSlides - 1 ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+  };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextSlide();
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const slides = [
+    {
+      image: "url('/images/slider-conference.jpg')",
+      title: "High-Level Networking",
+      description:
+        "Connect with government officials, industry leaders, and international investors",
+    },
+    {
+      image: "url('/images/slider-agriculture.jpg')",
+      title: "Agricultural Innovation",
+      description:
+        "Explore opportunities in coffee processing, commercial farming, and agro-exports",
+    },
+    {
+      image: "url('/images/slider-energy.jpg')",
+      title: "Energy Revolution",
+      description:
+        "Be part of Uganda's energy transformation with 6.5 billion barrels of oil reserves",
+    },
+    {
+      image: "url('/images/slider-technology.jpg')",
+      title: "Tech & Innovation",
+      description:
+        "Invest in East Africa's emerging technology hub and vibrant startup ecosystem",
+    },
+    {
+      image: "url('/images/slider-infra.webp')",
+      title: "Infrastructure Development",
+      description:
+        "Participate in building Uganda's growing transportation and urban infrastructure",
+    },
+  ];
+
+  return (
+    <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-12">
+          <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+            UNITE 2025 Features
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Seven days of investment opportunities, knowledge sharing, and
+            meaningful connections
+          </p>
         </div>
-        <div className="flex flex-col items-center">
-          <div className="h-24 flex items-center justify-center mb-4">
-            <div className="bg-gray-100 dark:bg-gray-700 h-20 w-full flex items-center justify-center border border-gray-200 dark:border-gray-600">
-              <span className="text-gray-400 text-xs">UIA Logo</span>
+
+        <div className="relative">
+          <div className="overflow-hidden">
+            <div
+              className="flex transition-transform duration-500 ease-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+            >
+              {slides.map((slide, index) => (
+                <div key={index} className="w-full flex-shrink-0">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div
+                      className="aspect-[4/3] bg-cover bg-center"
+                      style={{ backgroundImage: slide.image }}
+                    ></div>
+                    <div className="p-8">
+                      <h3 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">
+                        {slide.title}
+                      </h3>
+                      <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+                        {slide.description}
+                      </p>
+                      <Button variant="primary" href="/about">
+                        Learn More
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
-          <h3 className="text-sm font-bold text-center text-gray-900 dark:text-white">
-            Uganda Investment Authority
-          </h3>
+
+          <button
+            onClick={prevSlide}
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 bg-white dark:bg-gray-800 w-12 h-12 flex items-center justify-center"
+            aria-label="Previous slide"
+          >
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <button
+            onClick={nextSlide}
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white dark:bg-gray-800 w-12 h-12 flex items-center justify-center"
+            aria-label="Next slide"
+          >
+            <svg
+              className="h-6 w-6"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+
+          <div className="mt-6 flex justify-center space-x-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 ${
+                  currentSlide === index
+                    ? "bg-blue-600"
+                    : "bg-gray-300 dark:bg-gray-600"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              ></button>
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col items-center">
-          <div className="h-24 flex items-center justify-center mb-4">
-            <div className="bg-gray-100 dark:bg-gray-700 h-20 w-full flex items-center justify-center border border-gray-200 dark:border-gray-600">
-              <span className="text-gray-400 text-xs">UNBS Logo</span>
-            </div>
+      </div>
+    </section>
+  );
+};
+
+const TopicSection1 = () => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div>
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+            Africa's Next Economic Powerhouse
+          </h2>
+          <div className="space-y-6 text-gray-600 dark:text-gray-300">
+            <p className="text-lg">
+              Uganda is one of Africa's fastest-growing economies, maintaining a
+              consistent annual growth rate of around 5%, despite global
+              economic challenges.
+            </p>
+            <p className="text-lg">
+              This growth is set to accelerate dramatically, with the IMF
+              projecting a 10.8% GDP growth in FY2025/26 as oil production
+              begins. Uganda's Vision 2040 agenda targets transformative growth
+              to reach middle-income status.
+            </p>
+            <p className="text-lg">
+              In 2023, FDI inflows surged 79% to $2.9 billion, a testament to
+              investor confidence in Uganda's economic future and business
+              environment.
+            </p>
           </div>
-          <h3 className="text-sm font-bold text-center text-gray-900 dark:text-white">
-            Uganda National Bureau of Standards
-          </h3>
+          <div className="mt-8">
+            <Button variant="primary" href="/about">
+              Learn More
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-col items-center">
-          <div className="h-24 flex items-center justify-center mb-4">
-            <div className="bg-gray-100 dark:bg-gray-700 h-20 w-full flex items-center justify-center border border-gray-200 dark:border-gray-600">
-              <span className="text-gray-400 text-xs">PSFU Logo</span>
-            </div>
-          </div>
-          <h3 className="text-sm font-bold text-center text-gray-900 dark:text-white">
-            Private Sector Foundation Uganda
-          </h3>
+        <div className="relative">
+          <div
+            className="aspect-[4/3] bg-cover bg-center border border-gray-200 dark:border-gray-700"
+            style={{ backgroundImage: "url('/images/uganda-economy.jpg')" }}
+          ></div>
+          <div className="absolute -bottom-6 -right-6 w-48 h-48 bg-yellow-500 -z-10"></div>
         </div>
       </div>
     </div>
   </section>
 );
 
-interface FeaturedEventsProps {
-  events: Event[];
-  loading: boolean;
-}
-
-const FeaturedEventsSection = ({ events, loading }: FeaturedEventsProps) => (
+const TopicSection2 = () => (
   <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div className="relative order-2 md:order-1">
+          <div
+            className="aspect-[4/3] bg-cover bg-center border border-gray-200 dark:border-gray-700"
+            style={{ backgroundImage: "url('/images/strategic-location.jpg')" }}
+          ></div>
+          <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-blue-600 -z-10"></div>
+        </div>
+        <div className="order-1 md:order-2">
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+            Gateway to East Africa
+          </h2>
+          <div className="space-y-6 text-gray-600 dark:text-gray-300">
+            <p className="text-lg">
+              Uganda offers strategic access to the East African Community
+              (EAC), a regional common market of over 300 million consumers with
+              harmonized trade policies.
+            </p>
+            <p className="text-lg">
+              Through Uganda, businesses tap into a broad East and Central
+              African market (including COMESA) with strategic trade corridors
+              and growing cross-border infrastructure.
+            </p>
+            <p className="text-lg">
+              The country's political stability and pro-business reforms make it
+              an ideal base for companies seeking regional expansion in East
+              Africa, with Uganda consistently recognized as a top investment
+              destination in the region.
+            </p>
+          </div>
+          <div className="mt-8">
+            <Button variant="primary" href="/about">
+              Learn More
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const EventsGridSection = ({ events }: { events: Event[] }) => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
         <div>
           <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-            Programme Highlights
+            Program Highlights
           </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-4">
+            Explore key events during UNITE Expo 2025
+          </p>
         </div>
         <Button
           variant="primary"
@@ -393,56 +854,44 @@ const FeaturedEventsSection = ({ events, loading }: FeaturedEventsProps) => (
           href="/events"
           className="mt-4 md:mt-0"
         >
-          View Complete Schedule
+          View All Events
         </Button>
       </div>
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-white dark:bg-gray-800 animate-pulse h-96 border border-gray-200 dark:border-gray-600"
-            ></div>
-          ))}
-        </div>
-      ) : events.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Programme details will be announced soon.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {events.map((event) => (
-            <Link
-              href={`/events/${event.Slug}`}
-              key={event.id}
-              className="group block"
-            >
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 h-full flex flex-col">
-                <div className="relative aspect-[4/3] w-full bg-gray-100 dark:bg-gray-600">
-                  {event.Image ? (
-                    <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
-                      alt={event.Image.alternativeText || event.Title}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-gray-400 text-xl">UNITE 2025</span>
-                    </div>
-                  )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {events.length === 0
+          ? // Fallback content for when API data isn't loaded
+            Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
+              >
+                <div className="aspect-[4/3] bg-gray-100 dark:bg-gray-600 relative flex items-center justify-center">
+                  <span className="text-gray-400">Event Image</span>
                   <div className="absolute top-0 left-0 p-4">
-                    <span className="bg-blue-600 px-3 py-1 text-xs uppercase tracking-wider text-white">
-                      {event.Enumeration}
-                    </span>
+                    <div className="bg-blue-600 px-3 py-1 text-xs uppercase tracking-wider text-white">
+                      Day {index + 1}
+                    </div>
                   </div>
                 </div>
-                <div className="p-6 flex flex-col flex-grow">
-                  <div className="flex items-center mb-2">
+                <div className="p-4">
+                  <h3 className="font-bold mb-2 text-gray-900 dark:text-white">
+                    {
+                      [
+                        "Opening Ceremony",
+                        "Investment Forums",
+                        "B2B Matchmaking",
+                        "Sector Workshops",
+                        "Site Visits",
+                        "Networking Gala",
+                        "Innovation Showcase",
+                        "Closing Event",
+                      ][index]
+                    }
+                  </h3>
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                     <svg
-                      className="w-4 h-4 mr-2 text-blue-600"
-                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-2 text-blue-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -454,22 +903,81 @@ const FeaturedEventsSection = ({ events, loading }: FeaturedEventsProps) => (
                         d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                       />
                     </svg>
-                    <span className="text-sm text-gray-500 dark:text-gray-300">
-                      {formatDate(event.StartDate)}
-                    </span>
+                    <span>July {7 + index}, 2025</span>
                   </div>
-                  <h3 className="text-xl font-bold mb-3 group-hover:text-blue-600 transition-colors text-gray-900 dark:text-white">
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <svg
+                      className="h-4 w-4 mr-2 text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                    <span>Kampala Conference Centre</span>
+                  </div>
+                </div>
+              </div>
+            ))
+          : // Display actual API data
+            events.slice(0, 8).map((event) => (
+              <Link
+                href={`/events/${event.Slug}`}
+                key={event.id}
+                className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 group"
+              >
+                <div className="aspect-[4/3] relative">
+                  {event.Image ? (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}${event.Image.url}`}
+                      alt={event.Image.alternativeText || event.Title}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-100 dark:bg-gray-600 flex items-center justify-center">
+                      <span className="text-gray-400">UNITE 2025</span>
+                    </div>
+                  )}
+                  <div className="absolute top-0 left-0 p-4">
+                    <div className="bg-blue-600 px-3 py-1 text-xs uppercase tracking-wider text-white">
+                      {event.Enumeration}
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-bold mb-2 text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
                     {event.Title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4 flex-grow">
-                    {event.ShortDescription.length > 120
-                      ? `${event.ShortDescription.substring(0, 120)}...`
-                      : event.ShortDescription}
-                  </p>
-                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-300">
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
                     <svg
-                      className="w-4 h-4 mr-2 text-blue-600"
-                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 mr-2 text-blue-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <span>{formatDate(event.StartDate)}</span>
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <svg
+                      className="h-4 w-4 mr-2 text-blue-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -490,332 +998,156 @@ const FeaturedEventsSection = ({ events, loading }: FeaturedEventsProps) => (
                     <span>{event.Location}</span>
                   </div>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
+              </Link>
+            ))}
+      </div>
     </div>
   </section>
 );
 
-interface FeaturedSpeakersProps {
-  speakers: Speaker[];
-  loading: boolean;
-}
-
-const FeaturedSpeakersSection = ({
-  speakers,
-  loading,
-}: FeaturedSpeakersProps) => (
-  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+const SponsorsGridSection = ({ sponsors }: { sponsors: Sponsor[] }) => (
+  <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
-        <div>
-          <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-            Distinguished Speakers
-          </h2>
-        </div>
-        <Button
-          variant="primary"
-          buttonType="outline"
-          href="/speakers"
-          className="mt-4 md:mt-0"
-        >
-          View All Speakers
-        </Button>
+      <div className="text-center mb-12">
+        <span className="inline-block mb-3 h-1 w-16 bg-yellow-500 mx-auto"></span>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
+          Our Partners
+        </h2>
+        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          UNITE Expo 2025 is supported by leading organizations committed to
+          Uganda's economic growth
+        </p>
       </div>
-      {loading ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="bg-white dark:bg-gray-800 animate-pulse h-80 border border-gray-200 dark:border-gray-600"
-            ></div>
-          ))}
-        </div>
-      ) : speakers.length === 0 ? (
-        <div className="text-center py-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
-          <p className="text-lg text-gray-600 dark:text-gray-300">
-            Speaker announcements coming soon.
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          {speakers.map((speaker) => (
-            <Link
-              href={`/speakers/${speaker.Slug}`}
-              key={speaker.id}
-              className="group block"
-            >
-              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 h-full">
-                <div className="aspect-square w-full bg-gray-100 dark:bg-gray-700 relative">
-                  {speaker.ProfileImage ? (
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        {sponsors.length === 0
+          ? // Fallback content for when API data isn't loaded
+            Array.from({ length: 8 }).map((_, index) => (
+              <div
+                key={index}
+                className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 flex items-center justify-center"
+              >
+                <div className="h-24 w-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                  <span className="text-gray-400 text-xs uppercase tracking-wider">
+                    Partner Logo
+                  </span>
+                </div>
+              </div>
+            ))
+          : // Display actual API data
+            sponsors.slice(0, 8).map((sponsor) => (
+              <div
+                key={sponsor.id}
+                className="p-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600"
+              >
+                <div className="h-24 w-full flex items-center justify-center">
+                  {sponsor.Logo ? (
                     <img
-                      src={`${process.env.NEXT_PUBLIC_API_URL}${speaker.ProfileImage.url}`}
-                      alt={speaker.Name}
-                      className="w-full h-full object-cover"
+                      src={`${process.env.NEXT_PUBLIC_API_URL}${sponsor.Logo.url}`}
+                      alt={sponsor.Name}
+                      className="max-h-full max-w-full object-contain"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
-                      <span className="text-gray-400 text-4xl font-bold">
-                        {speaker.Name.charAt(0)}
+                    <div className="bg-gray-100 dark:bg-gray-700 h-full w-full flex items-center justify-center">
+                      <span className="text-gray-400 text-xs uppercase tracking-wider">
+                        {sponsor.Name}
                       </span>
                     </div>
                   )}
-                  {speaker.Organization && (
-                    <div className="absolute bottom-0 left-0 right-0 bg-blue-600 text-white py-1 px-3">
-                      <div className="text-xs uppercase tracking-wider truncate">
-                        {speaker.Organization}
-                      </div>
-                    </div>
-                  )}
                 </div>
-                <div className="p-5">
-                  <h3 className="text-lg font-bold mb-1 group-hover:text-blue-600 transition-colors text-gray-900 dark:text-white">
-                    {speaker.Name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm">
-                    {speaker.Title}
-                  </p>
+                <div className="mt-4 text-center">
+                  <div className="font-bold text-gray-900 dark:text-white">
+                    {sponsor.Name}
+                  </div>
+                  <div className="mt-1">
+                    <Chip
+                      variant={
+                        sponsor.Tier === "Platinum"
+                          ? "primary"
+                          : sponsor.Tier === "Gold"
+                          ? "secondary"
+                          : "danger"
+                      }
+                      size="sm"
+                    >
+                      {sponsor.Tier} Sponsor
+                    </Chip>
+                  </div>
                 </div>
               </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  </section>
-);
+            ))}
+      </div>
 
-const CTASection = () => (
-  <section className="bg-gray-900 py-16 md:py-24">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
-        Join Us at UNITE Expo 2025
-      </h2>
-      <p className="text-xl max-w-3xl mx-auto mb-10 text-gray-300">
-        Be part of Uganda's premier investment and trade exhibition. Connect
-        with international investors, discover opportunities, and showcase your
-        business.
-      </p>
-      <div className="flex flex-col sm:flex-row justify-center gap-4">
-        <Button variant="primary" size="lg" href="/tickets">
-          Get Your Tickets
-        </Button>
-        <Button variant="light" buttonType="outline" size="lg" href="/contact">
-          Exhibit Your Business
+      <div className="mt-12 text-center">
+        <Button variant="primary" buttonType="outline" href="/sponsors">
+          View All Partners
         </Button>
       </div>
     </div>
   </section>
 );
 
-const RegistrationSection = () => (
-  <section className="bg-gray-900 py-16 border-t border-gray-800">
+const ExhibitorCTASection = () => (
+  <section className="py-16 bg-black text-white">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col md:flex-row items-center">
-        <div className="md:w-2/3 mb-10 md:mb-0 md:pr-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">
-            Registration Information
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+        <div>
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Become an Exhibitor
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-800 p-5 border-l-4 border-blue-600">
-              <h3 className="text-xl font-bold mb-3 text-white">
-                Delegate Registration
-              </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Early Bird: $150 (Until December 31, 2024)</span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Standard: $250 (January - February 2025)</span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Late Registration: $350 (March 2025)</span>
-                </li>
-              </ul>
-            </div>
-            <div className="bg-gray-800 p-5 border-l-4 border-blue-600">
-              <h3 className="text-xl font-bold mb-3 text-white">
-                Exhibitor Registration
-              </h3>
-              <ul className="space-y-2 text-gray-300">
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Standard Booth (3m x 3m): $1,200</span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Premium Booth (6m x 3m): $2,000</span>
-                </li>
-                <li className="flex items-center">
-                  <svg
-                    className="h-5 w-5 mr-2 text-blue-400"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>Includes 2 exhibitor passes per booth</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <p className="text-gray-300">
-            All registrations include access to conference sessions, exhibition
-            area, networking events, and official documentation. Special rates
-            are available for government delegations, NGOs, and academic
-            institutions.
+          <p className="text-xl mb-8">
+            Join over 300 exhibitors connecting with 20,000+ attendees and
+            international investors at UNITE Expo 2025.
           </p>
+          <Button variant="primary" size="lg" href="/contact">
+            Exhibit Your Business
+          </Button>
         </div>
-        <div className="md:w-1/3 bg-white dark:bg-gray-700 p-8">
-          <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">
-            Register Your Interest
-          </h3>
-          <form className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Organization
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Organization name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Interested in
-              </label>
-              <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600">
-                <option>Attending as a delegate</option>
-                <option>Exhibiting</option>
-                <option>Speaking opportunity</option>
-                <option>Media partnership</option>
-                <option>Sponsorship</option>
-              </select>
-            </div>
-            <Button variant="primary" className="w-full">
-              Register Interest
-            </Button>
-          </form>
+        <div className="bg-gray-900 border border-gray-800 p-8">
+          <h3 className="text-2xl font-bold mb-6">Exhibitor Benefits</h3>
+          <ul className="space-y-4">
+            <li className="flex">
+              <div className="h-6 w-6 bg-yellow-500 flex-shrink-0 mr-4"></div>
+              <span>Direct access to qualified international investors</span>
+            </li>
+            <li className="flex">
+              <div className="h-6 w-6 bg-yellow-500 flex-shrink-0 mr-4"></div>
+              <span>Structured B2B matchmaking with potential partners</span>
+            </li>
+            <li className="flex">
+              <div className="h-6 w-6 bg-yellow-500 flex-shrink-0 mr-4"></div>
+              <span>Presentation opportunities in sector-specific forums</span>
+            </li>
+            <li className="flex">
+              <div className="h-6 w-6 bg-yellow-500 flex-shrink-0 mr-4"></div>
+              <span>Media exposure and investment facilitation support</span>
+            </li>
+          </ul>
+          <div className="mt-8 p-4 bg-gray-800 text-center">
+            <p className="font-bold mb-2">Standard Booth (3m x 3m)</p>
+            <p className="text-2xl font-bold text-yellow-500">$1,200</p>
+          </div>
         </div>
       </div>
     </div>
   </section>
 );
 
-const ContactSubscribeSection = () => (
-  <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600">
+const ContactFormSection = () => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
         <div>
           <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-            Contact Information
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-gray-900 dark:text-white">
+            Contact Us
           </h2>
-          <div className="space-y-6">
-            <div className="flex items-start">
-              <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
+          <div className="space-y-8">
+            <div className="flex">
+              <div className="flex-shrink-0 h-12 w-12 bg-blue-600 flex items-center justify-center mr-6">
                 <svg
-                  className="h-5 w-5 text-white"
+                  className="h-6 w-6 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -830,24 +1162,23 @@ const ContactSubscribeSection = () => (
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
                   Email
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   General Inquiries: info@uniteexpo.org
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Media Inquiries: media@uniteexpo.org
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                  <br />
                   Exhibitor Support: exhibitors@uniteexpo.org
+                  <br />
+                  Media Inquiries: media@uniteexpo.org
                 </p>
               </div>
             </div>
-            <div className="flex items-start">
-              <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
+
+            <div className="flex">
+              <div className="flex-shrink-0 h-12 w-12 bg-blue-600 flex items-center justify-center mr-6">
                 <svg
-                  className="h-5 w-5 text-white"
+                  className="h-6 w-6 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -862,21 +1193,21 @@ const ContactSubscribeSection = () => (
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
                   Phone
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   Secretariat: +256 417 700 000
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                  <br />
                   International Desk: +256 417 700 001
                 </p>
               </div>
             </div>
-            <div className="flex items-start">
-              <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
+
+            <div className="flex">
+              <div className="flex-shrink-0 h-12 w-12 bg-blue-600 flex items-center justify-center mr-6">
                 <svg
-                  className="h-5 w-5 text-white"
+                  className="h-6 w-6 text-white"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -897,338 +1228,132 @@ const ContactSubscribeSection = () => (
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">
-                  Office Address
+                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                  Address
                 </h3>
                 <p className="text-gray-600 dark:text-gray-300">
                   UNITE Expo Secretariat
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                  <br />
                   Uganda Investment Authority Building
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                  <br />
                   Plot 22B, Lumumba Avenue
-                </p>
-                <p className="text-gray-600 dark:text-gray-300">
+                  <br />
                   Kampala, Uganda
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex space-x-4 mt-8">
-            <a href="#" className="text-gray-500 hover:text-blue-600">
-              <span className="sr-only">Twitter</span>
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-              </svg>
-            </a>
-            <a href="#" className="text-gray-500 hover:text-blue-600">
-              <span className="sr-only">LinkedIn</span>
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-              </svg>
-            </a>
-            <a href="#" className="text-gray-500 hover:text-blue-600">
-              <span className="sr-only">Facebook</span>
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path
-                  fillRule="evenodd"
-                  d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </a>
-          </div>
         </div>
+
         <div>
-          <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
-          <h2 className="text-2xl md:text-3xl font-bold mb-6 text-gray-900 dark:text-white">
-            Stay Informed
-          </h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-6">
-            Subscribe to receive updates about UNITE Expo 2025, including
-            programme announcements, speaker confirmations, and important
-            deadlines.
-          </p>
-          <form className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Enter your full name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Enter your email"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Organization
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600"
-                placeholder="Organization name"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Areas of Interest
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                <label className="flex items-center">
+          <div className="bg-gray-50 dark:bg-gray-700 p-8 border border-gray-200 dark:border-gray-600">
+            <h3 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
+              Send a Message
+            </h3>
+            <form className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    First Name
+                  </label>
                   <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    placeholder="First Name"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Agriculture
-                  </span>
-                </label>
-                <label className="flex items-center">
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Last Name
+                  </label>
                   <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
+                    type="text"
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                    placeholder="Last Name"
                   />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Technology
-                  </span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Manufacturing
-                  </span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Energy
-                  </span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Tourism
-                  </span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 dark:border-gray-600 text-blue-600 mr-2"
-                  />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">
-                    Infrastructure
-                  </span>
-                </label>
+                </div>
               </div>
-            </div>
-            <Button variant="primary" className="w-full">
-              Subscribe to Updates
-            </Button>
-          </form>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-            By subscribing, you consent to receive communications about UNITE
-            Expo 2025. You can unsubscribe at any time. View our Privacy Policy.
-          </p>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="Your Email"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Organization
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="Organization Name"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Inquiry Type
+                </label>
+                <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                  <option>General Inquiry</option>
+                  <option>Exhibitor Information</option>
+                  <option>Speaker Opportunity</option>
+                  <option>Sponsorship</option>
+                  <option>Media & Press</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Message
+                </label>
+                <textarea
+                  rows={4}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                  placeholder="Your Message"
+                ></textarea>
+              </div>
+
+              <Button variant="primary" className="w-full">
+                Send Message
+              </Button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
   </section>
 );
 
-const PracticalInformationSection = () => (
-  <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+const SubscribeSection = () => (
+  <section className="py-12 bg-blue-600 text-white">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
-        <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
-        <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-          Visitor Information
-        </h2>
-        <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-          Essential information for international delegates attending UNITE Expo
-          2025
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-start mb-4">
-            <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
-              <svg
-                className="h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Visa Requirements
-            </h3>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Most visitors require a visa to enter Uganda. E-visas can be
-            obtained online through the official immigration portal. UNITE
-            delegates qualify for expedited processing.
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        <div className="md:col-span-8">
+          <h2 className="text-2xl font-bold mb-2">
+            Stay Updated on UNITE Expo 2025
+          </h2>
+          <p className="text-white text-opacity-80">
+            Subscribe to receive news, program updates, and investment
+            opportunities
           </p>
-          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">
-            Visa Information →
-          </a>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-start mb-4">
-            <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
-              <svg
-                className="h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Health Requirements
-            </h3>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Yellow fever vaccination is required for entry. Health insurance
-            covering international travel is recommended for all delegates.
-          </p>
-          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">
-            Health Advisory →
-          </a>
+        <div className="md:col-span-4">
+          <form className="flex flex-col sm:flex-row gap-4">
+            <input
+              type="email"
+              placeholder="Your email"
+              className="flex-grow px-4 py-2 bg-white bg-opacity-20 border border-white border-opacity-30 text-white placeholder-white placeholder-opacity-60 focus:outline-none focus:ring-2 focus:ring-white focus:ring-opacity-40"
+            />
+            <Button variant="primary">Subscribe</Button>
+          </form>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-start mb-4">
-            <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
-              <svg
-                className="h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Transportation
-            </h3>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Entebbe International Airport is the main gateway. Airport transfers
-            will be provided for registered delegates. Local transport options
-            include taxi services and special shuttle buses.
-          </p>
-          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">
-            Transport Information →
-          </a>
-        </div>
-        <div className="bg-gray-50 dark:bg-gray-700 p-6 border border-gray-200 dark:border-gray-600">
-          <div className="flex items-start mb-4">
-            <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
-              <svg
-                className="h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              Accommodation
-            </h3>
-          </div>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Special rates are available at partner hotels near the venue. Early
-            booking is recommended as availability may be limited.
-          </p>
-          <a href="#" className="text-blue-600 hover:text-blue-800 font-medium">
-            Hotel Information →
-          </a>
-        </div>
-      </div>
-      <div className="bg-gray-50 dark:bg-gray-700 p-8 border border-gray-200 dark:border-gray-600">
-        <div className="flex items-start mb-6">
-          <div className="bg-blue-600 rounded-full h-10 w-10 flex items-center justify-center flex-shrink-0 mr-4">
-            <svg
-              className="h-5 w-5 text-white"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              />
-            </svg>
-          </div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-            Delegate Information Pack
-          </h3>
-        </div>
-        <p className="text-gray-600 dark:text-gray-300 mb-6">
-          Download our comprehensive guide for international delegates, covering
-          all aspects of your visit to Uganda including cultural norms, business
-          etiquette, currency information, and emergency contacts.
-        </p>
-        <Button variant="primary" buttonType="outline">
-          Download Information Pack
-        </Button>
       </div>
     </div>
   </section>
@@ -1239,33 +1364,23 @@ const PracticalInformationSection = () => (
 // -------------------------------------------------------------------
 
 export default function HomePage() {
-  // State for dynamic data
-  const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
-  const [featuredSpeakers, setFeaturedSpeakers] = useState<Speaker[]>([]);
-  const [sponsors, setSponsors] = useState<{
-    platinum: Sponsor[];
-    gold: Sponsor[];
-    silver: Sponsor[];
-  }>({
-    platinum: [],
-    gold: [],
-    silver: [],
-  });
+  // State for API data
+  const [events, setEvents] = useState<Event[]>([]);
+  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [loading, setLoading] = useState({
     events: true,
-    speakers: true,
     sponsors: true,
   });
 
-  // Fetch featured events
+  // Fetch events - using actual endpoint from original code
   useEffect(() => {
     const fetchEvents = async () => {
       try {
         const response = await fetchAPI(
-          "/events?filters[FeaturedEvent][$eq]=true&populate=*&sort=StartDate:asc&pagination[limit]=3"
+          "/events?populate=*&sort=StartDate:asc&pagination[limit]=8"
         );
         if (response && response.data) {
-          setFeaturedEvents(response.data);
+          setEvents(response.data);
         }
         setLoading((prev) => ({ ...prev, events: false }));
       } catch (err) {
@@ -1276,45 +1391,13 @@ export default function HomePage() {
     fetchEvents();
   }, []);
 
-  // Fetch featured speakers
-  useEffect(() => {
-    const fetchSpeakers = async () => {
-      try {
-        const response = await fetchAPI(
-          "/speakers?filters[Featured][$eq]=true&populate=*&pagination[limit]=4"
-        );
-        if (response && response.data) {
-          setFeaturedSpeakers(response.data);
-        }
-        setLoading((prev) => ({ ...prev, speakers: false }));
-      } catch (err) {
-        console.error("Error fetching speakers:", err);
-        setLoading((prev) => ({ ...prev, speakers: false }));
-      }
-    };
-    fetchSpeakers();
-  }, []);
-
-  // Fetch sponsors
+  // Fetch sponsors - using actual endpoint from original code
   useEffect(() => {
     const fetchSponsors = async () => {
       try {
         const response = await fetchAPI("/sponsors?populate=*");
         if (response && response.data) {
-          const platinumSponsors = response.data.filter(
-            (sponsor: Sponsor) => sponsor.Tier === "Platinum"
-          );
-          const goldSponsors = response.data.filter(
-            (sponsor: Sponsor) => sponsor.Tier === "Gold"
-          );
-          const silverSponsors = response.data.filter(
-            (sponsor: Sponsor) => sponsor.Tier === "Silver"
-          );
-          setSponsors({
-            platinum: platinumSponsors,
-            gold: goldSponsors,
-            silver: silverSponsors,
-          });
+          setSponsors(response.data);
         }
         setLoading((prev) => ({ ...prev, sponsors: false }));
       } catch (err) {
@@ -1326,21 +1409,23 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="bg-gray-100 dark:bg-gray-900">
+    <main className="bg-white dark:bg-gray-900">
       <HeroSection />
       <KeyMetricsSection />
-      <AboutSection />
-      <InvestmentMetricsSection />
-      <GovernmentPartnersSection />
-      <FeaturedEventsSection events={featuredEvents} loading={loading.events} />
-      <FeaturedSpeakersSection
-        speakers={featuredSpeakers}
-        loading={loading.speakers}
-      />
-      <CTASection />
-      <RegistrationSection />
-      <ContactSubscribeSection />
-      <PracticalInformationSection />
+      <AboutExpoSection />
+      <WhyUgandaSection />
+      <FullWidthBannerSection />
+      <StrategicSectorsSection />
+      <MiddleCTASection />
+      <ImageGallerySection />
+      <TopicSection1 />
+      <ImageSliderSection />
+      <TopicSection2 />
+      <EventsGridSection events={events} />
+      <SponsorsGridSection sponsors={sponsors} />
+      <ExhibitorCTASection />
+      <ContactFormSection />
+      <SubscribeSection />
     </main>
   );
 }
