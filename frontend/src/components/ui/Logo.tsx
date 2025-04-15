@@ -47,7 +47,11 @@ export function Logo({ className = "", forceMode }: LogoProps) {
   }
 
   return (
-    <Link href="/" className={`flex items-center ${className}`}>
+    <Link
+      href="/"
+      onClick={() => (window.location.href = "/")}
+      className={`flex items-center ${className}`}
+    >
       <Image
         src={effectiveDarkMode ? "/logo-darkmode.svg" : "/logo-lightmode.svg"}
         alt="UNITE Expo 2025"
