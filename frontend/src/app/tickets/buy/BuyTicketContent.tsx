@@ -267,32 +267,84 @@ export default function BuyTicketContent() {
       console.log("Purchase created:", purchaseResponse);
 
       if (purchaseResponse && purchaseResponse.data) {
-        // Now initiate payment with Pesapal through our API
-        console.log("Initiating payment with Pesapal...");
-        const paymentResponse = await fetch("/api/tickets/initiate-payment", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            referenceNumber,
-            amount: totalAmount,
-            currency: ticketCategory?.currency || "UGX",
-            description: `UNITE Expo 2025 Ticket - ${ticketCategory?.name}`,
-            buyerName: formData.buyerName,
-            buyerEmail: formData.buyerEmail,
-            buyerPhone: formData.buyerPhone || "",
-          }),
-        });
+        // Special handling for free tickets
+        if (totalAmount <= 0) {
+          console.log("Processing free ticket...");
 
-        const paymentData = await paymentResponse.json();
-        console.log("Payment initiation response:", paymentData);
+          // Generate a transaction ID for the free ticket
+          const freeTransactionId = `FREE-${Date.now()}`;
 
-        if (paymentData.success && paymentData.redirectUrl) {
-          // Redirect to Pesapal payment page
-          window.location.href = paymentData.redirectUrl;
+          // Get Strapi URL
+          let STRAPI_URL = process.env.NEXT_PUBLIC_API_URL;
+          if (STRAPI_URL && STRAPI_URL.includes("localhost")) {
+            STRAPI_URL = STRAPI_URL.replace("localhost", "127.0.0.1");
+          }
+
+          // Update purchase status directly
+          try {
+            const updateUrl = `${STRAPI_URL}/api/ticket-purchases/by-reference/${referenceNumber}`;
+            console.log("Updating free ticket purchase at:", updateUrl);
+
+            const updateResponse = await fetch(updateUrl, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                data: {
+                  paymentStatus: "paid",
+                  paymentMethod: "Free Ticket",
+                  transactionId: freeTransactionId,
+                },
+              }),
+            });
+
+            if (!updateResponse.ok) {
+              console.error(
+                "Failed to update purchase:",
+                await updateResponse.text()
+              );
+              throw new Error("Failed to update purchase status");
+            }
+
+            console.log("Free ticket purchase updated successfully");
+
+            // Redirect to confirmation page
+            router.push(
+              `/tickets/confirmation?OrderTrackingId=${freeTransactionId}&OrderMerchantReference=${referenceNumber}&OrderNotificationType=COMPLETED`
+            );
+          } catch (updateError) {
+            console.error("Error updating free ticket status:", updateError);
+            throw new Error("Failed to process free ticket. Please try again.");
+          }
         } else {
-          throw new Error(paymentData.message || "Failed to initiate payment");
+          // Normal flow for paid tickets
+          console.log("Initiating payment with Pesapal...");
+          const paymentResponse = await fetch("/api/tickets/initiate-payment", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              referenceNumber,
+              amount: totalAmount,
+              currency: ticketCategory?.currency || "UGX",
+              description: `UNITE Expo 2025 Ticket - ${ticketCategory?.name}`,
+              buyerName: formData.buyerName,
+              buyerEmail: formData.buyerEmail,
+              buyerPhone: formData.buyerPhone || "",
+            }),
+          });
+
+          const paymentData = await paymentResponse.json();
+          console.log("Payment initiation response:", paymentData);
+
+          if (paymentData.success && paymentData.redirectUrl) {
+            // Redirect to Pesapal payment page
+            window.location.href = paymentData.redirectUrl;
+          } else {
+            throw new Error(
+              paymentData.message || "Failed to initiate payment"
+            );
+          }
         }
       } else {
         throw new Error("Failed to create purchase record");

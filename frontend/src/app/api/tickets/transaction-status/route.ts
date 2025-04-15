@@ -6,7 +6,9 @@ const PESAPAL_BASE_URL = "https://pay.pesapal.com/v3";
 // const PESAPAL_BASE_URL = "https://cybqa.pesapal.com/pesapalv3";
 
 const PESAPAL_TRANSACTION_STATUS_URL = `${PESAPAL_BASE_URL}/api/Transactions/GetTransactionStatus`;
+// =====================================
 
+// ========================================
 /**
  * Handles checking transaction status from Pesapal
  */
@@ -49,7 +51,35 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
+    // ======
+    // Special handling for free tickets
+    if (orderTrackingId.startsWith("FREE-")) {
+      console.log("Processing free ticket transaction:", orderTrackingId);
 
+      // Extract reference number from query parameters - check both cases
+      const orderMerchantReference =
+        searchParams.get("OrderMerchantReference") ||
+        searchParams.get("orderMerchantReference");
+
+      console.log("Free ticket merchant reference:", orderMerchantReference);
+
+      // Return mock successful transaction data for free tickets
+      return NextResponse.json({
+        success: true,
+        paymentMethod: "Free Ticket",
+        amount: 0,
+        createdDate: new Date().toISOString(),
+        confirmationCode: orderTrackingId,
+        paymentStatus: "Completed",
+        statusCode: 1,
+        description: "Free ticket processed successfully",
+        paymentAccount: "",
+        merchantReference: orderMerchantReference,
+        currency: "UGX",
+        message: "Free ticket transaction completed successfully",
+      });
+    }
+    // ========================
     console.log("Checking transaction status for:", orderTrackingId);
 
     // Auth URL for token retrieval - using the correct base URL

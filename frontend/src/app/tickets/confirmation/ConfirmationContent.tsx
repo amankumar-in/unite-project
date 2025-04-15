@@ -503,7 +503,7 @@ export default function ConfirmationContent() {
     const checkPaymentStatus = async () => {
       try {
         const response = await fetch(
-          `/api/tickets/transaction-status?orderTrackingId=${orderTrackingId}`,
+          `/api/tickets/transaction-status?orderTrackingId=${orderTrackingId}&OrderMerchantReference=${orderMerchantReference}`,
           { method: "GET", headers: { "Content-Type": "application/json" } }
         );
         const data = await response.json();
@@ -814,6 +814,7 @@ export default function ConfirmationContent() {
           <Link
             href="/tickets"
             className="inline-flex items-center mt-4 px-4 py-2 text-sm font-medium bg-blue-600 text-white"
+            onClick={() => (window.location.href = "/tickets")}
           >
             Back to Tickets
           </Link>
@@ -1397,6 +1398,7 @@ export default function ConfirmationContent() {
           <Link
             href="/"
             className="inline-flex items-center px-4 py-2 text-sm font-medium bg-gray-200 dark:bg-gray-700 text-black dark:text-white hover:bg-gray-300"
+            onClick={() => (window.location.href = "/")}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
