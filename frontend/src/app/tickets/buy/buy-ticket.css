@@ -1,0 +1,10 @@
+/* Hide header and footer */
+header,
+footer {
+  display: none !important;
+}
+
+/* Add padding to compensate for the missing header's space */
+body {
+  padding-top: 0 !important;
+}

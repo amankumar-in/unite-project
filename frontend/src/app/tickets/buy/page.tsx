@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import BuyTicketContent from "./BuyTicketContent";
+import "./buy-ticket.css"; // Add this line
 
 export const dynamic = "force-dynamic";
 
