@@ -1,7 +1,7 @@
 // src/admin/app.js
 import AuthLogo from "/logo.png";
 import MenuLogo from "/logo.png";
-import favicon from "/logo.png";
+import favicon from "./favicon.ico";
 
 export default {
   config: {
@@ -23,6 +23,10 @@ export default {
       en: {
         "Auth.form.welcome.title": "Welcome to UNITE Console", // Changes the welcome message
         "Auth.form.welcome.subtitle": "Log in to your account", // Changes the subtitle
+        "app.components.LeftMenu.navbrand.title": "UNITE Dashboard",
+        "HomePage.head.title": "Homepage | UNITE",
+
+
         // You can add more translation overrides here
       },
     },
