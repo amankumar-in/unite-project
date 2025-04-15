@@ -672,7 +672,7 @@ export default function BuyTicketContent() {
               <Button
                 variant="dark"
                 buttonType="outline"
-                href="/tickets"
+                onClick={() => (window.location.href = "/tickets")}
                 className="dark:border-white dark:text-white"
               >
                 Cancel
