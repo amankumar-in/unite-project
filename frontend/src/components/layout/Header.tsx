@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+
 import { NavigationLink } from "@/components/ui/NavigationLink";
 import { MobileMenuButton } from "@/components/ui/MobileMenuButton";
 import { Logo } from "@/components/ui/Logo";
@@ -9,7 +11,6 @@ import { Chip } from "@/components/ui/Chip";
 
 // Remove Contact from mobile nav items
 const navItems = [
-  { name: "Home", href: "/" },
   { name: "About", href: "/about" },
   { name: "Events", href: "/events" },
   { name: "Speakers", href: "/speakers" },
@@ -23,6 +24,7 @@ const desktopNavItems = [...navItems, { name: "Contact", href: "/contact" }];
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   // Handle scroll state to add shadow on scroll
   useEffect(() => {
@@ -33,6 +35,11 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
