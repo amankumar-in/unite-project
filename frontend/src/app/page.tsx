@@ -308,6 +308,28 @@ const FeaturedSpeakersSection = ({
   </section>
 );
 
+// New Banner Section with gradient background
+const BannerSection = () => (
+  <section className="w-full border-b border-gray-200 dark:border-gray-700">
+    <div
+      className="w-full"
+      style={{
+        background: "linear-gradient(90deg, #004aad 0%, #cb6ce6 100%)",
+      }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <a href="/events/uganda-s-journey-to-the-digital-age">
+          <img
+            src="/images/banner-1.svg"
+            alt="Banner"
+            className="w-full h-auto block"
+          />
+        </a>
+      </div>
+    </div>
+  </section>
+);
+
 // 4 card grid section with image and text - 4 in 1 row
 const WhyUgandaSection = () => (
   <section className="py-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
@@ -1539,6 +1561,7 @@ export default function HomePage() {
       <AboutExpoSection />
       {/* New FeaturedSpeakersSection added here */}
       <FeaturedSpeakersSection speakers={speakers} loading={loading.speakers} />
+      <BannerSection />
       <WhyUgandaSection />
       <FullWidthBannerSection />
       <EventsGridSection events={events} />
