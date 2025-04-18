@@ -86,7 +86,7 @@ const HeroSection = () => (
         <div className="max-w-2xl">
           <div className="inline-flex items-center bg-blue-600 px-4 py-2 mb-6">
             <span className="text-sm text-white uppercase tracking-wider font-medium">
-              July 7-14, 2025 • Kampala, Uganda
+              Sept 26-27, 2025 • Kampala, Uganda
             </span>
           </div>
           <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight text-white">
