@@ -213,8 +213,103 @@ const AboutExpoSection = () => (
   </section>
 );
 
-const WhyUgandaSection = () => (
+// New FeaturedSpeakersSection (added between AboutExpoSection and WhyUgandaSection)
+interface FeaturedSpeakersProps {
+  speakers: Speaker[];
+  loading: boolean;
+}
+
+const FeaturedSpeakersSection = ({
+  speakers,
+  loading,
+}: FeaturedSpeakersProps) => (
   <section className="py-16 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+        <div>
+          <span className="inline-block mb-3 h-1 w-16 bg-yellow-500"></span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+            Distinguished Speakers
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-300 mt-4">
+            Meet the industry leaders and experts at UNITE Expo 2025
+          </p>
+        </div>
+        <Button
+          variant="primary"
+          buttonType="outline"
+          href="/speakers"
+          className="mt-4 md:mt-0"
+        >
+          View All Speakers
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="bg-white dark:bg-gray-800 animate-pulse h-80 border border-gray-200 dark:border-gray-600"
+            ></div>
+          ))}
+        </div>
+      ) : speakers.length === 0 ? (
+        <div className="text-center py-12 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600">
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Speaker announcements coming soon.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {speakers.map((speaker) => (
+            <Link
+              href={`/speakers/${speaker.Slug}`}
+              key={speaker.id}
+              className="group block"
+            >
+              <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 h-full">
+                <div className="aspect-square w-full bg-gray-100 dark:bg-gray-700 relative">
+                  {speaker.ProfileImage ? (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL}${speaker.ProfileImage.url}`}
+                      alt={speaker.Name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
+                      <span className="text-gray-400 text-4xl font-bold">
+                        {speaker.Name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  {speaker.Organization && (
+                    <div className="absolute bottom-0 left-0 right-0 bg-blue-600 text-white py-1 px-3">
+                      <div className="text-xs uppercase tracking-wider truncate">
+                        {speaker.Organization}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="p-5">
+                  <h3 className="text-lg font-bold mb-1 group-hover:text-blue-600 transition-colors text-gray-900 dark:text-white">
+                    {speaker.Name}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm">
+                    {speaker.Title}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+);
+
+const WhyUgandaSection = () => (
+  <section className="py-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <span className="inline-block mb-3 h-1 w-16 bg-blue-600 mx-auto"></span>
@@ -1366,9 +1461,11 @@ const SubscribeSection = () => (
 export default function HomePage() {
   // State for API data
   const [events, setEvents] = useState<Event[]>([]);
+  const [speakers, setSpeakers] = useState<Speaker[]>([]); // New state for speakers
   const [sponsors, setSponsors] = useState<Sponsor[]>([]);
   const [loading, setLoading] = useState({
     events: true,
+    speakers: true, // New loading state for speakers
     sponsors: true,
   });
 
@@ -1389,6 +1486,25 @@ export default function HomePage() {
       }
     };
     fetchEvents();
+  }, []);
+
+  // New effect for fetching featured speakers
+  useEffect(() => {
+    const fetchSpeakers = async () => {
+      try {
+        const response = await fetchAPI(
+          "/speakers?filters[Featured][$eq]=true&populate=*&pagination[limit]=8"
+        );
+        if (response && response.data) {
+          setSpeakers(response.data);
+        }
+        setLoading((prev) => ({ ...prev, speakers: false }));
+      } catch (err) {
+        console.error("Error fetching speakers:", err);
+        setLoading((prev) => ({ ...prev, speakers: false }));
+      }
+    };
+    fetchSpeakers();
   }, []);
 
   // Fetch sponsors - using actual endpoint from original code
@@ -1413,6 +1529,8 @@ export default function HomePage() {
       <HeroSection />
       <KeyMetricsSection />
       <AboutExpoSection />
+      {/* New FeaturedSpeakersSection added here */}
+      <FeaturedSpeakersSection speakers={speakers} loading={loading.speakers} />
       <WhyUgandaSection />
       <FullWidthBannerSection />
       <StrategicSectorsSection />
