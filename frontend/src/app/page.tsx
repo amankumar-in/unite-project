@@ -308,6 +308,7 @@ const FeaturedSpeakersSection = ({
   </section>
 );
 
+// 4 card grid section with image and text - 4 in 1 row
 const WhyUgandaSection = () => (
   <section className="py-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -402,6 +403,7 @@ const WhyUgandaSection = () => (
   </section>
 );
 
+// Image background CTA - Call to action section
 const FullWidthBannerSection = () => (
   <section className="relative py-24">
     <div
@@ -429,6 +431,7 @@ const FullWidthBannerSection = () => (
   </section>
 );
 
+// 4 card grid section with image and text
 const StrategicSectorsSection = () => (
   <section className="py-16 bg-white dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -682,6 +685,7 @@ const ImageGallerySection = () => (
   </section>
 );
 
+// Image Slider Section
 const ImageSliderSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = 5;
@@ -740,7 +744,7 @@ const ImageSliderSection = () => {
         <div className="mb-12">
           <span className="inline-block mb-3 h-1 w-16 bg-blue-600"></span>
           <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-            UNITE 2025 Features
+            Key Focus Areas
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300">
             Seven days of investment opportunities, knowledge sharing, and
@@ -840,6 +844,7 @@ const ImageSliderSection = () => {
   );
 };
 
+// Image and paragraph - Gateway to East Africa
 const TopicSection1 = () => (
   <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -885,6 +890,7 @@ const TopicSection1 = () => (
   </section>
 );
 
+// Image and paragraph - Gateway to East Africa
 const TopicSection2 = () => (
   <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -930,6 +936,7 @@ const TopicSection2 = () => (
   </section>
 );
 
+// Program highlights - Events grid section
 const EventsGridSection = ({ events }: { events: Event[] }) => (
   <section className="py-16 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1100,13 +1107,14 @@ const EventsGridSection = ({ events }: { events: Event[] }) => (
   </section>
 );
 
+// Sponsors grid section
 const SponsorsGridSection = ({ sponsors }: { sponsors: Sponsor[] }) => (
   <section className="py-16 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-700">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-12">
         <span className="inline-block mb-3 h-1 w-16 bg-yellow-500 mx-auto"></span>
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">
-          Our Partners
+          UNITE 2025 Sponsors
         </h2>
         <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
           UNITE Expo 2025 is supported by leading organizations committed to
@@ -1533,14 +1541,16 @@ export default function HomePage() {
       <FeaturedSpeakersSection speakers={speakers} loading={loading.speakers} />
       <WhyUgandaSection />
       <FullWidthBannerSection />
+      <EventsGridSection events={events} />
       <StrategicSectorsSection />
       <MiddleCTASection />
-      <ImageGallerySection />
+      <SponsorsGridSection sponsors={sponsors} />
+      {/* hiding below image gallery */}
+      {/* <ImageGallerySection /> */}
       <TopicSection1 />
       <ImageSliderSection />
       <TopicSection2 />
-      <EventsGridSection events={events} />
-      <SponsorsGridSection sponsors={sponsors} />
+
       <ExhibitorCTASection />
       <ContactFormSection />
       <SubscribeSection />
