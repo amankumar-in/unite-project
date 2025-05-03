@@ -37,6 +37,7 @@ export default [
         "http://192.168.1.23:3000",
         process.env.FRONTEND_URL || "https://unite-frontend.onrender.com",
         "https://meea.coinsforcollege.org",
+        "https://mea.coinsforcollege.org",
     "https://meea.onrender.com",
       ],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],

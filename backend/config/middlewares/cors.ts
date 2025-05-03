@@ -7,6 +7,7 @@ export default {
     "https://ugandanext.com",
     "https://unite-frontend.onrender.com",
     "https://meea.coinsforcollege.org",
+    "https://mea.coinsforcollege.org",
     "https://meea.onrender.com",
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"],
