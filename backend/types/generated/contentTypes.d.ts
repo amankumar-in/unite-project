@@ -594,6 +594,7 @@ export interface ApiOrganizerOrganizer extends Struct.CollectionTypeSchema {
 export interface ApiSpeakerSpeaker extends Struct.CollectionTypeSchema {
   collectionName: 'speakers';
   info: {
+    description: '';
     displayName: 'Speaker';
     pluralName: 'speakers';
     singularName: 'speaker';
@@ -625,6 +626,7 @@ export interface ApiSpeakerSpeaker extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'A short description about the speaker'>;
     Slug: Schema.Attribute.UID<'Name'> & Schema.Attribute.Required;
+    SortOrder: Schema.Attribute.Integer;
     Title: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<'Job Title'>;

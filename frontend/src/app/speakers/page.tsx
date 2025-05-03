@@ -48,7 +48,7 @@ export default function SpeakersPage() {
   useEffect(() => {
     const fetchSpeakers = async () => {
       try {
-        const response = await fetchAPI("/speakers?populate=*");
+        const response = await fetchAPI("/speakers?populate=*&sort[0]=SortOrder:asc&sort[1]=Name:asc");
         console.log("Speakers response:", response);
 
         if (response && response.data) {
